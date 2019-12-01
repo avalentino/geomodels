@@ -2,11 +2,26 @@
 
 PYTHON=python3
 
-.PHONY: sdist clean
+.PHONY: ext build sdist wheel clean
+
+
+dafault: ext
+
+
+ext:
+	$(PYTHON) setup.py build_ext --inplace
+
+
+build:
+	$(PYTHON) setup.py build
 
 
 sdist:
 	$(PYTHON) setup.py sdist
+
+
+wheel:
+	$(PYTHON) setup.py bdist_wheel
 
 
 clean:
