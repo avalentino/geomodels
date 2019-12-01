@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.1.0.dev0'
+from ._magnetic import MagneticFieldModel           # noqa
 
-from .magnetic import MagneticFieldModel         # noqa
+
+__version__ = '0.1.0.dev0'

@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from distutils.core import setup, Extension
-from Cython.Build import cythonize
+from setuptools import setup, Extension
 
 
 def get_version(versionfile, strip_extra=False):
@@ -25,7 +24,7 @@ def get_version(versionfile, strip_extra=False):
 
 extensions = [
     Extension(
-        'geomodels.magnetic',
+        'geomodels._magnetic',
         sources=['geomodels/magnetic.pyx'],
         libraries=['Geographic'],
         language="c++",
@@ -60,13 +59,14 @@ setup(
     license='MIT',
     classifiers=classifiers,
     packages=['geomodels'],
-    ext_modules=cythonize(extensions),
+    ext_modules=extensions,
+    setup_requires=['cython'],
     install_requires=['numpy'],
     # python_requires='>=3.5',
     # package_data={
     #     'sample': ['package_data.dat'],
     # },
-    # data_files=[('my_data', ['data/data_file'])],
+    # data_files=[('data', ['data/data_file'])],
     # entry_points={
     #  ...
     # },
