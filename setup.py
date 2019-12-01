@@ -38,7 +38,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
@@ -62,7 +61,10 @@ setup(
     ext_modules=extensions,
     setup_requires=['cython'],
     install_requires=['numpy'],
-    # python_requires='>=3.5',
+    extras_require={
+        'download': 'tqdm',
+    },
+    python_requires='>=3.6',
     # package_data={
     #     'sample': ['package_data.dat'],
     # },
