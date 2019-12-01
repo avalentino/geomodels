@@ -310,7 +310,7 @@ cdef class MagneticFieldModel:
         return self._ptr.MaxHeight()
 
     def min_time(self):
-        """The minimum time (in years) for which this moel should be used.
+        """The minimum time (in years) for which this model should be used.
 
         Because the model will typically provide useful results
         slightly outside the range of allowed times,
