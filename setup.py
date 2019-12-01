@@ -63,6 +63,7 @@ setup(
     install_requires=['numpy'],
     extras_require={
         'download': 'tqdm',
+        'cli': 'argcomplete',
     },
     python_requires='>=3.6',
     # package_data={
