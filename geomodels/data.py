@@ -314,7 +314,7 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
     base_path.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tempdir:
-        if tqdm:
+        if len(urls) > 1 and tqdm:
             urliterator = tqdm.tqdm(urls, unit='file', desc='download')
         else:
             urliterator = urls
