@@ -309,7 +309,7 @@ cdef class MagneticFieldModel:
     #                                       H, F, D, I, Ht, Ft, Dt, It)
     #     return H, F, D, I, Ht, Ft, Dt, It
 
-    def description(self):
+    def description(self) -> str:
         """Return the description of the magnetic model.
 
         Return the description of the magnetic model if available,
@@ -318,7 +318,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.Description().decode('utf-8')
 
-    def datetime(self):
+    def datetime(self) -> str:
         """Return date of the model.
 
         Return date of the model, if available, from the ReleaseDate
@@ -326,11 +326,11 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.DateTime().decode('utf-8')
 
-    def magnetic_file(self):
+    def magnetic_file(self) -> str:
         """Full file name used to load the magnetic model."""
         return self._ptr.MagneticFile().decode('urf-8')
 
-    def magnetic_model_name(self):
+    def magnetic_model_name(self) -> str:
         """Name used to load the magnetic model.
 
         The 'name' used to load the magnetic model (from the first
@@ -339,11 +339,11 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MagneticModelName().decode('utf-8')
 
-    def magnetic_model_directory(self):
+    def magnetic_model_directory(self) -> str:
         """Directory used to load the magnetic model."""
         return self._ptr.MagneticModelDirectory().decode('utf-8')
 
-    def min_height(self):
+    def min_height(self) -> float:
         """Minimum height.
 
         The minimum height above the ellipsoid (in meters) for which
@@ -356,7 +356,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MinHeight()
 
-    def max_height(self):
+    def max_height(self) -> float:
         """Maximum height.
 
         The maximum height above the ellipsoid (in meters) for which
@@ -369,7 +369,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MaxHeight()
 
-    def min_time(self):
+    def min_time(self) -> float:
         """The minimum time (in years) for which this model should be used.
 
         Because the model will typically provide useful results
@@ -379,7 +379,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MinTime()
 
-    def max_time(self):
+    def max_time(self) -> float:
         """The maximum time (in years) for which this moel should be used.
 
         Because the model will typically provide useful results
@@ -389,7 +389,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MaxTime()
 
-    def major_radius(self):
+    def major_radius(self) -> float:
         """The equatorial radius of the ellipsoid (meters).
 
         This is the value of 'a' inherited from the Geocentric object
@@ -397,7 +397,7 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MajorRadius()
 
-    def flattening(self):
+    def flattening(self) -> float:
         """The flattening of the ellipsoid.
 
         This is the value inherited from the Geocentric object
@@ -406,7 +406,7 @@ cdef class MagneticFieldModel:
         return self._ptr.Flattening()
 
     @staticmethod
-    def default_magnetic_path():
+    def default_magnetic_path() -> str:
         """Return the default path for magnetic model data files.
 
         This is the value of the environment variable
@@ -419,7 +419,7 @@ cdef class MagneticFieldModel:
         return MagneticModel.DefaultMagneticPath().decode('utf-8')
 
     @staticmethod
-    def default_magnetic_name():
+    def default_magnetic_name() -> str:
         """The default name for the magnetic model.
 
         This is the value of the environment variable
