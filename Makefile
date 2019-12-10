@@ -26,5 +26,5 @@ wheel:
 
 clean:
 	$(PYTHON) setup.py clean --all
-	$(RM) -rf MANIFEST dist build
+	$(RM) -rf MANIFEST dist build geomodels.egg-info
 	$(RM) -rf geomodels/__pycache__/ geomodels/*.cpp geomodels/*.so
