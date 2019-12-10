@@ -118,9 +118,7 @@ cdef class MagneticFieldModel:
     def __cinit__(self, name, path=''):
         # @TODO: support for 'earth' parameter (default: WGS84)
         cdef string c_name = os.fsencode(name)
-        cdef string c_path
-        if not path:
-            c_path = os.fsencode(path)
+        cdef string c_path = os.fsencode(path)
 
         with nogil:
             self._ptr = new MagneticModel(c_name, c_path)
@@ -130,7 +128,7 @@ cdef class MagneticFieldModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def __call__(self, double t, lat, lon, h, time_derivatives=False):
+    def __call__(self, double t, lat, lon, h, bint time_derivatives=False):
         """Compute the magnetic field.
 
         Evaluate the components of the geomagnetic field and
@@ -155,21 +153,29 @@ cdef class MagneticFieldModel:
             and Bzt are the rate of change of Bx, By and Bz
             respectively (nT/yr).
         """
+        cdef bint is_scalar = np.isscalar(h)
+
         lat = np.asarray(lat)
         lon = np.asarray(lon)
         h = np.asarray(h)
+
+        for name, param in (('lat', lat), ('lon', lon), ('h', h)):
+            dt = param.dtype
+            if not (np.issubdtype(dt, np.floating) or
+                    np.issubdtype(dt, np.integer)):
+                raise TypeError('{}: {!r}}'.format(name, param))
 
         shape = h.shape
         if lat.shape != shape or lon.shape != shape:
             raise ValueError('lat, lon and h shall have the same shape')
 
         cdef long size = h.size
-
-        lat = np.ascontiguousarray(lat.reshape([size]), dtype='float64')
-        lon = np.ascontiguousarray(lon.reshape([size]), dtype='float64')
-        h = np.ascontiguousarray(h.reshape([size]), dtype='float64')
-
         dtype = np.float64
+
+        lat = np.ascontiguousarray(lat.reshape([size]), dtype=dtype)
+        lon = np.ascontiguousarray(lon.reshape([size]), dtype=dtype)
+        h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
+
         Bx = np.empty(shape=[size], dtype=dtype)
         By = np.empty(shape=[size], dtype=dtype)
         Bz = np.empty(shape=[size], dtype=dtype)
@@ -193,9 +199,14 @@ cdef class MagneticFieldModel:
                     cython.operator.dereference(self._ptr)(
                         t, vlat[i], vlon[i], vh[i], vBx[i], vBy[i], vBz[i])
 
-            Bx = Bx.reshape(shape)
-            By = By.reshape(shape)
-            Bz = Bz.reshape(shape)
+            if is_scalar:
+                Bx = np.asscalar(Bx)
+                By = np.asscalar(By)
+                Bz = np.asscalar(Bz)
+            else:
+                Bx = Bx.reshape(shape)
+                By = By.reshape(shape)
+                Bz = Bz.reshape(shape)
 
             return Bx, By, Bz
         else:
@@ -214,13 +225,22 @@ cdef class MagneticFieldModel:
                         vBx[i], vBy[i], vBz[i],
                         vBxt[i], vByt[i], vBzt[i])
 
-            Bx = Bx.reshape(shape)
-            By = By.reshape(shape)
-            Bz = Bz.reshape(shape)
+            if is_scalar:
+                Bx = np.asscalar(Bx)
+                By = np.asscalar(By)
+                Bz = np.asscalar(Bz)
 
-            Bxt = Bxt.reshape(shape)
-            Byt = Bxt.reshape(shape)
-            Bzt = Bxt.reshape(shape)
+                Bxt = np.asscalar(Bxt)
+                Byt = np.asscalar(Byt)
+                Bzt = np.asscalar(Bzt)
+            else:
+                Bx = Bx.reshape(shape)
+                By = By.reshape(shape)
+                Bz = Bz.reshape(shape)
+
+                Bxt = Bxt.reshape(shape)
+                Byt = Bxt.reshape(shape)
+                Bzt = Bxt.reshape(shape)
 
             return Bx, By, Bz, Bxt, Byt, Bzt
 
