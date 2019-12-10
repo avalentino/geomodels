@@ -41,51 +41,8 @@ import numpy as np
 cimport cython
 from libcpp.string cimport string
 
+from .magnetic cimport MagneticModel
 from .error import GeographicErr
-
-
-cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib":
-    cdef cppclass MagneticModel:
-        ctypedef double real
-        MagneticModel(const string& name, const string& path) nogil except +
-        # @TODO: const Geocentric& earth=Geocentric.WGS84()
-
-        void operator()(real t, real lat, real lon, real h,
-                        real& Bx, real& By, real& Bz) nogil const
-        void operator()(real t, real lat, real lon, real h,
-                        real& Bx, real& By, real& Bz,
-                        real& Bxt, real& Byt, real& Bzt) nogil const
-
-        # MagneticCircle Circle(real t, real lat, real h) const
-
-        @staticmethod
-        void FieldComponents(real Bx, real By, real Bz,
-                             real& H, real& F, real& D, real& I) nogil
-
-        # @staticmethod
-        # void FieldComponents(real Bx, real By, real Bz,
-        #                      real Bxt, real Byt, real Bzt,
-        #                      real& H, real& F, real& D, real& I,
-        #                      real& Ht, real& Ft, real& Dt, real& It) nogil
-
-        const string& Description() const
-        const string& DateTime() const
-        const string& MagneticFile() const
-        const string& MagneticModelName() const
-        const string& MagneticModelDirectory() const
-
-        real MinHeight() const
-        real MaxHeight() const
-        real MinTime() const
-        real MaxTime() const
-        real MajorRadius() const
-        real Flattening() const
-
-        @staticmethod
-        string DefaultMagneticPath()
-
-        @staticmethod
-        string DefaultMagneticName();
 
 
 cdef class MagneticFieldModel:
