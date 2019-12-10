@@ -4,6 +4,7 @@
 
 from ._magnetic import MagneticFieldModel           # noqa
 from .data import *                                 # noqa
+from .error import GeographicErr                    # noqa
 
 
 __version__ = '0.1.0.dev0'

@@ -41,6 +41,8 @@ import numpy as np
 cimport cython
 from libcpp.string cimport string
 
+from .error import GeographicErr
+
 
 cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib":
     cdef cppclass MagneticModel:
@@ -120,8 +122,11 @@ cdef class MagneticFieldModel:
         cdef string c_name = os.fsencode(name)
         cdef string c_path = os.fsencode(path)
 
-        with nogil:
-            self._ptr = new MagneticModel(c_name, c_path)
+        try:
+            with nogil:
+                self._ptr = new MagneticModel(c_name, c_path)
+        except RuntimeError as exc:
+            raise GeographicErr(str(exc)) from exc
 
     def __dealloc__(self):
         del self._ptr
