@@ -2,6 +2,39 @@
 # cython: language_level=3
 # distutils: language=c++
 
+"""Model of the earth's magnetic field.
+
+Evaluate the earth's magnetic field according to a model.  At present only
+internal magnetic fields are handled.  These are due to the earth's code
+and crust; these vary slowly (over many years).  Excluded are the effects
+of currents in the ionosphere and magnetosphere which have daily and
+annual variations.
+
+See:
+
+* General information:
+  - http://geomag.org/models/index.html
+* WMM2010:
+  - https://ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml
+  - https://ngdc.noaa.gov/geomag/WMM/data/WMM2010/WMM2010COF.zip
+* WMM2015:
+  - https://ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml
+  - https://ngdc.noaa.gov/geomag/WMM/data/WMM2015/WMM2015COF.zip
+* IGRF11:
+  - https://ngdc.noaa.gov/IAGA/vmod/igrf.html
+  - https://ngdc.noaa.gov/IAGA/vmod/igrf11coeffs.txt
+  - https://ngdc.noaa.gov/IAGA/vmod/geomag70_linux.tar.gz
+* EMM2010:
+  - https://ngdc.noaa.gov/geomag/EMM/index.html
+  - https://ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2010_Sph_Windows_Linux.zip
+* EMM2015:
+  - https://ngdc.noaa.gov/geomag/EMM/index.html
+  - https://www.ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2015_Sph_Linux.zip
+* EMM2017:
+  - https://ngdc.noaa.gov/geomag/EMM/index.html
+  - https://www.ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2017_Sph_Linux.zip
+"""
+
 import os
 import numpy as np
 
@@ -60,9 +93,9 @@ cdef class MagneticFieldModel:
         the name of the model
     :param path:
         (optional) directory for data file
-     :raises GeographicErr:
+    :raises GeographicErr:
          if the data file cannot be found, is unreadable, or is corrupt
-     :raises bad_alloc:
+    :raises MemoryError:
          if the memory necessary for storing the model can't be allocated
 
     A filename is formed by appending ".wmm" (World Magnetic Model) to
@@ -83,7 +116,7 @@ cdef class MagneticFieldModel:
     cdef MagneticModel *_ptr
 
     def __cinit__(self, name, path=''):
-        # @TODO: support for 'earth' parameter (defauld: WGS84)
+        # @TODO: support for 'earth' parameter (default: WGS84)
         cdef string c_name = os.fsencode(name)
         cdef string c_path
         if not path:
@@ -192,6 +225,33 @@ cdef class MagneticFieldModel:
             return Bx, By, Bz, Bxt, Byt, Bzt
 
     # @TODO: MagneticCircle Circle(real t, real lat, real h) const
+    # def circle(...):
+    #     """Create a MagneticCircle object.
+    #
+    #     A MagneticCircle object to allow the geomagnetic field at many
+    #     points with constant \e lat, \e h, and \e t and varying `lon`
+    #     to be computed efficiently.
+    #
+    #     :param t:
+    #         the time (years).
+    #     :param lat:
+    #         latitude of the point (degrees).
+    #     :param h:
+    #         the height of the point above the ellipsoid (meters).
+    #     :raises MenoryError:
+    #         if the memory necessary for creating a MagneticCircle
+    #         can't be allocated.
+    #     :returns:
+    #         a MagneticCircle object whose MagneticCircle.__call__(lon)
+    #         member function computes the field at particular values of
+    #         `lon`.
+    #
+    #     If the field at several points on a circle of latitude need to be
+    #     calculated then creating a MagneticCircle and using its member
+    #     functions will be substantially faster, especially for high-degree
+    #     models.
+    #     """
+    #     pass
 
     @staticmethod
     def field_components(double Bx, double By, double Bz):
