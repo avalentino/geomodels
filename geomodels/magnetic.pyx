@@ -10,29 +10,7 @@ and crust; these vary slowly (over many years).  Excluded are the effects
 of currents in the ionosphere and magnetosphere which have daily and
 annual variations.
 
-See:
-
-* General information:
-  - http://geomag.org/models/index.html
-* WMM2010:
-  - https://ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml
-  - https://ngdc.noaa.gov/geomag/WMM/data/WMM2010/WMM2010COF.zip
-* WMM2015:
-  - https://ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml
-  - https://ngdc.noaa.gov/geomag/WMM/data/WMM2015/WMM2015COF.zip
-* IGRF11:
-  - https://ngdc.noaa.gov/IAGA/vmod/igrf.html
-  - https://ngdc.noaa.gov/IAGA/vmod/igrf11coeffs.txt
-  - https://ngdc.noaa.gov/IAGA/vmod/geomag70_linux.tar.gz
-* EMM2010:
-  - https://ngdc.noaa.gov/geomag/EMM/index.html
-  - https://ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2010_Sph_Windows_Linux.zip
-* EMM2015:
-  - https://ngdc.noaa.gov/geomag/EMM/index.html
-  - https://www.ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2015_Sph_Linux.zip
-* EMM2017:
-  - https://ngdc.noaa.gov/geomag/EMM/index.html
-  - https://www.ngdc.noaa.gov/geomag/EMM/data/geomag/EMM2017_Sph_Linux.zip
+See https://geographiclib.sourceforge.io/html/magnetic.html.
 """
 
 import os
@@ -90,7 +68,7 @@ cdef class MagneticFieldModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def __call__(self, double t, lat, lon, h, bint time_derivatives=False):
+    def __call__(self, double t, lat, lon, h, bint rate=False):
         """Compute the magnetic field.
 
         Evaluate the components of the geomagnetic field and
@@ -104,18 +82,19 @@ cdef class MagneticFieldModel:
             longitude of the point (degrees)
         :param h:
             the height of the point above the ellipsoid (meters)
-        :param bool time_derivatives:
-            also returns time derivatives of the magnetic field
+        :param bool rate:
+            also returns first time derivative of the magnetic field
+            components (default: False)
         :returns:
             Bx, By, Bz: the easterly, northerly and vertical (up)
             components of the magnetic field (nanotesla).
 
-            If time_derivativesis set to True then the following touple
+            If time_derivatives is set to True then the following tuple
             is returned: (Bx, By, Bz, Bxt, Byt, Bzt), where  Bxt, Byt
             and Bzt are the rate of change of Bx, By and Bz
             respectively (nT/yr).
         """
-        cdef bint is_scalar = np.isscalar(h)
+        cdef bint is_scalar = np.isscalar(lat)
 
         lat = np.asarray(lat)
         lon = np.asarray(lon)
@@ -127,16 +106,19 @@ cdef class MagneticFieldModel:
                     np.issubdtype(dt, np.integer)):
                 raise TypeError('{}: {!r}}'.format(name, param))
 
-        shape = h.shape
-        if lat.shape != shape or lon.shape != shape:
+        shape = lat.shape
+        if lon.shape != shape or (h.size > 1 and h.shape != shape):
             raise ValueError('lat, lon and h shall have the same shape')
 
-        cdef long size = h.size
+        cdef long size = lat.size
         dtype = np.float64
 
         lat = np.ascontiguousarray(lat.reshape([size]), dtype=dtype)
         lon = np.ascontiguousarray(lon.reshape([size]), dtype=dtype)
-        h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
+        if h.size > 1:
+            h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
+        else:
+            h = np.full([size], h, dtype)
 
         Bx = np.empty(shape=[size], dtype=dtype)
         By = np.empty(shape=[size], dtype=dtype)
@@ -155,16 +137,16 @@ cdef class MagneticFieldModel:
 
         cdef long i = 0
 
-        if not time_derivatives:
+        if not rate:
             with nogil:
                 for i in range(size):
                     cython.operator.dereference(self._ptr)(
                         t, vlat[i], vlon[i], vh[i], vBx[i], vBy[i], vBz[i])
 
             if is_scalar:
-                Bx = np.asscalar(Bx)
-                By = np.asscalar(By)
-                Bz = np.asscalar(Bz)
+                Bx = Bx.item()
+                By = By.item()
+                Bz = Bz.item()
             else:
                 Bx = Bx.reshape(shape)
                 By = By.reshape(shape)
@@ -172,9 +154,9 @@ cdef class MagneticFieldModel:
 
             return Bx, By, Bz
         else:
-            Bxt = np.empty(shape=shape, dtype=dtype)
-            Byt = np.empty(shape=shape, dtype=dtype)
-            Bzt = np.empty(shape=shape, dtype=dtype)
+            Bxt = np.empty(shape=[size], dtype=dtype)
+            Byt = np.empty(shape=[size], dtype=dtype)
+            Bzt = np.empty(shape=[size], dtype=dtype)
 
             vBxt = Bxt
             vByt = Byt
@@ -188,21 +170,21 @@ cdef class MagneticFieldModel:
                         vBxt[i], vByt[i], vBzt[i])
 
             if is_scalar:
-                Bx = np.asscalar(Bx)
-                By = np.asscalar(By)
-                Bz = np.asscalar(Bz)
+                Bx = Bx.item()
+                By = By.item()
+                Bz = Bz.item()
 
-                Bxt = np.asscalar(Bxt)
-                Byt = np.asscalar(Byt)
-                Bzt = np.asscalar(Bzt)
+                Bxt = Bxt.item()
+                Byt = Byt.item()
+                Bzt = Bzt.item()
             else:
                 Bx = Bx.reshape(shape)
                 By = By.reshape(shape)
                 Bz = Bz.reshape(shape)
 
                 Bxt = Bxt.reshape(shape)
-                Byt = Bxt.reshape(shape)
-                Bzt = Bxt.reshape(shape)
+                Byt = Byt.reshape(shape)
+                Bzt = Bzt.reshape(shape)
 
             return Bx, By, Bz, Bxt, Byt, Bzt
 
@@ -235,8 +217,10 @@ cdef class MagneticFieldModel:
     #     """
     #     pass
 
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
     @staticmethod
-    def field_components(double Bx, double By, double Bz):
+    def field_components(Bx, By, Bz):
         """Compute various quantities dependent on the magnetic field.
 
         :param float Bx:
@@ -251,9 +235,60 @@ cdef class MagneticFieldModel:
             * D the declination of the field (degrees east of north)
             * I the inclination of the field (degrees down from horizontal)
         """
-        cdef double H=0, F=0, D=0, I=0
+        cdef bint is_scalar = np.isscalar(Bx)
+
+        Bx = np.asarray(Bx)
+        By = np.asarray(By)
+        Bz = np.asarray(Bz)
+
+        for name, param in (('Bx', Bx), ('By', By), ('Bz', Bz)):
+            dt = param.dtype
+            if not (np.issubdtype(dt, np.floating) or
+                    np.issubdtype(dt, np.integer)):
+                raise TypeError('{}: {!r}}'.format(name, param))
+
+        shape = Bx.shape
+        if By.shape != shape or Bz.shape != shape:
+            raise ValueError('Bx, By and Bz shall have the same shape')
+
+        cdef long size = Bx.size
+        dtype = np.float64
+
+        Bx = np.ascontiguousarray(Bx.reshape([size]), dtype=dtype)
+        By = np.ascontiguousarray(By.reshape([size]), dtype=dtype)
+        Bz = np.ascontiguousarray(Bz.reshape([size]), dtype=dtype)
+
+        H = np.empty(shape=[size], dtype=dtype)
+        F = np.empty(shape=[size], dtype=dtype)
+        D = np.empty(shape=[size], dtype=dtype)
+        I = np.empty(shape=[size], dtype=dtype)
+
+        cdef double[::1] vBx = Bx
+        cdef double[::1] vBy = By
+        cdef double[::1] vBz = Bz
+
+        cdef double[::1] vH = H
+        cdef double[::1] vF = F
+        cdef double[::1] vD = D
+        cdef double[::1] vI = I
+
+        cdef long i = 0
         with nogil:
-            MagneticModel.FieldComponents(Bx, By, Bz, H, F, D, I)
+            for i in range(size):
+                MagneticModel.FieldComponents(
+                    vBx[i], vBy[i], vBz[i], vH[i], vF[i], vD[i], vI[i])
+
+        if is_scalar:
+            H = H.item()
+            F = F.item()
+            D = D.item()
+            I = I.item()
+        else:
+            H = H.reshape(shape)
+            F = F.reshape(shape)
+            D = D.reshape(shape)
+            I = I.reshape(shape)
+
         return H, F, D, I
 
     # @staticmethod
@@ -310,7 +345,7 @@ cdef class MagneticFieldModel:
 
     def magnetic_file(self) -> str:
         """Full file name used to load the magnetic model."""
-        return self._ptr.MagneticFile().decode('urf-8')
+        return self._ptr.MagneticFile().decode('utf-8')
 
     def magnetic_model_name(self) -> str:
         """Name used to load the magnetic model.
@@ -362,7 +397,7 @@ cdef class MagneticFieldModel:
         return self._ptr.MinTime()
 
     def max_time(self) -> float:
-        """The maximum time (in years) for which this moel should be used.
+        """The maximum time (in years) for which this model should be used.
 
         Because the model will typically provide useful results
         slightly outside the range of allowed times,

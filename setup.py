@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 
 def get_version(versionfile, strip_extra=False):
@@ -69,7 +69,7 @@ setup(
     author_email='antonio.valentino@tiscali.it',
     license='MIT',
     classifiers=classifiers,
-    packages=['geomodels'],
+    packages=find_packages(),
     ext_modules=extensions,
     setup_requires=['cython'],
     install_requires=['numpy'],
@@ -85,4 +85,5 @@ setup(
     # entry_points={
     #  ...
     # },
+    test_suite='geomodels.test'
 )

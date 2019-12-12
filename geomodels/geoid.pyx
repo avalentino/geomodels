@@ -8,14 +8,7 @@ This class evaluates the height of one of the standard geoids, EGM84,
 EGM96, or EGM2008 by bilinear or cubic interpolation into a rectangular
 grid of data.
 
-These geoid models are documented in:
-
-* EGM84:
-  http://earth-info.nga.mil/GandG/wgs84/gravitymod/wgs84_180/wgs84_180.html
-* EGM96:
-  http://earth-info.nga.mil/GandG/wgs84/gravitymod/egm96/egm96.html
-* EGM2008:
-  http://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008
+See https://geographiclib.sourceforge.io/html/geoid.html.
 
 The geoids are defined in terms of spherical harmonics.  However in order
 to provide a quick and flexible method of evaluating the geoid heights,
@@ -53,7 +46,7 @@ from .geoid cimport Geoid
 from .error import GeographicErr
 
 
-class EConvertFlag(enum.IntEnum):
+class EHeightConvDir(enum.IntEnum):
     ELLIPSOIDTOGEOID = -1
     NONE = 0
     GEOIDTOELLIPSOID = 1
@@ -166,7 +159,7 @@ cdef class GeoidModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def __call__(self, lon, lat):
+    def __call__(self, lat, lon):
         """Compute the geoid height at a point.
 
         :param lat:
@@ -213,12 +206,12 @@ cdef class GeoidModel:
             with nogil:
                 for i in range(size):
                     vh[i] = cython.operator.dereference(self._ptr)(
-                        vlon[i], vlat[i])
+                        vlat[i], vlon[i])
         except RecursionError as exc:
             raise GeographicErr(str(exc)) from exc
 
         if is_scalar:
-            h = np.asscalar(h)
+            h = h.item()
         else:
             h = h.reshape(shape)
 
@@ -226,7 +219,7 @@ cdef class GeoidModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def convert_height(self, lat, lon, h, d: EConvertFlag):
+    def convert_height(self, lat, lon, h, dir: EHeightConvDir):
         """Convert a height above the geoid to a height above the
         ellipsoid and vice versa.
 
@@ -236,7 +229,7 @@ cdef class GeoidModel:
             longitude of the point (degrees).
         :param h:
             height of the point (meters).
-        :param d:
+        :param dir:
             a `Geoid.convertflag` specifying the direction of the
             conversion; `Geoid.GEOIDTOELLIPSOID` means convert a height
             above the geoid to a height above the ellipsoid;
@@ -248,10 +241,10 @@ cdef class GeoidModel:
         :returns:
             converted height (meters).
         """
-        d = EConvertFlag(d)
-        cdef Geoid.convertflag c_direction = d.value
+        dir = EHeightConvDir(dir)
+        cdef Geoid.convertflag c_direction = dir.value
 
-        cdef bint is_scalar = np.isscalar(h)
+        cdef bint is_scalar = np.isscalar(lat)
 
         lat = np.asarray(lat)
         lon = np.asarray(lon)
@@ -294,7 +287,7 @@ cdef class GeoidModel:
             raise GeographicErr(str(exc)) from exc
 
         if is_scalar:
-            out = np.asscalar(out)
+            out = out.item()
         else:
             out = out.reshape(shape)
 
@@ -376,7 +369,7 @@ cdef class GeoidModel:
         """Return true if a data cache is active."""
         return self._ptr.Cache()
 
-    def cache_east(self) -> float:
+    def cache_west(self) -> float:
         """West edge of the cached area.
 
         The cache includes this edge.

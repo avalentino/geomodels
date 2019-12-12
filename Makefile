@@ -2,7 +2,7 @@
 
 PYTHON=python3
 
-.PHONY: ext build sdist wheel clean
+.PHONY: ext build sdist wheel check clean
 
 
 dafault: ext
@@ -24,7 +24,12 @@ wheel:
 	$(PYTHON) setup.py bdist_wheel
 
 
+check:
+	$(PYTHON) setup.py test
+
+
 clean:
 	$(PYTHON) setup.py clean --all
-	$(RM) -rf MANIFEST dist build geomodels.egg-info
-	$(RM) -rf geomodels/__pycache__/ geomodels/*.cpp geomodels/*.so
+	$(RM) -r MANIFEST dist build geomodels.egg-info .pytest_cache
+	$(RM) -r geomodels/__pycache__ geomodels/test/__pycache__
+	$(RM) geomodels/*.cpp geomodels/*.so

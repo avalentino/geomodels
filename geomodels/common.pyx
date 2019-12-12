@@ -3,6 +3,7 @@
 # distutils: language=c++
 
 from typing import Tuple
+from collections import namedtuple
 
 from .common cimport (
     GEOGRAPHICLIB_VERSION_MAJOR,
@@ -15,6 +16,9 @@ from .common cimport (
 __all__ = ['lib_version_info', 'lib_version_str']
 
 
+VersionInfo = namedtuple('VersionInfo', ['major', 'minor', 'micro'])
+
+
 def lib_version_info() -> Tuple[int, int, int]:
     """Return the (major, minor, patch) version of GeographicLib.
 
@@ -25,7 +29,7 @@ def lib_version_info() -> Tuple[int, int, int]:
         The version of the shared library actually used at runtime could
         be different.
     """
-    return (
+    return VersionInfo(
         GEOGRAPHICLIB_VERSION_MAJOR,
         GEOGRAPHICLIB_VERSION_MINOR,
         GEOGRAPHICLIB_VERSION_PATCH,
