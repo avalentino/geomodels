@@ -3,10 +3,10 @@
 # distutils: language=c++
 
 cdef extern from "GeographicLib/Config.h":
-    int GEOGRAPHICLIB_VERSION_MAJOR
-    int GEOGRAPHICLIB_VERSION_MINOR
-    int GEOGRAPHICLIB_VERSION_PATCH
-    int GEOGRAPHICLIB_VERSION
+    const int GEOGRAPHICLIB_VERSION_MAJOR
+    const int GEOGRAPHICLIB_VERSION_MINOR
+    const int GEOGRAPHICLIB_VERSION_PATCH
+    const int GEOGRAPHICLIB_VERSION
     const char[] GEOGRAPHICLIB_VERSION_STRING
 
 
