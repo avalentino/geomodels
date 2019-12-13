@@ -9,7 +9,7 @@ About
 -----
 
 GeoModels provides tools for the management of Earth models like
-geoids, gravity models the magnetic field models.
+geoids, gravity models, and magnetic field models.
 
 It also provides some utility function to download and install support
 data to that are necessary for Earth models computation.
