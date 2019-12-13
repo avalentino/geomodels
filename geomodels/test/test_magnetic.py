@@ -39,17 +39,17 @@ class StaticMethodsTestCase(unittest.TestCase):
 
 
 class InstantiationTestCase01(unittest.TestCase):
-    NAME = 'wmm2015'
+    MODEL_NAME = 'wmm2015'
 
     def test_name(self):
-        model = MagneticFieldModel(self.NAME)
+        model = MagneticFieldModel(self.MODEL_NAME)
         self.assertIsInstance(model, MagneticFieldModel)
-        self.assertEqual(model.magnetic_model_name(), self.NAME)
+        self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
 
     def test_default_path(self):
         path = MagneticFieldModel.default_magnetic_path()
-        model = MagneticFieldModel(self.NAME, path)
-        self.assertEqual(model.magnetic_model_name(), self.NAME)
+        model = MagneticFieldModel(self.MODEL_NAME, path)
+        self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
         self.assertEqual(model.magnetic_model_directory(), path)
 
     def test_custom_path(self):
@@ -58,8 +58,8 @@ class InstantiationTestCase01(unittest.TestCase):
             magnetic_path = os.path.join(
                 dirname, os.path.basename(default_path))
             shutil.copytree(default_path, magnetic_path)
-            model = MagneticFieldModel(self.NAME, magnetic_path)
-            self.assertEqual(model.magnetic_model_name(), self.NAME)
+            model = MagneticFieldModel(self.MODEL_NAME, magnetic_path)
+            self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
             self.assertEqual(model.magnetic_model_directory(), magnetic_path)
 
     def test_custom_path_from_env01(self):
@@ -72,9 +72,10 @@ class InstantiationTestCase01(unittest.TestCase):
             old_env = os.environ.get('GEOGRAPHICLIB_DATA')
             os.environ['GEOGRAPHICLIB_DATA'] = dirname
             try:
-                model = MagneticFieldModel(self.NAME)
-                self.assertEqual(model.magnetic_model_name(), self.NAME)
-                self.assertEqual(model.magnetic_model_directory(), magnetic_path)
+                model = MagneticFieldModel(self.MODEL_NAME)
+                self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
+                self.assertEqual(
+                    model.magnetic_model_directory(), magnetic_path)
             finally:
                 if old_env is None:
                     del os.environ['GEOGRAPHICLIB_DATA']
@@ -91,8 +92,8 @@ class InstantiationTestCase01(unittest.TestCase):
             old_env = os.environ.get('GEOGRAPHICLIB_MAGNETIC_PATH')
             os.environ['GEOGRAPHICLIB_MAGNETIC_PATH'] = magnetic_path
             try:
-                model = MagneticFieldModel(self.NAME)
-                self.assertEqual(model.magnetic_model_name(), self.NAME)
+                model = MagneticFieldModel(self.MODEL_NAME)
+                self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
                 self.assertEqual(model.magnetic_model_directory(),
                                  magnetic_path)
             finally:
@@ -103,7 +104,7 @@ class InstantiationTestCase01(unittest.TestCase):
 
 
 class InstantiationTestCase02(InstantiationTestCase01):
-    NAME = 'igrf12'
+    MODEL_NAME = 'igrf12'
 
 
 class InfoMethodsTestCase(unittest.TestCase):
@@ -150,7 +151,7 @@ class InfoMethodsTestCase(unittest.TestCase):
 
     def test_min_time(self):
         self.assertIsInstance(self.model.min_time(), float)
-        self.assertLess(self.model.min_time(), datetime.date.today().year)
+        # self.assertLess(self.model.min_time(), datetime.date.today().year)
 
     def test_max_time(self):
         self.assertIsInstance(self.model.max_time(), float)
@@ -170,6 +171,9 @@ class InfoMethodsTestCase(unittest.TestCase):
 
 
 class ComputationTestCase(unittest.TestCase):
+    # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
+    MODEL_NAME = 'wmm2015'
+
     YEAR = 2016.0                   # 2016-01-01
     LAT = +dms_to_dec(16, 46, 33)   # 16:46:33N
     LON = -dms_to_dec(3, 0, 34)     # 03:00:34W
@@ -195,8 +199,7 @@ class ComputationTestCase(unittest.TestCase):
     # 0.09288284 -0.07794874 31.7696715 33.7765829 53.6988656 -41.3769946 22.3474336
 
     def setUp(self) -> None:
-        name = MagneticFieldModel.default_magnetic_name()
-        self.model = MagneticFieldModel(name)
+        self.model = MagneticFieldModel(self.MODEL_NAME)
 
     def test_field_components(self):
         H, F, D, I = MagneticFieldModel.field_components(
@@ -223,6 +226,9 @@ class ComputationTestCase(unittest.TestCase):
 
 
 class VectorComputationTestCase(unittest.TestCase):
+    # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
+    MODEL_NAME = 'wmm2015'
+
     YEAR = 2016.0
     LAT = np.asarray([
         [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
@@ -278,8 +284,7 @@ class VectorComputationTestCase(unittest.TestCase):
     ])
 
     def setUp(self) -> None:
-        name = MagneticFieldModel.default_magnetic_name()
-        self.model = MagneticFieldModel(name)
+        self.model = MagneticFieldModel(self.MODEL_NAME)
 
     def test_field_components_vector(self):
         H, F, D, I = MagneticFieldModel.field_components(
@@ -343,6 +348,9 @@ class VectorComputationTestCase(unittest.TestCase):
 
 
 class ConstHeightVectorComputationTestCase(unittest.TestCase):
+    # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
+    MODEL_NAME = 'wmm2015'
+
     YEAR = 2016.0
     LAT = np.asarray([
         [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
@@ -395,8 +403,7 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     ])
 
     def setUp(self) -> None:
-        name = MagneticFieldModel.default_magnetic_name()
-        self.model = MagneticFieldModel(name)
+        self.model = MagneticFieldModel(self.MODEL_NAME)
 
     # @TODO
     # def test_circle_xxx(self):
