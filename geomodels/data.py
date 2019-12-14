@@ -65,6 +65,7 @@ class EMagneticModel(enum.Enum):
 
     WMM2010 = 'wmm2010'
     WMM2015 = 'wmm2015'
+    WMM2020 = 'wmm2020'  # new in GeographicLib v1.50.1
     IGRF11 = 'igrf11'
     IGRF12 = 'igrf12'
     EMM2010 = 'emm2010'
