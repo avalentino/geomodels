@@ -274,8 +274,9 @@ def download(url: str, path: PathType = '.',
 
 
 def install(model: Optional[Union[EModelType, GenericModelType]],
-            base_path: Optional[PathType] = None, base_url: str = None,
-            archive_type: EArchiveType = EArchiveType.BZ2):
+            datadir: Optional[PathType] = None, base_url: str = None,
+            archive_type: EArchiveType = EArchiveType.BZ2,
+            progress: bool = True):
     """Install the specified geographic model data.
 
     :param model:
@@ -285,7 +286,7 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
         enumerates defined in :class:`EModelType` to indicate that all
         geographic models of the specified type shall be installed.
         Finally if model is set to None, then all models are installed.
-    :param PathType base_path:
+    :param PathType datadir:
         (optional) specify the target location where geographic model
         data shall be installed. If not specified that the path returned
         by :func:`get_default_data_path` is assumed.
@@ -297,6 +298,8 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
     :param EArchiveType archive_type:
         specifies the archive type that should be downloaded.
         Default: EArchiveType.BZ2.
+    :param bool progress:
+        enable/disable progress information display (default: True)
     """.format(_BASE_URL)
     urls = {}
     if model is None or model in EModelType:
@@ -304,32 +307,32 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
     else:
         urls.update(get_model_url(model, base_url, archive_type))
 
-    if not base_path:
-        base_path = get_default_data_path()
-        if base_path is None:
+    if not datadir:
+        datadir = get_default_data_path()
+        if datadir is None:
             raise RuntimeError('no default data location found')
 
-        base_path = pathlib.Path(base_path)
-        if not base_path.is_dir():
+        datadir = pathlib.Path(datadir)
+        if not datadir.is_dir():
             raise NotADirectoryError(
-                '"{}" is not a directory'.format(base_path))
+                '"{}" is not a directory'.format(datadir))
 
-    base_path = pathlib.Path(base_path)
-    base_path.mkdir(parents=True, exist_ok=True)
+    datadir = pathlib.Path(datadir)
+    datadir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tempdir:
-        if len(urls) > 1 and tqdm:
+        if progress and tqdm and len(urls) > 1:
             urliterator = tqdm.tqdm(urls.items(), unit='file', desc='download')
         else:
             urliterator = urls.items()
 
         for model, url in urliterator:
-            target = base_path / model.get_model_type().value / model.value
+            target = datadir / model.get_model_type().value / model.value
             matches = list(target.parent.glob(f'{target.name}*'))
             if matches:
                 logging.debug('"%s" already exists: skip download', target)
                 continue
-            filename = download(url, tempdir)
+            filename = download(url, tempdir, progress=progress)
             # NOTE: shutil.unpack_archive accepts pathlib.Path for
             #       extract_dir since Python 3.7
-            shutil.unpack_archive(filename, extract_dir=str(base_path))
+            shutil.unpack_archive(filename, extract_dir=str(datadir))
