@@ -5,13 +5,14 @@
 import os
 import enum
 import shutil
+import logging
 import pathlib
 import tempfile
 import contextlib
 
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
-from typing import List, Union, Optional, Callable
+from typing import Dict, Union, Optional, Callable
 
 
 __all__ = [
@@ -153,13 +154,14 @@ def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
     return url.geturl()
 
 
-def _get_url_list(modeltype: Optional[EModelType],
-                  base_url: Optional[str] = None,
-                  archive_type: EArchiveType = EArchiveType.BZ2) -> List[str]:
-    urls = []
+def _get_url_map(modeltype: Optional[EModelType],
+                 base_url: Optional[str] = None,
+                 archive_type: EArchiveType = EArchiveType.BZ2
+                 ) -> Dict[GenericModelType, str]:
+    urls = {}
     if not modeltype:
         for modeltype in EModelType:
-            urls.extend(_get_url_list(modeltype, base_url, archive_type))
+            urls.update(_get_url_map(modeltype, base_url, archive_type))
     else:
         modeltype_map = {
             EModelType.GEOID: EGeoidModel,
@@ -167,9 +169,10 @@ def _get_url_list(modeltype: Optional[EModelType],
             EModelType.MAGNETIC: EMagneticModel,
         }
         modelenum = modeltype_map[modeltype]
-        urls = [
-            get_model_url(item, base_url, archive_type) for item in modelenum
-        ]
+        urls = {
+            item: get_model_url(item, base_url, archive_type)
+            for item in modelenum
+        }
 
     return urls
 
@@ -295,11 +298,11 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
         specifies the archive type that should be downloaded.
         Default: EArchiveType.BZ2.
     """.format(_BASE_URL)
-    urls = []
+    urls = {}
     if model is None or model in EModelType:
-        urls.extend(_get_url_list(model, base_url, archive_type))
+        urls.update(_get_url_map(model, base_url, archive_type))
     else:
-        urls.append(get_model_url(model, base_url, archive_type))
+        urls.update(get_model_url(model, base_url, archive_type))
 
     if not base_path:
         base_path = get_default_data_path()
@@ -316,11 +319,16 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
 
     with tempfile.TemporaryDirectory() as tempdir:
         if len(urls) > 1 and tqdm:
-            urliterator = tqdm.tqdm(urls, unit='file', desc='download')
+            urliterator = tqdm.tqdm(urls.items(), unit='file', desc='download')
         else:
-            urliterator = urls
+            urliterator = urls.items()
 
-        for url in urliterator:
+        for model, url in urliterator:
+            target = base_path / model.get_model_type().value / model.value
+            matches = list(target.parent.glob(f'{target.name}*'))
+            if matches:
+                logging.debug('"%s" already exists: skip download', target)
+                continue
             filename = download(url, tempdir)
             # NOTE: shutil.unpack_archive accepts pathlib.Path for
             #       extract_dir since Python 3.7
