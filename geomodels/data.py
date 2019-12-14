@@ -305,7 +305,7 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
     if model is None or model in EModelType:
         urls.update(_get_url_map(model, base_url, archive_type))
     else:
-        urls.update(get_model_url(model, base_url, archive_type))
+        urls[model] = get_model_url(model, base_url, archive_type)
 
     if not datadir:
         datadir = get_default_data_path()
