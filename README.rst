@@ -86,4 +86,17 @@ In alternative the following command can be used::
 
   $ python3 setup.py test
 
+.. note::
+
+    running tests requires that model data, used by the underlying
+    GeographicLib_, are correctly installed in the default system location.
+
+    More in detail, the following data models are sued for testing:
+
+    :magnetic field data:
+        'wmm2015', 'igrf12' and data for the default model
+    :geoid data:
+        'egm96-5', and data for the default model
+
+
 .. _PyTest: http://pytest.org
