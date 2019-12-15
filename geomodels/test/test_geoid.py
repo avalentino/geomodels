@@ -11,7 +11,7 @@ import numpy as np
 from numpy import testing as npt
 
 from geomodels import GeoidModel, EHeightConvDir
-from geomodels.data import get_default_data_path
+from geomodels import get_default_data_path
 from geomodels.test.utils import dms_to_dec
 
 
@@ -38,17 +38,17 @@ class StaticMethodsTestCase(unittest.TestCase):
 
 
 class InstantiationTestCase(unittest.TestCase):
-    NAME = 'egm96-5'
+    MODEL_NAME = 'egm96-5'
 
     def test_name(self):
-        model = GeoidModel(self.NAME)
+        model = GeoidModel(self.MODEL_NAME)
         self.assertIsInstance(model, GeoidModel)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
 
     def test_default_path(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
 
     def test_custom_path(self):
@@ -56,11 +56,11 @@ class InstantiationTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.NAME}*'):
+            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
                 shutil.copy(filename, geoid_path)
 
-            model = GeoidModel(self.NAME, geoid_path)
-            self.assertEqual(model.geoid_name(), self.NAME)
+            model = GeoidModel(self.MODEL_NAME, geoid_path)
+            self.assertEqual(model.geoid_name(), self.MODEL_NAME)
             self.assertEqual(model.geoid_directory(), str(geoid_path))
 
     def test_custom_path_from_env01(self):
@@ -68,14 +68,14 @@ class InstantiationTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.NAME}*'):
+            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
                 shutil.copy(filename, geoid_path)
 
             old_env = os.environ.get('GEOGRAPHICLIB_DATA')
             os.environ['GEOGRAPHICLIB_DATA'] = dirname
             try:
-                model = GeoidModel(self.NAME)
-                self.assertEqual(model.geoid_name(), self.NAME)
+                model = GeoidModel(self.MODEL_NAME)
+                self.assertEqual(model.geoid_name(), self.MODEL_NAME)
                 self.assertEqual(model.geoid_directory(), str(geoid_path))
             finally:
                 if old_env is None:
@@ -88,14 +88,14 @@ class InstantiationTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.NAME}*'):
+            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
                 shutil.copy(filename, geoid_path)
 
             old_env = os.environ.get('GEOGRAPHICLIB_GEOID_PATH')
             os.environ['GEOGRAPHICLIB_GEOID_PATH'] = str(geoid_path)
             try:
-                model = GeoidModel(self.NAME)
-                self.assertEqual(model.geoid_name(), self.NAME)
+                model = GeoidModel(self.MODEL_NAME)
+                self.assertEqual(model.geoid_name(), self.MODEL_NAME)
                 self.assertEqual(model.geoid_directory(), str(geoid_path))
             finally:
                 if old_env is None:
@@ -105,44 +105,44 @@ class InstantiationTestCase(unittest.TestCase):
 
     def test_cubic_true(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, cubic=True)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, cubic=True)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), 'cubic')
 
     def test_cubic_false(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, cubic=False)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, cubic=False)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), 'bilinear')
 
     def test_threadsafe_true(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, threadsafe=True)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, threadsafe=True)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertTrue(model.threadsafe())
 
     def test_threadsafe_false(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, threadsafe=False)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, threadsafe=False)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertFalse(model.threadsafe())
 
     def test_positional_true_false(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, True, False)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, True, False)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), 'cubic')
         self.assertFalse(model.threadsafe())
 
     def test_positional_false_true(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.NAME, path, False, True)
-        self.assertEqual(model.geoid_name(), self.NAME)
+        model = GeoidModel(self.MODEL_NAME, path, False, True)
+        self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), 'bilinear')
         self.assertTrue(model.threadsafe())

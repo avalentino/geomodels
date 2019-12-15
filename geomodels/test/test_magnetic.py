@@ -10,7 +10,7 @@ import numpy as np
 from numpy import testing as npt
 
 from geomodels import MagneticFieldModel
-from geomodels.data import get_default_data_path
+from geomodels import get_default_data_path
 from geomodels.test.utils import dms_to_dec
 
 
