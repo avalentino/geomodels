@@ -44,8 +44,14 @@ import numpy as np
 cimport cython
 from libcpp.string cimport string
 
-from .geoid cimport Geoid
+from .geoid cimport CGeoid
 from .error import GeographicErr
+from ._utils import (
+    as_contiguous_1d_llh, as_contiguous_1d_components, reshape_components,
+)
+
+
+ctypedef CGeoid.convertflag ConvDir
 
 
 class EHeightConvDir(enum.IntEnum):
@@ -81,7 +87,7 @@ cdef class GeoidModel:
     memory, the data file is closed, and single-cell caching is turned
     off; this results in a Geoid object which is thread safe.
     """
-    cdef Geoid *_ptr
+    cdef CGeoid *_ptr
 
     def __cinit__(self, name, path='', bint cubic=True, bint threadsafe=False):
         cdef string c_name = os.fsencode(name)
@@ -89,7 +95,7 @@ cdef class GeoidModel:
 
         try:
             with nogil:
-                self._ptr = new Geoid(c_name, c_path, cubic, threadsafe)
+                self._ptr = new CGeoid(c_name, c_path, cubic, threadsafe)
         except RuntimeError as exc:
             raise GeographicErr(str(exc)) from exc
 
@@ -161,6 +167,21 @@ cdef class GeoidModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
+    cdef compute(self, double[::1] vlat, double[::1] vlon):
+        cdef long size = vlat.size
+        h = np.empty(shape=[size], dtype=np.float64)
+        cdef double[::1] vh = h
+
+        try:
+            with nogil:
+                for i in range(size):
+                    vh[i] = cython.operator.dereference(self._ptr)(
+                        vlat[i], vlon[i])
+        except RecursionError as exc:
+            raise GeographicErr(str(exc)) from exc
+
+        return h
+
     def __call__(self, lat, lon):
         """Compute the geoid height at a point.
 
@@ -177,50 +198,32 @@ cdef class GeoidModel:
 
         The latitude should be in [-90 deg, +90deg].
         """
-        cdef bint is_scalar = np.isscalar(lat)
-
-        lat = np.asarray(lat)
-        lon = np.asarray(lon)
-
-        for name, param in (('lat', lat), ('lon', lon)):
-            dt = param.dtype
-            if not (np.issubdtype(dt, np.floating) or
-                    np.issubdtype(dt, np.integer)):
-                raise TypeError('{}: {!r}}'.format(name, param))
-
-        shape = lat.shape
-        if lon.shape != shape:
-            raise ValueError('lat and lon shall have the same shape')
-
-        cdef long size = lat.size
         dtype = np.float64
+        lat, lon, shape = as_contiguous_1d_components(
+            lat, lon, labels=['lat', 'lon'], dtype=dtype)
+        h = self.compute(lat, lon)
+        return reshape_components(shape, h)
 
-        lat = np.ascontiguousarray(lat.reshape([size]), dtype=dtype)
-        lon = np.ascontiguousarray(lon.reshape([size]), dtype=dtype)
-
-        h = np.empty(shape=[size], dtype=dtype)
-
-        cdef double[::1] vlat = lat
-        cdef double[::1] vlon = lon
-        cdef double[::1] vh = h
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef core_convert_height(self,
+                             double[::1] vlat, double[::1] vlon, double[::1] vh,
+                             ConvDir direction):
+        cdef long size = vlat.size
+        out = np.empty(shape=[size], dtype=np.float64)
+        cdef double[::1] vout = out
+        cdef long i = 0
 
         try:
             with nogil:
                 for i in range(size):
-                    vh[i] = cython.operator.dereference(self._ptr)(
-                        vlat[i], vlon[i])
+                    vout[i] = self._ptr.ConvertHeight(
+                        vlat[i], vlon[i], vh[i], direction)
         except RecursionError as exc:
             raise GeographicErr(str(exc)) from exc
 
-        if is_scalar:
-            h = h.item()
-        else:
-            h = h.reshape(shape)
+        return out
 
-        return h
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
     def convert_height(self, lat, lon, h, dir: EHeightConvDir):
         """Convert a height above the geoid to a height above the
         ellipsoid and vice versa.
@@ -244,56 +247,12 @@ cdef class GeoidModel:
             converted height (meters).
         """
         dir = EHeightConvDir(dir)
-        cdef Geoid.convertflag c_direction = dir.value
-
-        cdef bint is_scalar = np.isscalar(lat)
-
-        lat = np.asarray(lat)
-        lon = np.asarray(lon)
-        h = np.asarray(h)
-
-        for name, param in (('lat', lat), ('lon', lon), ('h', h)):
-            dt = param.dtype
-            if not (np.issubdtype(dt, np.floating) or
-                    np.issubdtype(dt, np.integer)):
-                raise TypeError('{}: {!r}}'.format(name, param))
-
-        shape = lat.shape
-        if lon.shape != shape or (h.size > 1 and h.shape != shape):
-            raise ValueError('lat, lon and h shall have the same shape')
-
-        cdef long size = lat.size
         dtype = np.float64
+        lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
 
-        lat = np.ascontiguousarray(lat.reshape([size]), dtype=dtype)
-        lon = np.ascontiguousarray(lon.reshape([size]), dtype=dtype)
-        if h.size > 1:
-            h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
-        else:
-            h = np.full([size], h, dtype)
+        out = self.core_convert_height(lat, lon, h, dir.value)
 
-        out = np.empty(shape=[size], dtype=dtype)
-
-        cdef double[::1] vlat = lat
-        cdef double[::1] vlon = lon
-        cdef double[::1] vh = h
-
-        cdef double[::1] vout = out
-
-        try:
-            with nogil:
-                for i in range(size):
-                    vout[i] = self._ptr.ConvertHeight(
-                        vlat[i], vlon[i], vh[i], c_direction)
-        except RecursionError as exc:
-            raise GeographicErr(str(exc)) from exc
-
-        if is_scalar:
-            out = out.item()
-        else:
-            out = out.reshape(shape)
-
-        return out
+        return reshape_components(shape, out)
 
     def description(self) -> str:
         """Return geoid description, if available, in the data file.
@@ -426,7 +385,7 @@ cdef class GeoidModel:
         `GEOGRAPHICLIB_DATA` is set; otherwise, it is a compile-time
         default.
         """
-        return Geoid.DefaultGeoidPath().decode('utf-8')
+        return CGeoid.DefaultGeoidPath().decode('utf-8')
 
     @staticmethod
     def default_geoid_name() ->  str:
@@ -438,4 +397,4 @@ cdef class GeoidModel:
         provided as a convenience for a calling program when
         constructing a GeoidModel object.
         """
-        return Geoid.DefaultGeoidName().decode('utf-8')
+        return CGeoid.DefaultGeoidName().decode('utf-8')

@@ -9,14 +9,14 @@ from .common cimport real
 
 
 cdef extern from "GeographicLib/Geoid.hpp" namespace "GeographicLib" nogil:
-    cdef cppclass Geoid:
+    cdef cppclass CGeoid 'GeographicLib::Geoid':
         ctypedef enum convertflag:
             ELLIPSOIDTOGEOID = -1,
             NONE = 0,
             GEOIDTOELLIPSOID = 1
 
-        Geoid(const string& name, const string& path, bool cubic,
-              bool threadsafe) except +
+        CGeoid(const string& name, const string& path, bool cubic,
+               bool threadsafe) except +
 
         void CacheArea(real south, real west, real north, real east) except +  # const
         void CacheAll() except +  # const

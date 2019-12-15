@@ -19,8 +19,11 @@ import numpy as np
 cimport cython
 from libcpp.string cimport string
 
-from .magnetic cimport MagneticModel
+from .magnetic cimport CMagneticModel
 from .error import GeographicErr
+from ._utils import (
+    as_contiguous_1d_llh, as_contiguous_1d_components, reshape_components,
+)
 
 
 cdef class MagneticFieldModel:
@@ -50,7 +53,7 @@ cdef class MagneticFieldModel:
     allow geodetic coordinates to the transformed into the spherical
     coordinates used in the spherical harmonic sum.
     """
-    cdef MagneticModel *_ptr
+    cdef CMagneticModel *_ptr
 
     def __cinit__(self, name, path=''):
         # @TODO: support for 'earth' parameter (default: WGS84)
@@ -59,7 +62,7 @@ cdef class MagneticFieldModel:
 
         try:
             with nogil:
-                self._ptr = new MagneticModel(c_name, c_path)
+                self._ptr = new CMagneticModel(c_name, c_path)
         except RuntimeError as exc:
             raise GeographicErr(str(exc)) from exc
 
@@ -68,6 +71,57 @@ cdef class MagneticFieldModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
+    cdef compute(self,
+                 double t, double[::1] vlat, double[::1] vlon, double[::1] vh):
+        cdef long size = vlat.size
+        dtype = np.float64
+
+        Bx = np.empty(shape=[size], dtype=dtype)
+        By = np.empty(shape=[size], dtype=dtype)
+        Bz = np.empty(shape=[size], dtype=dtype)
+
+        cdef double[::1] vBx = Bx
+        cdef double[::1] vBy = By
+        cdef double[::1] vBz = Bz
+
+        cdef long i = 0
+        with nogil:
+            for i in range(size):
+                cython.operator.dereference(self._ptr)(
+                    t, vlat[i], vlon[i], vh[i], vBx[i], vBy[i], vBz[i])
+
+        return Bx, By, Bz
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef compute_with_rate(self, double t,
+                           double[::1] vlat, double[::1] vlon, double[::1] vh,):
+        cdef long size = vlat.size
+        dtype = np.float64
+
+        Bx = np.empty(shape=[size], dtype=dtype)
+        By = np.empty(shape=[size], dtype=dtype)
+        Bz = np.empty(shape=[size], dtype=dtype)
+        Bxt = np.empty(shape=[size], dtype=dtype)
+        Byt = np.empty(shape=[size], dtype=dtype)
+        Bzt = np.empty(shape=[size], dtype=dtype)
+
+        cdef double[::1] vBx = Bx
+        cdef double[::1] vBy = By
+        cdef double[::1] vBz = Bz
+        cdef double[::1] vBxt = Bxt
+        cdef double[::1] vByt = Byt
+        cdef double[::1] vBzt = Bzt
+
+        cdef long i = 0
+        with nogil:
+            for i in range(size):
+                cython.operator.dereference(self._ptr)(
+                    t, vlat[i], vlon[i], vh[i],
+                    vBx[i], vBy[i], vBz[i], vBxt[i], vByt[i], vBzt[i])
+
+        return Bx, By, Bz, Bxt, Byt, Bzt
+
     def __call__(self, double t, lat, lon, h, bint rate=False):
         """Compute the magnetic field.
 
@@ -94,99 +148,15 @@ cdef class MagneticFieldModel:
             and Bzt are the rate of change of Bx, By and Bz
             respectively (nT/yr).
         """
-        cdef bint is_scalar = np.isscalar(lat)
-
-        lat = np.asarray(lat)
-        lon = np.asarray(lon)
-        h = np.asarray(h)
-
-        for name, param in (('lat', lat), ('lon', lon), ('h', h)):
-            dt = param.dtype
-            if not (np.issubdtype(dt, np.floating) or
-                    np.issubdtype(dt, np.integer)):
-                raise TypeError('{}: {!r}}'.format(name, param))
-
-        shape = lat.shape
-        if lon.shape != shape or (h.size > 1 and h.shape != shape):
-            raise ValueError('lat, lon and h shall have the same shape')
-
-        cdef long size = lat.size
         dtype = np.float64
-
-        lat = np.ascontiguousarray(lat.reshape([size]), dtype=dtype)
-        lon = np.ascontiguousarray(lon.reshape([size]), dtype=dtype)
-        if h.size > 1:
-            h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
-        else:
-            h = np.full([size], h, dtype)
-
-        Bx = np.empty(shape=[size], dtype=dtype)
-        By = np.empty(shape=[size], dtype=dtype)
-        Bz = np.empty(shape=[size], dtype=dtype)
-
-        cdef double[::1] vlat = lat
-        cdef double[::1] vlon = lon
-        cdef double[::1] vh = h
-
-        cdef double[::1] vBx = Bx
-        cdef double[::1] vBy = By
-        cdef double[::1] vBz = Bz
-        cdef double[::1] vBxt
-        cdef double[::1] vByt
-        cdef double[::1] vBzt
-
-        cdef long i = 0
+        lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
 
         if not rate:
-            with nogil:
-                for i in range(size):
-                    cython.operator.dereference(self._ptr)(
-                        t, vlat[i], vlon[i], vh[i], vBx[i], vBy[i], vBz[i])
-
-            if is_scalar:
-                Bx = Bx.item()
-                By = By.item()
-                Bz = Bz.item()
-            else:
-                Bx = Bx.reshape(shape)
-                By = By.reshape(shape)
-                Bz = Bz.reshape(shape)
-
-            return Bx, By, Bz
+            Bx, By, Bz = self.compute(t, lat, lon, h)
+            return reshape_components(shape, Bx, By, Bz)
         else:
-            Bxt = np.empty(shape=[size], dtype=dtype)
-            Byt = np.empty(shape=[size], dtype=dtype)
-            Bzt = np.empty(shape=[size], dtype=dtype)
-
-            vBxt = Bxt
-            vByt = Byt
-            vBzt = Bzt
-
-            with nogil:
-                for i in range(size):
-                    cython.operator.dereference(self._ptr)(
-                        t, vlat[i], vlon[i], vh[i],
-                        vBx[i], vBy[i], vBz[i],
-                        vBxt[i], vByt[i], vBzt[i])
-
-            if is_scalar:
-                Bx = Bx.item()
-                By = By.item()
-                Bz = Bz.item()
-
-                Bxt = Bxt.item()
-                Byt = Byt.item()
-                Bzt = Bzt.item()
-            else:
-                Bx = Bx.reshape(shape)
-                By = By.reshape(shape)
-                Bz = Bz.reshape(shape)
-
-                Bxt = Bxt.reshape(shape)
-                Byt = Byt.reshape(shape)
-                Bzt = Bzt.reshape(shape)
-
-            return Bx, By, Bz, Bxt, Byt, Bzt
+            Bx, By, Bz, Bxt, Byt, Bzt = self.compute_with_rate(t, lat, lon, h)
+            return reshape_components(shape, Bx, By, Bz, Bxt, Byt, Bzt)
 
     # @TODO: MagneticCircle Circle(real t, real lat, real h) const
     # def circle(...):
@@ -220,6 +190,30 @@ cdef class MagneticFieldModel:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @staticmethod
+    cdef compute_field_components(
+            double[::1] vBx, double[::1] vBy, double[::1] vBz):
+        cdef long size = vBx.size
+        dtype = np.float64
+
+        H = np.empty(shape=[size], dtype=dtype)
+        F = np.empty(shape=[size], dtype=dtype)
+        D = np.empty(shape=[size], dtype=dtype)
+        I = np.empty(shape=[size], dtype=dtype)
+
+        cdef double[::1] vH = H
+        cdef double[::1] vF = F
+        cdef double[::1] vD = D
+        cdef double[::1] vI = I
+
+        cdef long i = 0
+        with nogil:
+            for i in range(size):
+                CMagneticModel.FieldComponents(
+                    vBx[i], vBy[i], vBz[i], vH[i], vF[i], vD[i], vI[i])
+
+        return H, F, D, I
+
+    @staticmethod
     def field_components(Bx, By, Bz):
         """Compute various quantities dependent on the magnetic field.
 
@@ -235,61 +229,13 @@ cdef class MagneticFieldModel:
             * D the declination of the field (degrees east of north)
             * I the inclination of the field (degrees down from horizontal)
         """
-        cdef bint is_scalar = np.isscalar(Bx)
-
-        Bx = np.asarray(Bx)
-        By = np.asarray(By)
-        Bz = np.asarray(Bz)
-
-        for name, param in (('Bx', Bx), ('By', By), ('Bz', Bz)):
-            dt = param.dtype
-            if not (np.issubdtype(dt, np.floating) or
-                    np.issubdtype(dt, np.integer)):
-                raise TypeError('{}: {!r}}'.format(name, param))
-
-        shape = Bx.shape
-        if By.shape != shape or Bz.shape != shape:
-            raise ValueError('Bx, By and Bz shall have the same shape')
-
-        cdef long size = Bx.size
         dtype = np.float64
+        Bx, By, Bz, shape = as_contiguous_1d_components(
+            Bx, By, Bz, labels=['Bx', 'By', 'Bz'], dtype=dtype)
 
-        Bx = np.ascontiguousarray(Bx.reshape([size]), dtype=dtype)
-        By = np.ascontiguousarray(By.reshape([size]), dtype=dtype)
-        Bz = np.ascontiguousarray(Bz.reshape([size]), dtype=dtype)
+        H, F, D, I = MagneticFieldModel.compute_field_components(Bx, By, Bz)
 
-        H = np.empty(shape=[size], dtype=dtype)
-        F = np.empty(shape=[size], dtype=dtype)
-        D = np.empty(shape=[size], dtype=dtype)
-        I = np.empty(shape=[size], dtype=dtype)
-
-        cdef double[::1] vBx = Bx
-        cdef double[::1] vBy = By
-        cdef double[::1] vBz = Bz
-
-        cdef double[::1] vH = H
-        cdef double[::1] vF = F
-        cdef double[::1] vD = D
-        cdef double[::1] vI = I
-
-        cdef long i = 0
-        with nogil:
-            for i in range(size):
-                MagneticModel.FieldComponents(
-                    vBx[i], vBy[i], vBz[i], vH[i], vF[i], vD[i], vI[i])
-
-        if is_scalar:
-            H = H.item()
-            F = F.item()
-            D = D.item()
-            I = I.item()
-        else:
-            H = H.reshape(shape)
-            F = F.reshape(shape)
-            D = D.reshape(shape)
-            I = I.reshape(shape)
-
-        return H, F, D, I
+        return reshape_components(shape, H, F, D, I)
 
     # @staticmethod
     # def field_components_and_rate(double Bx, double By, double Bz,
@@ -433,7 +379,7 @@ cdef class MagneticFieldModel:
         (/usr/local/share/GeographicLib/magnetic on non-Windows systems and
         C:/ProgramData/GeographicLib/magnetic on Windows systems).
         """
-        return MagneticModel.DefaultMagneticPath().decode('utf-8')
+        return CMagneticModel.DefaultMagneticPath().decode('utf-8')
 
     @staticmethod
     def default_magnetic_name() -> str:
@@ -446,4 +392,4 @@ cdef class MagneticFieldModel:
         it is just provided as a convenience for a calling program
         when constructing a MagneticFieldModel object.
         """
-        return MagneticModel.DefaultMagneticName().decode('utf-8')
+        return CMagneticModel.DefaultMagneticName().decode('utf-8')
