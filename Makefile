@@ -2,7 +2,7 @@
 
 PYTHON=python3
 
-.PHONY: ext build sdist wheel check clean
+.PHONY: ext build sdist wheel check pytest clean
 
 
 dafault: ext
@@ -26,6 +26,10 @@ wheel:
 
 check:
 	$(PYTHON) setup.py test
+
+
+pytest:
+	$(PYTHON) -m pytest
 
 
 clean:
