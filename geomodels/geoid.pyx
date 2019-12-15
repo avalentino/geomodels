@@ -32,6 +32,8 @@ threadsafe parameter to true in the constructor.  This causes the
 constructor to read all the data into memory and to turn off the
 single-cell caching which results in a Geoid object which \e is thread
 safe.
+
+See https://geographiclib.sourceforge.io/html/geoid.html.
 """
 
 import os
@@ -313,14 +315,14 @@ cdef class GeoidModel:
         return self._ptr.GeoidFile().decode('utf-8')
 
     def geoid_name(self) -> str:
-        """Return "name" used to load the geoid data.
+        """Return the "name" used to load the geoid data.
 
         "name" is the first argument of the constructor.
         """
         return self._ptr.GeoidName().decode('utf-8')
 
     def geoid_directory(self) -> str:
-        """Return directory used to load the geoid data."""
+        """Return the directory used to load the geoid data."""
         return self._ptr.GeoidDirectory().decode('utf-8')
 
     def interpolation(self) -> str:
