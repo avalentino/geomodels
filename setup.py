@@ -36,6 +36,12 @@ extensions = [
         language="c++",
     ),
     Extension(
+        'geomodels._gravity',
+        sources=['geomodels/gravity.pyx'],
+        libraries=['Geographic'],
+        language="c++",
+    ),
+    Extension(
         'geomodels._magnetic',
         sources=['geomodels/magnetic.pyx'],
         libraries=['Geographic'],
