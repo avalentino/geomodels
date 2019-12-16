@@ -24,26 +24,8 @@ def get_version(versionfile, strip_extra=False):
 
 extensions = [
     Extension(
-        'geomodels._common',
-        sources=['geomodels/common.pyx'],
-        libraries=['Geographic'],
-        language="c++",
-    ),
-    Extension(
-        'geomodels._geoid',
-        sources=['geomodels/geoid.pyx'],
-        libraries=['Geographic'],
-        language="c++",
-    ),
-    Extension(
-        'geomodels._gravity',
-        sources=['geomodels/gravity.pyx'],
-        libraries=['Geographic'],
-        language="c++",
-    ),
-    Extension(
-        'geomodels._magnetic',
-        sources=['geomodels/magnetic.pyx'],
+        'geomodels._ext',
+        sources=['geomodels/_ext.pyx'],
         libraries=['Geographic'],
         language="c++",
     ),
