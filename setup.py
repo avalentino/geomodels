@@ -66,12 +66,10 @@ setup(
         'cli': 'argcomplete',
     },
     python_requires='>=3.6',
-    # package_data={
-    #     'sample': ['package_data.dat'],
-    # },
-    # data_files=[('data', ['data/data_file'])],
-    # entry_points={
-    #  ...
-    # },
+    entry_points={
+        'console_scripts': [
+            'geomodels-download = geomodels.__main__:main'
+        ]
+    },
     test_suite='geomodels.test'
 )
