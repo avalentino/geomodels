@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re
 from setuptools import setup, Extension, find_packages
 
 
-def get_version(versionfile, strip_extra=False):
-    try:
-        data = versionfile.read()
-    except AttributeError:
-        with open(versionfile) as fd:
-            data = fd.read()
+def get_version(filename, strip_extra=False):
+    import re
+    from distutils.version import LooseVersion
 
+    data = open(filename).read()
     mobj = re.search(
         r'''^__version__\s*=\s*(?P<quote>['"])(?P<version>.*)(?P=quote)''',
         data, re.MULTILINE)
+    version = LooseVersion(mobj.group('version'))
 
     if strip_extra:
-        mobj = re.match(r'(?P<version>\d+(\.\d+)*)', mobj.group('version'))
-
-    return mobj.group('version')
+        return '.'.join(map(str, version.version[:3]))
+    else:
+        return version.vstring
 
 
 extensions = [
@@ -33,7 +31,7 @@ extensions = [
 
 
 classifiers = [
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     "Intended Audience :: Science/Research",
     'License :: OSI Approved :: MIT License',

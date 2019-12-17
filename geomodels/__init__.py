@@ -10,4 +10,4 @@ from .data import *                                  # noqa
 from .error import GeographicErr                     # noqa
 
 
-__version__ = '0.1.0.dev1'
+__version__ = '1.0.0.beta1'

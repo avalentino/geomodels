@@ -15,14 +15,33 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 
+def get_version(filename='../geomodels/__init__.py', strip_extra=False):
+    import re
+    from distutils.version import LooseVersion
+
+    data = open(filename).read()
+    mobj = re.search(
+        r'''^__version__\s*=\s*(?P<quote>['"])(?P<version>.*)(?P=quote)''',
+        data, re.MULTILINE)
+    version = LooseVersion(mobj.group('version'))
+
+    if strip_extra:
+        return '.'.join(map(str, version.version[:3]))
+    else:
+        return version.vstring
+
+
 # -- Project information -----------------------------------------------------
 
 project = 'GeoModels'
 copyright = '2019, Antonio Valentino'
 author = 'Antonio Valentino'
 
+# The short X.Y version.
+version = get_version(strip_extra=True)
+
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = get_version(strip_extra=False)
 
 
 # -- General configuration ---------------------------------------------------
