@@ -1,3 +1,4 @@
+=========
 GeoModels
 =========
 
@@ -5,8 +6,25 @@ GeoModels
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
+.. image:: https://travis-ci.org/avalentino/geomodels.svg?branch=master
+    :alt: Travis-CI status page
+    :target: https://travis-ci.org/avalentino/geomodels
+
+.. image:: https://img.shields.io/pypi/v/geomodels
+    :alt: Latest Version
+    :target: https://pypi.org/project/geomodels
+
+.. image:: https://img.shields.io/pypi/pyversions/geomodels
+    :alt: Supported Python versions
+    :target: https://pypi.org/project/geomodels
+
+.. image:: https://img.shields.io/pypi/l/geomodels
+    :alt: License
+    :target: https://pypi.org/project/geomodels
+
+
 About
------
+=====
 
 GeoModels provides tools for the management of Earth models like
 geoids, gravity models, and magnetic field models.
@@ -22,7 +40,7 @@ C++ library.
 
 
 Installation
-------------
+============
 
 The GeoModels requires `Python`_ >= 3.6.
 To use GeoModels it is necessary to have the following Python_ packages
@@ -73,7 +91,7 @@ within the root of the package source tree::
 
 
 Testing
--------
+=======
 
 The recommended way to run tests is to use `PyTest`_ form the root of the
 `geomodels` package source tree::
@@ -102,3 +120,12 @@ In alternative the following command can be used::
 
 
 .. _PyTest: http://pytest.org
+
+
+License
+=======
+
+GeoModels is released under the terms of the `MIT/X11 License`_
+(see LICENSE file).
+
+.. _`MIT/X11 License`: https://opensource.org/licenses/MIT
