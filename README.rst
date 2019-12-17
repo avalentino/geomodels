@@ -93,10 +93,12 @@ In alternative the following command can be used::
 
     More in detail, the following data models are sued for testing:
 
-    :magnetic field data:
-        'wmm2015', 'igrf12' and data for the default model
     :geoid data:
         'egm96-5', and data for the default model
+    :gravity data:
+        'egm96', and data for the default model
+    :magnetic field data:
+        'wmm2015', 'igrf12' and data for the default model
 
 
 .. _PyTest: http://pytest.org
