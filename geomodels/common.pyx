@@ -22,12 +22,12 @@ VersionInfo = namedtuple('VersionInfo', ['major', 'minor', 'micro'])
 def lib_version_info() -> Tuple[int, int, int]:
     """Return the (major, minor, patch) version of GeographicLib.
 
-    .. warning::
+    .. note::
 
-        the returned information refers to the version of the
-        GeographicLib library used at build time.
-        The version of the shared library actually used at runtime could
-        be different.
+       the returned information refers to the version of the
+       GeographicLib library used at build time.
+       The version of the shared library actually used at runtime could
+       be different.
     """
     return VersionInfo(
         GEOGRAPHICLIB_VERSION_MAJOR,
@@ -39,11 +39,11 @@ def lib_version_info() -> Tuple[int, int, int]:
 def lib_version_str() -> str:
     """Return the version string of GeographicLib.
 
-    .. warning::
+    .. note::
 
-        the returned information refers to the version of the
-        GeographicLib library used at build time.
-        The version of the shared library actually used at runtime could
-        be different.
+       the returned information refers to the version of the
+       GeographicLib library used at build time.
+       The version of the shared library actually used at runtime could
+       be different.
     """
     return GEOGRAPHICLIB_VERSION_STRING.decode('utf-8')

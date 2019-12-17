@@ -82,9 +82,6 @@ cdef class GravityModel:
     the model.  The coefficients for the spherical harmonic sums are
     obtained from a file obtained by appending ".cof" to metadata file
     (so the filename ends in ".egm.cof").
-
-    After the model is loaded, the maximum degree and order of the
-    model can be found by the :meth:`degree` and :meth:`order` methods.
     """
     cdef CGravityModel *_ptr
 
@@ -144,10 +141,10 @@ cdef class GravityModel:
             the height above the ellipsoid (meters)
         :returns:
             * W the sum of the gravitational and centrifugal potentials
-              ([m^2 / s^2])
-            * gx the easterly component of the acceleration ([m / s^2])
-            * gy the northerly component of the acceleration ([m / s^2])
-            * gz the upward component of the acceleration ([m / s^2]);
+              ([m**2 / s**2])
+            * gx the easterly component of the acceleration ([m / s**2])
+            * gy the northerly component of the acceleration ([m / s**2])
+            * gz the upward component of the acceleration ([m / s**2]);
               this is usually negative
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
@@ -191,13 +188,13 @@ cdef class GravityModel:
         :param h:
             the height above the ellipsoid (meters)
         :returns:
-            * T the corresponding disturbing potential ([m^2 / s^2])
+            * T the corresponding disturbing potential ([m**2 / s**2])
             * deltax the easterly component of the disturbance vector
-              ([m / s^2])
+              ([m / s**2])
             * deltay the northerly component of the disturbance vector
-              ([m / s^2])
+              ([m / s**2])
             * deltaz the upward component of the disturbance vector
-              ([m / s^2])
+              ([m / s**2])
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
         T, deltax, deltay, deltaz = self.compute_disturbance(lat, lon, h)
@@ -227,8 +224,8 @@ cdef class GravityModel:
         :param lon:
             the geographic longitude (degrees)
         :returns:
-            `N` the height of the geoid above the
-            :meth:`reference_ellipsoid` (meters)
+            `N` the height of the geoid above the reference ellipsoid
+            (meters)
 
         Some approximations are made in computing the geoid height so that the
         results of the NGA codes are reproduced accurately.
@@ -272,7 +269,7 @@ cdef class GravityModel:
         :param h:
             the height above the ellipsoid (meters)
         :returns:
-            * Dg01 the gravity anomaly ([m / s^2])
+            * Dg01 the gravity anomaly ([m / s**2])
             * xi the northerly component of the deflection of the
               vertical (degrees)
             * eta the easterly component of the deflection of the
@@ -590,7 +587,7 @@ cdef class GravityModel:
         return self._ptr.Flattening()
 
     def mass_constant(self) -> float:
-        """The mass constant of the model ([GM] = $m^{3} s^{-2}$).
+        """The mass constant of the model ([GM] = m**3 /s**2).
 
         It is the product of `G` the gravitational constant and `M` the
         mass of the earth (usually including the mass of the earth's
@@ -601,14 +598,14 @@ cdef class GravityModel:
     def reference_mass_constant(self) -> float:
         """The mass constant of the reference ellipsoid.
 
-        [GM] = $m^{3} s^{-2}$.
+        [GM] = m**3 / s**2.
         """
         return self._ptr.ReferenceMassConstant()
 
     def angular_velocity(self) -> float:
         """The angular velocity of the model and the reference ellipsoid.
 
-        $[\omega] = rad/s$
+        :math:`[\omega] = rad/s`
         """
         return self._ptr.AngularVelocity()
 
@@ -641,6 +638,6 @@ cdef class GravityModel:
         `GEOGRAPHICLIB_GRAVITY_NAME`, if set; otherwise, it is "egm96".
         The :class:`GravityModel` class does not use this function;
         it is just provided as a convenience for a calling program when
-        constructing a `GravityModel` object.
+        constructing a :class:`GravityModel` object.
         """
         return CGravityModel.DefaultGravityName().decode('utf-8')

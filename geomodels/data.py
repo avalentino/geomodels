@@ -97,7 +97,7 @@ def get_default_data_path() -> str:
     The `GEOGRAPHICLIB_DATA` environment variable is used if available
     to locate the location where the geographic model data are installed.
 
-    If `GEOGRAPHICLIB_DATA`_is not set, then then it is returned the
+    If `GEOGRAPHICLIB_DATA` is not set, then then it is returned the
     path configured at build time.
     """
     path = os.environ.get('GEOGRAPHICLIB_DATA')
@@ -130,11 +130,10 @@ def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
         (optional) base URL for data download.
         The full URL is build from this function starting form base_url
         and model information.
-        Default: {}.
     :param EArchiveType archive_type:
         specifies the archive type that should be downloaded.
-        Default: EArchiveType.BZ2.
-    """.format(_BASE_URL)
+        Default: `data:`EArchiveType.BZ2`.
+    """
     if not base_url:
         base_url = get_base_url()
         query = _URL_QUERY
@@ -292,15 +291,14 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
         by :func:`get_default_data_path` is assumed.
     :param str base_url:
         (optional) base URL for data download.
-        The full URL is build from this function starting form base_url
+        The full URL is built from this function starting form base_url
         and model information.
-        Default: {}.
     :param EArchiveType archive_type:
         specifies the archive type that should be downloaded.
-        Default: EArchiveType.BZ2.
+        Default: :data:`EArchiveType.BZ2`.
     :param bool progress:
         enable/disable progress information display (default: True)
-    """.format(_BASE_URL)
+    """
     urls = {}
     if model is None or model in EModelType:
         urls.update(_get_url_map(model, base_url, archive_type))

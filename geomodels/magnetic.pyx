@@ -41,7 +41,7 @@ cdef class MagneticFieldModel:
     A filename is formed by appending ".wmm" (World Magnetic Model) to
     the name.  If path is specified (and is non-empty), then the file
     is loaded from directory, path.  Otherwise the path is given by the
-    DefaultMagneticPath().
+    :meth:`MagneticFieldModel.default_magnetic_path`.
 
     This file contains the metadata which specifies the properties of the
     model.  The coefficients for the spherical harmonic sums are obtained
@@ -276,8 +276,8 @@ cdef class MagneticFieldModel:
         """Return the description of the magnetic model.
 
         Return the description of the magnetic model if available,
-        from the Description file in the data file;
-        if absent, return "NONE".
+        from the :meth:`MagneticFieldModel.description` file in the
+        data file; if absent, return "NONE".
         """
         return self._ptr.Description().decode('utf-8')
 
@@ -314,8 +314,8 @@ cdef class MagneticFieldModel:
 
         Because the model will typically provide useful results
         slightly outside the range of allowed heights,
-        no check of t argument is made by the MagneticModel.__call__()
-        operator.
+        no check of t argument is made by the
+        :meth:`MagneticFieldModel.__call__` operator.
         """
         return self._ptr.MinHeight()
 
@@ -327,8 +327,8 @@ cdef class MagneticFieldModel:
 
         Because the model will typically provide useful results
         slightly outside the range of allowed heights,
-        no check of t argument is made by the MagneticModel.__call__()
-        operator.
+        no check of t argument is made by the
+        :meth:`MagneticFieldModel.__call__` operator.
         """
         return self._ptr.MaxHeight()
 
@@ -337,8 +337,8 @@ cdef class MagneticFieldModel:
 
         Because the model will typically provide useful results
         slightly outside the range of allowed times,
-        no check of t argument is made by the MagneticModel.__call__()
-        operator.
+        no check of t argument is made by the
+        :meth:`MagneticFieldModel.__call__` operator.
         """
         return self._ptr.MinTime()
 
@@ -347,8 +347,8 @@ cdef class MagneticFieldModel:
 
         Because the model will typically provide useful results
         slightly outside the range of allowed times,
-        no check of t argument is made by the MagneticModel.__call__()
-        operator.
+        no check of the `t` argument is made by the
+        :meth:`MagneticFieldModel.__call__` operator.
         """
         return self._ptr.MaxTime()
 
@@ -373,11 +373,10 @@ cdef class MagneticFieldModel:
         """Return the default path for magnetic model data files.
 
         This is the value of the environment variable
-        GEOGRAPHICLIB_MAGNETIC_PATH, if set; otherwise, it is
-        $GEOGRAPHICLIB_DATA/magnetic if the environment variable
-        GEOGRAPHICLIB_DATA is set; otherwise, it is a compile-time default
-        (/usr/local/share/GeographicLib/magnetic on non-Windows systems and
-        C:/ProgramData/GeographicLib/magnetic on Windows systems).
+        `GEOGRAPHICLIB_MAGNETIC_PATH`, if set; otherwise, it is
+        `$GEOGRAPHICLIB_DATA/magnetic` if the environment variable
+        `GEOGRAPHICLIB_DATA` is set; otherwise, it is a compile-time
+        default.
         """
         return CMagneticModel.DefaultMagneticPath().decode('utf-8')
 
@@ -386,10 +385,10 @@ cdef class MagneticFieldModel:
         """The default name for the magnetic model.
 
         This is the value of the environment variable
-        GEOGRAPHICLIB_MAGNETIC_NAME, if set; otherwise,
+        `GEOGRAPHICLIB_MAGNETIC_NAME`, if set; otherwise,
         it is "wmm2015".
-        The MagneticFieldModel class does not use this function;
+        The :class:`MagneticFieldModel` class does not use this function;
         it is just provided as a convenience for a calling program
-        when constructing a MagneticFieldModel object.
+        when constructing a :class:`MagneticFieldModel` object.
         """
         return CMagneticModel.DefaultMagneticName().decode('utf-8')

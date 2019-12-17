@@ -68,8 +68,8 @@ cdef class GeoidModel:
     :param path:
         (optional) directory for data file
     :param cubic:
-        (optional) interpolation method; false means bilinear,
-        true (the default) means cubic.
+        (optional) interpolation method; false means `bilinear`,
+        true (the default) means `cubic`.
     :param threadsafe:
         (optional), if true, construct a thread safe object.
         The default is false
@@ -85,7 +85,7 @@ cdef class GeoidModel:
     Otherwise the path is given by :meth:`default_geoid_path`.
     If the `threadsafe` parameter is True, the data set is read into
     memory, the data file is closed, and single-cell caching is turned
-    off; this results in a Geoid object which is thread safe.
+    off; this results in a :class:`Geoid` object which is thread safe.
     """
     cdef CGeoid *_ptr
 
@@ -120,7 +120,7 @@ cdef class GeoidModel:
         :raises GeographicErr:
             if there's a problem reading the data.
         :raises GeographicErr:
-            if this is called on a threadsafe Geoid.
+            if this is called on a threadsafe :class:`Geoid`.
 
         Cache the data for the specified "rectangular" area bounded by
         the parallels `south` and `north` and the meridians `west` and
@@ -145,7 +145,7 @@ cdef class GeoidModel:
         :raises GeographicErr:
             if there's a problem reading the data.
         :raises GeographicErr:
-            if this is called on a threadsafe Geoid.
+            if this is called on a threadsafe :class:`Geoid`.
 
         On most computers, this is fast for data sets with grid
         resolution of 5' or coarser. For a 1' grid, the required RAM is
@@ -161,7 +161,7 @@ cdef class GeoidModel:
         """Clear the cache.
 
         This never throws an error.
-        This does nothing with a thread safe Geoid.
+        This does nothing with a thread safe :class:`Geoid`.
         """
         self._ptr.CacheClear()
 
@@ -235,11 +235,11 @@ cdef class GeoidModel:
         :param h:
             height of the point (meters).
         :param dir:
-            a `Geoid.convertflag` specifying the direction of the
-            conversion; `Geoid.GEOIDTOELLIPSOID` means convert a height
-            above the geoid to a height above the ellipsoid;
-            `Geoid.ELLIPSOIDTOGEOID` means convert a height above the
-            ellipsoid to a height above the geoid.
+            a :class:`EHeightConvDir` specifying the direction of the
+            conversion; :data:`EHeightConvDir.GEOIDTOELLIPSOID` means
+            convert a height above the geoid to a height above the
+            ellipsoid; :data:`Geoid.ELLIPSOIDTOGEOID` means convert a
+            height above the ellipsoid to a height above the geoid.
         :raises GeographicErr:
             if there's a problem reading the data; this never happens
             if (`lat`, `lon`) is within a successfully cached area.
@@ -286,6 +286,7 @@ cdef class GeoidModel:
 
     def interpolation(self) -> str:
         """Return interpolation method ("cubic" or "bilinear")."""
+        # @TODO: use an enum
         return self._ptr.Interpolation().decode('utf-8')
 
     def max_error(self) -> float:
@@ -395,6 +396,6 @@ cdef class GeoidModel:
         `GEOGRAPHICLIB_GEOID_NAME`, if set; otherwise, it is "egm96-5".
         The GeoidModel class does not use this function; it is just
         provided as a convenience for a calling program when
-        constructing a GeoidModel object.
+        constructing a :class:`GeoidModel` object.
         """
         return CGeoid.DefaultGeoidName().decode('utf-8')
