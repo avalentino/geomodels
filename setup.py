@@ -47,9 +47,9 @@ classifiers = [
 setup(
     name='geomodels',
     version=get_version('geomodels/__init__.py'),
-    description='Cython wrappers for GeographicLib earth data models',
-    # long_description=long_description,
-    # long_description_content_type='text/x-rst',
+    description='Python package for Earth data models management',
+    long_description=open('README.rst').read(),
+    long_description_content_type='text/x-rst',
     url='https://github.com/avalentino/geomodels',
     author='Antonio Valentino',
     author_email='antonio.valentino@tiscali.it',
