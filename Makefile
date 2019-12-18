@@ -1,8 +1,7 @@
 #!/usr/bin/make -f
 
 PYTHON=python3
-#SPHINX_APIDOC=sphinx-apidoc
-SPHINX_APIDOC=$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/venv/bin/sphinx-apidoc
+SPHINX_APIDOC=sphinx-apidoc
 
 
 .PHONY: ext build sdist wheel html check pytest apidoc clean
