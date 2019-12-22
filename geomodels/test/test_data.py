@@ -161,7 +161,7 @@ class InstallTestCase(unittest.TestCase):
         self.assertEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_all_models(self):
-        model = None
+        model = geomodels.data.EModelGroup.ALL
 
         with tempfile.TemporaryDirectory() as datadir:
             geomodels.data.install(model, datadir, progress=False)
@@ -172,6 +172,33 @@ class InstallTestCase(unittest.TestCase):
         self.unpack_archive_mock.assert_called_with(
             mock.ANY, extract_dir=datadir)
         self.assertEqual(self.unpack_archive_mock.call_count, n_models)
+
+    def test_install_minimal_models(self):
+        model = geomodels.data.EModelGroup.MINIMAL
+
+        with tempfile.TemporaryDirectory() as datadir:
+            geomodels.data.install(model, datadir, progress=False)
+
+        n_models = 3
+        self.download_mock.assert_called()
+        self.assertEqual(self.download_mock.call_count, n_models)
+        self.unpack_archive_mock.assert_called_with(
+            mock.ANY, extract_dir=datadir)
+        self.assertEqual(self.unpack_archive_mock.call_count, n_models)
+
+    def test_install_recommended_models(self):
+        model = geomodels.data.EModelGroup.RECOMMENDED
+
+        with tempfile.TemporaryDirectory() as datadir:
+            geomodels.data.install(model, datadir, progress=False)
+
+        self.download_mock.assert_called()
+        self.assertGreaterEqual(self.download_mock.call_count, 3)
+        self.assertLessEqual(self.download_mock.call_count, 7)
+        self.unpack_archive_mock.assert_called_with(
+            mock.ANY, extract_dir=datadir)
+        self.assertGreaterEqual(self.unpack_archive_mock.call_count, 3)
+        self.assertLessEqual(self.unpack_archive_mock.call_count, 7)
 
     def test_install_skip(self):
         datadir = geomodels.data.get_default_data_path()
@@ -202,6 +229,14 @@ class InstallTestCase(unittest.TestCase):
             mock.ANY, extract_dir=datadir)
         self.assertEqual(
             self.unpack_archive_mock.call_count, expected_call_count)
+
+    def test_install_invalid_01(self):
+        model = None
+
+        with tempfile.TemporaryDirectory() as datadir:
+            self.assertRaises(
+                TypeError,
+                geomodels.data.install, model, datadir, progress=False)
 
 
 if __name__ == '__main__':

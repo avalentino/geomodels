@@ -16,9 +16,18 @@ from typing import Dict, Union, Optional, Callable
 
 
 __all__ = [
-    'EModelType', 'EGeoidModel', 'EGravityModel', 'EMagneticModel',
-    'EArchiveType', 'get_default_data_path', 'get_model_url', 'install',
+    'EModelGroup', 'EModelType', 'EGeoidModel', 'EGravityModel',
+    'EMagneticModel', 'EArchiveType',
+    'get_default_data_path', 'get_model_url', 'install',
 ]
+
+
+class EModelGroup(enum.Enum):
+    """Model groups."""
+
+    ALL = 'all'
+    MINIMAL = 'minimal'
+    RECOMMENDED = 'recommended'
 
 
 class EModelType(enum.Enum):
@@ -153,25 +162,49 @@ def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
     return url.geturl()
 
 
-def _get_url_map(modeltype: Optional[EModelType],
+InstallableModelType = Union[EModelGroup, EModelType, GenericModelType]
+
+
+def _get_url_map(model: InstallableModelType,
                  base_url: Optional[str] = None,
                  archive_type: EArchiveType = EArchiveType.BZ2
                  ) -> Dict[GenericModelType, str]:
     urls = {}
-    if not modeltype:
+    if model is EModelGroup.ALL:
         for modeltype in EModelType:
             urls.update(_get_url_map(modeltype, base_url, archive_type))
-    else:
+    elif model is EModelGroup.MINIMAL:
+        from . import GeoidModel, GravityModel, MagneticFieldModel
+        models = [
+            EGeoidModel(GeoidModel.default_geoid_name()),
+            EGravityModel(GravityModel.default_gravity_name()),
+            EMagneticModel(MagneticFieldModel.default_magnetic_name()),
+        ]
+        for model_ in models:
+            urls[model_] = get_model_url(model_, base_url, archive_type)
+    elif model is EModelGroup.RECOMMENDED:
+        urls.update(_get_url_map(EModelGroup.MINIMAL))
+        extra_models = [
+            EGeoidModel.EGM96_5,
+            EGravityModel.EGM96,
+            EMagneticModel.IGRF12,
+            EMagneticModel.WMM2015,
+        ]
+        for model_ in extra_models:
+            urls[model_] = get_model_url(model_, base_url, archive_type)
+    elif model in EModelType:
         modeltype_map = {
             EModelType.GEOID: EGeoidModel,
             EModelType.GRAVITY: EGravityModel,
             EModelType.MAGNETIC: EMagneticModel,
         }
-        modelenum = modeltype_map[modeltype]
+        modelenum = modeltype_map[model]
         urls = {
             item: get_model_url(item, base_url, archive_type)
             for item in modelenum
         }
+    else:
+        urls[model] = get_model_url(model, base_url, archive_type)
 
     return urls
 
@@ -258,10 +291,12 @@ def download(url: str, path: PathType = '.',
             ncols = 0
         desc = urlsplit(url)._replace(query='', fragment='').geturl()
         reporthook = TqdmReportHook(desc=desc[-ncols:], leave=False)
-    elif progress is False:
-        reporthook = None       # type: ignore
-    else:
+    elif callable(progress):
         reporthook = progress
+    # elif progress is False:
+    #     reporthook = None  # type: ignore
+    else:
+        reporthook = None  # type: ignore
 
     if isinstance(reporthook, contextlib.AbstractContextManager):
         with reporthook:
@@ -272,7 +307,7 @@ def download(url: str, path: PathType = '.',
     return outpath
 
 
-def install(model: Optional[Union[EModelType, GenericModelType]],
+def install(model: InstallableModelType = EModelGroup.MINIMAL,
             datadir: Optional[PathType] = None, base_url: str = None,
             archive_type: EArchiveType = EArchiveType.BZ2,
             progress: bool = True):
@@ -283,8 +318,12 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
         It can be one of the enumerates defined in :class:`EGeoidModel`,
         :class:`EGravityModel`, :class:`EMagneticModel`, or one of the
         enumerates defined in :class:`EModelType` to indicate that all
-        geographic models of the specified type shall be installed.
-        Finally if model is set to None, then all models are installed.
+        geographic models of the specified type shall be installed,
+        or one of the enumerates defined in :class:`EModelGroup` to
+        indicate that a specific group of model data shall be installed:
+        :data:`EModelGroup.ALL` (all available models of any kind),
+        :data:`EModelGroup.MINIMAL` (only the default model for each type)
+        or :data:`EModelGroup.RECOMMENDED`.
     :param PathType datadir:
         (optional) specify the target location where geographic model
         data shall be installed. If not specified that the path returned
@@ -299,11 +338,7 @@ def install(model: Optional[Union[EModelType, GenericModelType]],
     :param bool progress:
         enable/disable progress information display (default: True)
     """
-    urls = {}
-    if model is None or model in EModelType:
-        urls.update(_get_url_map(model, base_url, archive_type))
-    else:
-        urls[model] = get_model_url(model, base_url, archive_type)
+    urls = _get_url_map(model, base_url, archive_type)
 
     if not datadir:
         datadir = get_default_data_path()

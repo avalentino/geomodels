@@ -7,7 +7,9 @@ import argparse
 
 from . import __version__
 from .data import get_default_data_path, get_base_url, install
-from .data import EModelType, EGeoidModel, EGravityModel, EMagneticModel
+from .data import (
+    EModelGroup, EModelType, EGeoidModel, EGravityModel, EMagneticModel,
+)
 
 try:
     import argcomplete
@@ -26,8 +28,8 @@ LOGFMT = '%(levelname)s: %(message)s'
 
 def get_parser():
     """Instantiate the command line argument parser."""
-    description = """This program downloads and installs the datasets
-used by the GeographicLib library tool to compute magnetic fields.
+    description = """This program downloads and installs the data
+used by the GeographicLib library for models computation.
 """
     parser = argparse.ArgumentParser(description=description, prog=PROG)
     parser.add_argument(
@@ -43,7 +45,7 @@ used by the GeographicLib library tool to compute magnetic fields.
              '(default: %(default)s).')
 
     # Positional arguments
-    choices = ['all']
+    choices = [model.value for model in EModelGroup]
     choices.extend(model.value for model in EModelType)
     choices.extend(model.value for model in EGeoidModel)
     choices.extend(model.value for model in EGravityModel)
@@ -84,7 +86,13 @@ def main(*argv):
         if args.model == 'all':
             model = None
         else:
-            enums = (EModelType, EGeoidModel, EGravityModel, EModelType)
+            enums = (
+                EModelGroup,
+                EModelType,
+                EGeoidModel,
+                EGravityModel,
+                EModelType,
+            )
             for enumtype in enums:
                 try:
                     model = enumtype(args.model)
