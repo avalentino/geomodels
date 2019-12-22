@@ -13,7 +13,8 @@ GEOGRAPHICLIB_ARCHIVE_URL=$(GEOGRAPHICLIB_BASE_URL)/$(GEOGRAPHICLIB_ARCHIVE)
 
 
 .PHONY: ext build sdist wheel html check pytest apidoc clean distclean \
-        ext-embed wheel-embed pytest-embed
+        ext-embed wheel-embed pytest-embed geographiclib-static \
+        manylinux
 
 
 dafault: ext
@@ -84,13 +85,16 @@ $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a: $(GEOGRAPHICLIB_SRCDIR)
 	$(MAKE) -C $(GEOGRAPHICLIB_SRCDIR) CXXFLAGS="-fPIC"
 
 
-wheel-embed: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
+geographiclib-static: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
+
+
+wheel-embed: geographiclib-static
 	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
 	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
 	$(PYTHON) setup.py bdist_wheel
 
 
-ext-embed: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
+ext-embed: geographiclib-static
 	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
 	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
 	$(PYTHON) setup.py build_ext --inplace
@@ -103,3 +107,9 @@ data:
 pytest-embed: ext-embed data
 	$(PYTHON) -c "from geomodels.test import print_versions; print_versions()"
 	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest
+
+
+manylinux: sdist
+	# make sdist
+	# docker pull quay.io/pypa/manylinux2010_x86_64
+	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh
