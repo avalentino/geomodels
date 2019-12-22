@@ -2,9 +2,18 @@
 
 PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
+DOWNLOAD=curl -O
+
+GEOGRAPHICLIB_VERSION=1.50.1
+GEOGRAPHICLIB_SRCDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
+GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_SRCDIR).tar.gz
+GEOGRAPHICLIB_BASE_URL=\
+https://netcologne.dl.sourceforge.net/project/geographiclib/distrib
+GEOGRAPHICLIB_ARCHIVE_URL=$(GEOGRAPHICLIB_BASE_URL)/$(GEOGRAPHICLIB_ARCHIVE)
 
 
-.PHONY: ext build sdist wheel html check pytest apidoc clean
+.PHONY: ext build sdist wheel html check pytest apidoc clean distclean \
+        ext-embed wheel-embed pytest-embed
 
 
 dafault: ext
@@ -34,7 +43,8 @@ check:
 	$(PYTHON) setup.py test
 
 
-pytest:
+pytest: ext
+	$(PYTHON) -c "form geomodel.test import print_versions; print_versions()"
 	$(PYTHON) -m pytest
 
 
@@ -54,3 +64,42 @@ clean:
 	$(RM) -r MANIFEST dist build geomodels.egg-info .pytest_cache
 	$(RM) -r geomodels/__pycache__ geomodels/test/__pycache__ docs/_build
 	$(RM) geomodels/*.cpp geomodels/*.so
+	$(RM) -r $(GEOGRAPHICLIB_SRCDIR)
+
+
+distclean: clean
+	$(RM) $(GEOGRAPHICLIB_ARCHIVE)
+	$(RM) -r data
+
+
+$(GEOGRAPHICLIB_ARCHIVE):
+	$(DOWNLOAD) $(GEOGRAPHICLIB_ARCHIVE_URL)
+
+
+$(GEOGRAPHICLIB_SRCDIR): $(GEOGRAPHICLIB_ARCHIVE)
+	tar xvf $<
+
+
+$(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a: $(GEOGRAPHICLIB_SRCDIR)
+	$(MAKE) -C $(GEOGRAPHICLIB_SRCDIR) CXXFLAGS="-fPIC"
+
+
+wheel-embed: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
+	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
+	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
+	$(PYTHON) setup.py bdist_wheel
+
+
+ext-embed: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
+	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
+	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
+	$(PYTHON) setup.py build_ext --inplace
+
+
+data:
+	$(PYTHON) -m geomodels -d data recommended
+
+
+pytest-embed: ext-embed data
+	$(PYTHON) -c "from geomodels.test import print_versions; print_versions()"
+	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest
