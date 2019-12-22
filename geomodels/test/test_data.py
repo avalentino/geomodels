@@ -235,7 +235,7 @@ class InstallTestCase(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as datadir:
             self.assertRaises(
-                TypeError,
+                (TypeError, AttributeError),
                 geomodels.data.install, model, datadir, progress=False)
 
 
