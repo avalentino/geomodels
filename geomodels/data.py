@@ -165,6 +165,13 @@ def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
 InstallableModelType = Union[EModelGroup, EModelType, GenericModelType]
 
 
+_MODELTYPE_MAP = {
+    EModelType.GEOID: EGeoidModel,
+    EModelType.GRAVITY: EGravityModel,
+    EModelType.MAGNETIC: EMagneticModel,
+}
+
+
 def _get_url_map(model: InstallableModelType,
                  base_url: Optional[str] = None,
                  archive_type: EArchiveType = EArchiveType.BZ2
@@ -192,13 +199,8 @@ def _get_url_map(model: InstallableModelType,
         ]
         for model_ in extra_models:
             urls[model_] = get_model_url(model_, base_url, archive_type)
-    elif model in EModelType:
-        modeltype_map = {
-            EModelType.GEOID: EGeoidModel,
-            EModelType.GRAVITY: EGravityModel,
-            EModelType.MAGNETIC: EMagneticModel,
-        }
-        modelenum = modeltype_map[model]
+    elif model in _MODELTYPE_MAP:
+        modelenum = _MODELTYPE_MAP[model]
         urls = {
             item: get_model_url(item, base_url, archive_type)
             for item in modelenum
