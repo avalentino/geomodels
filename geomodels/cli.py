@@ -51,8 +51,7 @@ used by the GeographicLib library for models computation.
     choices.extend(model.value for model in EGravityModel)
     choices.extend(model.value for model in EMagneticModel)
     parser.add_argument(
-        'model', choices=choices,
-        help='model(s) to be installed (default: %(default)s)')
+        'model', choices=choices, help='model(s) to be installed')
 
     if argcomplete:
         argcomplete.autocomplete(parser)
