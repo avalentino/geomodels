@@ -45,25 +45,22 @@ check:
 
 
 pytest: ext
-	$(PYTHON) -c "form geomodel.test import print_versions; print_versions()"
+	$(PYTHON) -c "form geomodel.tests import print_versions; print_versions()"
 	$(PYTHON) -m pytest
 
 
 apidoc: ext
 	$(RM) -r docs/api
-	$(SPHINX_APIDOC) -M -e -o docs/api . setup.py geomodels/test
-	$(RM) docs/api/geomodels.common.rst \
-		  docs/api/geomodels.gravity.rst \
-		  docs/api/geomodels.geoid.rst \
-		  docs/api/geomodels.magnetic.rst \
-		  docs/api/modules.rst
-	sed -i '/\(common\|geoid\|gravity\|magnetic\)$$/d' docs/api/geomodels.rst
+	$(SPHINX_APIDOC) -M -T -e -o docs/api . setup.py geomodels/tests geomodels/*.pyx
+	# sed -i '/\(common\|geoid\|gravity\|magnetic\)$$/d' docs/api/geomodels.rst
+	# Darwin
+	# sed -E '/\(common\|geoid\|gravity\|magnetic\)$$/d' docs/api/geomodels.rst > docs/api/geomodels.rst.new
 
 
 clean:
 	$(PYTHON) setup.py clean --all
 	$(RM) -r MANIFEST dist build geomodels.egg-info .pytest_cache
-	$(RM) -r geomodels/__pycache__ geomodels/test/__pycache__ docs/_build
+	$(RM) -r geomodels/__pycache__ geomodels/tests/__pycache__ docs/_build
 	$(RM) geomodels/*.cpp geomodels/*.so
 	$(RM) -r $(GEOGRAPHICLIB_SRCDIR)
 
@@ -105,7 +102,7 @@ data:
 
 
 pytest-embed: ext-embed data
-	$(PYTHON) -c "from geomodels.test import print_versions; print_versions()"
+	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
 	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest
 
 

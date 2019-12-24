@@ -69,5 +69,5 @@ setup(
             'geomodels-download = geomodels.__main__:main'
         ]
     },
-    test_suite='geomodels.test'
+    test_suite='geomodels.tests'
 )

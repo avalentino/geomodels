@@ -11,7 +11,7 @@ from numpy import testing as npt
 
 from geomodels import MagneticFieldModel
 from geomodels import get_default_data_path
-from geomodels.test.utils import dms_to_dec
+from geomodels.tests.utils import dms_to_dec
 
 
 class StaticMethodsTestCase(unittest.TestCase):

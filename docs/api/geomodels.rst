@@ -6,10 +6,6 @@ geomodels package
    :undoc-members:
    :show-inheritance:
 
-.. autofunction:: lib_version_info
-
-.. autofunction:: lib_version_str
-
 .. autoclass:: GeoidModel
    :members:
    :undoc-members:
@@ -29,6 +25,12 @@ geomodels package
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. autofunction:: lib_version_info
+
+.. autofunction:: lib_version_str
+
+.. autofunction:: test
 
 Submodules
 ----------

@@ -6,10 +6,11 @@ import locale
 import platform
 import unittest
 
-from .. import lib_version_str, __version__
-
 
 def print_versions():
+    """Print platform information and library version."""
+    from .. import lib_version_str, __version__  # avoid circular imports
+
     print('geomodels version:     %s' % __version__)
     print('GeographicLib version: %s' % lib_version_str())
 
@@ -26,11 +27,21 @@ def print_versions():
 
 
 def suite():
+    """Return the test suite for the geomodels package."""
     loader = unittest.TestLoader()
     return loader.discover(start_dir=os.path.dirname(__file__))
 
 
-def test(verbosity=1, failfast=False):
+def test(verbosity: int = 1, failfast: bool = False):
+    """Run the test suite for the geomodels package.
+
+    :param int verbosity:
+        verbosity level (higher is more verbose).
+        Default: 1.
+    :param bool failfast:
+        Stop the test run on the first error or failure.
+        Default: False.
+    """
     print_versions()
     runner = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast)
     result = runner.run(suite())
