@@ -82,25 +82,22 @@ def main(*argv):
     try:
         logging.debug('args: %s', args)
 
-        if args.model == 'all':
-            model = None
-        else:
-            enums = (
-                EModelGroup,
-                EModelType,
-                EGeoidModel,
-                EGravityModel,
-                EModelType,
-            )
-            for enumtype in enums:
-                try:
-                    model = enumtype(args.model)
-                except ValueError:
-                    pass
-                else:
-                    break
+        enums = (
+            EModelGroup,
+            EModelType,
+            EGeoidModel,
+            EGravityModel,
+            EModelType,
+        )
+        for enumtype in enums:
+            try:
+                model = enumtype(args.model)
+            except ValueError:
+                pass
             else:
-                raise RuntimeError('unexpected model: {!r}'.format(args.model))
+                break
+        else:
+            raise RuntimeError('unexpected model: {!r}'.format(args.model))
 
         install(model, args.datadir, args.base_url)
     except Exception as exc:
