@@ -75,49 +75,73 @@ and `GeographicLib`_ are properly installed and configured.
 
 The installation form sources can be done using the following command::
 
-  $ python3 -m pip install PATH_TO_GEOMODELS_SOURCES_OR_TARBALL
+  $ python3 -m pip install geomodels
 
 Please refer to the Pip_ user manual for details about installation options.
-
-Developers may want to build the package inplace for development and
-testing purposes.  In this case the following command can be used from
-within the root of the package source tree::
-
-  $ python3 setup.py build_ext --inplace
 
 .. _Python: https://www.python.org
 .. _Pip: https://pip.pypa.io
 .. _setuptools: https://github.com/pypa/setuptools
 
 
+Model data installation
+-----------------------
+
+GeoModels uses external data to perform geoid, gravity and magnetic field
+computations.
+
+If required data are not already available on the system that thay can be
+downloaded and installed using the `geomodels-download` command line tool
+that is provided by the GeoTools package::
+
+  $ geomodels-download [-d DATADIR] recommended
+
+The above command installs the `recommended` subset of data (about 20MB)
+into the specified `DATAROOT`folder.
+If `DATAROOT` is not explicitly specified using the `-d` (or `--datadir`)
+option then the default system path is used (e.g.
+`/usr/local/share/GeographicLib`).
+
+In any case it is necessary to have write permission on the `DATADIR` folder,
+so to install into the default system path it will be probably necessary to
+use `sudo` or some equivalent method.
+
+If data are not installed into the default system folder than it is necessary
+to set the `GEOGRAPHICLIB_DATA` environment variable to the data installation
+path. E.g., on systems using bash one can use the following command::
+
+  export GEOGRAPHICLIB_DATA=/path/to/data
+
+Please note that with the `geomodels-download` command line tool it is
+possible to install different subsets of data:
+
+:minimal:
+    only data for the default model of each kind (geoid, gravity and magnetic
+    field) are installed. If GeographicLib_ v1.5.1 is used then installed
+    data are: geoids/egm96-5, gravity/egm96 and magnetic/wmm2020 (about 20MB)
+:recommended:
+    the `minimal` set of data (see above) plus few additional and commonly
+    used data (magnetic/igrf12).
+    The total amount of disk space required is about 20MB.
+    It is guaranteed that the `recommended` subset always includes all data
+    that are necessary to run the test suite.
+:all:
+   install all available data (about 670MB of disk space are required)
+
+Additionally the `geomodels-download` command line tool allows also to install
+data for a single model. See the command line help for details::
+
+  $ geomodels-download -h
+
+
 Testing
-=======
+-------
 
-The recommended way to run tests is to use `PyTest`_ form the root of the
-`geomodels` package source tree::
+Once the GeoModels package and necessary data have been installed, it is
+possible to run the test suite to be sure that all works correctly.
+The recommended way to test GeoModels with using PyTest_::
 
-  $ python3 -m pytest
-
-The above, of course, requires the `PyTest`_ to be installed.
-
-In alternative the following command can be used::
-
-  $ python3 setup.py test
-
-.. note::
-
-    running tests requires that model data, used by the underlying
-    GeographicLib_, are correctly installed in the default system location.
-
-    More in detail, the following data models are sued for testing:
-
-    :geoid data:
-        'egm96-5', and data for the default model
-    :gravity data:
-        'egm96', and data for the default model
-    :magnetic field data:
-        'wmm2015', 'igrf12' and data for the default model
-
+  $ env GEOGRAPHICLIB_DATA=/path/to/data python3 -m pytest --pyargs geomodels
 
 .. _PyTest: http://pytest.org
 
