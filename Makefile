@@ -46,7 +46,7 @@ check:
 
 pytest: ext
 	$(PYTHON) -c "form geomodel.tests import print_versions; print_versions()"
-	$(PYTHON) -m pytest
+	$(PYTHON) -m pytest geomodels
 
 
 apidoc: ext
@@ -100,7 +100,7 @@ data:
 
 pytest-embed: ext-embed data
 	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
-	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest
+	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest geomodels
 
 
 manylinux: sdist
