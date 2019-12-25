@@ -80,10 +80,65 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = 'alabaster'
 
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+    # Service links and badges¶
+    # 'badge_branch': 'master',  # not supported by Sphinx v1.8.5
+    # 'codecov_button': True,
+    'github_user': 'avalentino',
+    'github_repo': 'geomodels',
+    'github_banner': True,
+    'github_button': True,
+    'github_type': 'watch',  # 'watch', 'fork', 'follow'
+    'github_count': True,
+    # 'travis_button': True,
+    # Non-service sidebar control
+    'extra_nav_links': {
+        'GeoModels on PyPI': 'https://pypi.org/project/geomodels',
+        'GeoGraphicLib': 'https://geographiclib.sourceforge.io/html',
+    },
+    # 'show_related': True,
+    # 'sidebar_collapse': True,  # not supported by Sphinx v1.8.5
+    # Header/footer options
+    # 'show_powered_by': True,
+    # 'show_relbars': True,  # not supported by Sphinx v1.8.5
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Custom sidebar templates, must be a dictionary that maps document names
+# to template names.
+#
+# This is required for the alabaster theme
+# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
+html_sidebars = {
+    'index': [
+        'about.html',
+        'localtoc.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+    ],
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+    ],
+}
+_html_sidebars = {
+    '**': [
+        'globaltoc.html',
+        'relations.html',
+        'sourcelink.html',
+        'searchbox.html',
+    ],
+}
 
 
 # -- Extension configuration -------------------------------------------------
