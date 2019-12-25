@@ -2,19 +2,24 @@
 
 PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
-DOWNLOAD=curl -O
-
+DOWNLOAD=curl -C - -O
 GEOGRAPHICLIB_VERSION=1.50.1
-GEOGRAPHICLIB_SRCDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
-GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_SRCDIR).tar.gz
+GEOGRAPHICLIB_BASEDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
+GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_BASEDIR).tar.gz
 GEOGRAPHICLIB_BASE_URL=\
 https://netcologne.dl.sourceforge.net/project/geographiclib/distrib
 GEOGRAPHICLIB_ARCHIVE_URL=$(GEOGRAPHICLIB_BASE_URL)/$(GEOGRAPHICLIB_ARCHIVE)
 
+EXTERNAL=external
+GEOGRAPHICLIB_SRC=$(EXTERNAL)/$(GEOGRAPHICLIB_BASEDIR)
+
+PKG=geomodels
+PKG_VER=$(shell grep __version__ geomodels/__init__.py | cut -d "'" -f 2)
+PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
+
 
 .PHONY: ext build sdist wheel html check pytest apidoc clean distclean \
-        ext-embed wheel-embed pytest-embed geographiclib-static \
-        manylinux
+        embed data sdidt-embed pytest-embed manylinux
 
 
 dafault: ext
@@ -28,16 +33,24 @@ build:
 	$(PYTHON) setup.py build
 
 
-sdist:
+$(PKG_SRC_ARC):
 	$(PYTHON) setup.py sdist
+
+
+sdist: $(PKG_SRC_ARC)
 
 
 wheel:
 	$(PYTHON) setup.py bdist_wheel
 
 
-html: ext
+html: docs/html
+
+
+docs/html: ext
 	$(MAKE) -C docs html
+	$(RM) -r docs/html
+	cp -R docs/_build/html docs/html
 
 
 check:
@@ -45,7 +58,7 @@ check:
 
 
 pytest: ext
-	$(PYTHON) -c "form geomodel.tests import print_versions; print_versions()"
+	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
 	$(PYTHON) -m pytest geomodels
 
 
@@ -55,54 +68,46 @@ apidoc: ext
 
 
 clean:
+	$(MAKE) -C docs clean
 	$(PYTHON) setup.py clean --all
 	$(RM) -r MANIFEST dist build geomodels.egg-info .pytest_cache
 	$(RM) -r geomodels/__pycache__ geomodels/tests/__pycache__ docs/_build
 	$(RM) geomodels/*.cpp geomodels/*.so
-	$(RM) -r $(GEOGRAPHICLIB_SRCDIR)
+	$(RM) $(GEOGRAPHICLIB_ARCHIVE)
 
 
 distclean: clean
-	$(RM) $(GEOGRAPHICLIB_ARCHIVE)
+	$(RM) -r docs/html
+	$(RM) -r $(EXTERNAL)
 	$(RM) -r data
+	$(RM) -r wheelhouse
 
 
 $(GEOGRAPHICLIB_ARCHIVE):
 	$(DOWNLOAD) $(GEOGRAPHICLIB_ARCHIVE_URL)
 
 
-$(GEOGRAPHICLIB_SRCDIR): $(GEOGRAPHICLIB_ARCHIVE)
-	tar xvf $<
+$(GEOGRAPHICLIB_SRC):
+	$(MAKE) $(GEOGRAPHICLIB_ARCHIVE)
+	mkdir -p $(EXTERNAL)
+	tar -C $(EXTERNAL) -xvf $(GEOGRAPHICLIB_ARCHIVE)
 
 
-$(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a: $(GEOGRAPHICLIB_SRCDIR)
-	$(MAKE) -C $(GEOGRAPHICLIB_SRCDIR) CXXFLAGS="-fPIC"
-
-
-geographiclib-static: $(GEOGRAPHICLIB_SRCDIR)/src/libGeographic.a
-
-
-wheel-embed: geographiclib-static
-	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
-	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
-	$(PYTHON) setup.py bdist_wheel
-
-
-ext-embed: geographiclib-static
-	env CPPFLAGS="-I$${PWD}/GeographicLib-1.50.1/include" \
-	    LDFLAGS="-L$${PWD}/GeographicLib-1.50.1/src" \
-	$(PYTHON) setup.py build_ext --inplace
-
-
-data:
+data: ext
 	$(PYTHON) -m geomodels -d data recommended
 
 
-pytest-embed: ext-embed data
+embed: $(GEOGRAPHICLIB_SRC)
+
+
+sdist-embed: embed html sdist
+
+
+pytest-embed: embed ext data
 	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
 	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest geomodels
 
 
-manylinux: sdist
+manylinux: sdist-embed
 	docker pull quay.io/pypa/manylinux2010_x86_64
 	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 from setuptools import setup, Extension, find_packages
 
 
@@ -20,15 +21,35 @@ def get_version(filename, strip_extra=False):
         return version.vstring
 
 
-extensions = [
-    Extension(
+EXTERNAL = 'external'
+
+
+if os.path.exists(EXTERNAL):
+    import glob
+
+    geographiclib_src = glob.glob(
+        os.path.join(EXTERNAL, 'GeographicLib*', 'src', '*.cpp'))
+    geographiclib_include = glob.glob(
+        os.path.join(EXTERNAL, 'GeographicLib*', 'include'))
+    geographiclib_include = (
+        geographiclib_include[0] if geographiclib_include else None)
+    geomodels_ext = Extension(
+        'geomodels._ext',
+        sources=['geomodels/_ext.pyx'] + geographiclib_src,
+        include_dirs=[geographiclib_include],
+        libraries=[],
+        language="c++",
+        extra_compile_args=['-std=c++0x', '-Wall', '-Wextra'],
+    )
+else:
+    geomodels_ext = Extension(
         'geomodels._ext',
         sources=['geomodels/_ext.pyx'],
         libraries=['Geographic'],
         language="c++",
-    ),
-]
+    )
 
+extensions = [geomodels_ext]
 
 classifiers = [
     'Development Status :: 4 - Beta',

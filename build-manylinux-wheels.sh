@@ -23,9 +23,6 @@ GEOGRAPHICLIB_DATA=/io/data
 # Compile wheels
 for PYBIN in /opt/python/cp3[6-9]*/bin; do
     "${PYBIN}/pip" install -r /io/requirements-dev.txt
-    make -C /io PYTHON="${PYBIN}/python" geographiclib-static
-    env CPPFLAGS="-I/io/GeographicLib-1.50.1/include" \
-	      LDFLAGS="-L/io/GeographicLib-1.50.1/src" \
     "${PYBIN}/pip" wheel /io/dist/${PKG}*.tar.gz --wheel-dir wheelhouse/
 done
 
