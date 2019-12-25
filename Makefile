@@ -52,9 +52,6 @@ pytest: ext
 apidoc: ext
 	$(RM) -r docs/api
 	$(SPHINX_APIDOC) -M -T -e -o docs/api . setup.py geomodels/tests geomodels/*.pyx
-	# sed -i '/\(common\|geoid\|gravity\|magnetic\)$$/d' docs/api/geomodels.rst
-	# Darwin
-	# sed -E '/\(common\|geoid\|gravity\|magnetic\)$$/d' docs/api/geomodels.rst > docs/api/geomodels.rst.new
 
 
 clean:
@@ -107,6 +104,5 @@ pytest-embed: ext-embed data
 
 
 manylinux: sdist
-	# make sdist
-	# docker pull quay.io/pypa/manylinux2010_x86_64
+	docker pull quay.io/pypa/manylinux2010_x86_64
 	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh
