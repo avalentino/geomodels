@@ -2,14 +2,21 @@
 
 """Command Line Interface (CLI) for the geomodels package."""
 
+import os
+import enum
+import glob
 import logging
 import argparse
 
+from typing import Optional
+
 from . import __version__
+from . import tests
 from .data import get_default_data_path, get_base_url, install
 from .data import (
     EModelGroup, EModelType, EGeoidModel, EGravityModel, EMagneticModel,
 )
+from .tests import print_versions
 
 try:
     import argcomplete
@@ -23,28 +30,177 @@ EX_INTERRUPT = 130
 
 PROG = __package__
 LOGFMT = '%(levelname)s: %(message)s'
-# LOGFMT = '%(asctime)s %(levelname)-8s -- %(message)s'
 
 
-def get_parser():
-    """Instantiate the command line argument parser."""
-    description = """This program downloads and installs the data
-used by the GeographicLib library for models computation.
-"""
-    parser = argparse.ArgumentParser(description=description, prog=PROG)
+class EInfoMode(enum.Enum):
+    INFO = 'info'
+    DATA = 'data'
+    ALL = 'all'
+
+
+def _format_data_info(datadir=None):
+    if datadir is None:
+        datadir = get_default_data_path()
+
+    lines = [f'data directory: {datadir!r}']
+    for modelenum in (EGeoidModel, EGravityModel, EMagneticModel):
+        modeltype = modelenum.get_model_type().value
+        modeltype_dir = os.path.join(datadir, modeltype)
+        lines.append(f'* model: {modeltype} ({modeltype_dir!r})')
+        for item in modelenum:
+            pattern = os.path.join(modeltype_dir, item.value + '*')
+            installed = bool(glob.glob(pattern))
+            installed = 'INSTALLED ' if installed else 'NOT INSTALLED'
+            lines.append(f'  {item.name:12s} - {installed}')
+
+    return '\n'.join(lines)
+
+
+def info(mode=EInfoMode.ALL, datadir=None):
+    """Provide information about the platform, library versions and
+    installed data."""
+
+    if mode in (EInfoMode.INFO, EInfoMode.ALL):
+        print_versions()
+    if mode in (EInfoMode.DATA, EInfoMode.ALL):
+        print(_format_data_info(datadir))
+
+
+def install_data(model, datadir=None, base_url=None):
+    """Download and install the data necessary for models computation.
+
+    GeoModels uses external data to perform geoid, gravity and magnetic
+    field computations.
+    It is possible to install different subsets of data:
+    `minimal` only data for the default model of each kind (geoid,
+    gravity and magnetic field) are installed,
+    `recommended` install the `minimal` set of data (see above) plus
+    few additional and commonly used data (it is guaranteed that the
+    `recommended` subset always includes all data that are necessary
+    to run the test suite),
+    `all` install all available data (about 670MB of disk space required),
+    `geoids` install data for all supported geoids,
+    `gravity` install data for all supported gravity models,
+    `magnetic` install data for all supported magnetic field models.
+    Additionally the it is possible to install data for a single model.
+    """
+    if datadir is None:
+        datadir = get_default_data_path()
+    if base_url is None:
+        base_url = get_base_url()
+
+    enums = (
+        EModelGroup,
+        EModelType,
+        EGeoidModel,
+        EGravityModel,
+        EModelType,
+    )
+    for enumtype in enums:
+        try:
+            model = enumtype(model)
+        except ValueError:
+            pass
+        else:
+            break
+    else:
+        raise RuntimeError(f'unexpected model: {model!r}')
+
+    install(model, datadir, base_url)
+
+
+def test(datadir: Optional[str] = None,
+         verbosity: int = 1, failfast: bool = False):
+    """Run the test suite for the geomodels package."""
+    old_geographiclib_data = os.environ.get('GEOGRAPHICLIB_DATA')
+    try:
+        if datadir is not None:
+            os.environ['GEOGRAPHICLIB_DATA'] = str(datadir)
+        return tests.test(verbosity, failfast)
+    finally:
+        if old_geographiclib_data is None:
+            del os.environ['GEOGRAPHICLIB_DATA']
+        else:
+            os.environ['GEOGRAPHICLIB_DATA'] = old_geographiclib_data
+
+
+def _set_logging_control_args(parser, default_loglevel='WARNING'):
+    """Setup command line options for logging control."""
+
+    loglevels = [logging.getLevelName(level) for level in range(10, 60, 10)]
+
     parser.add_argument(
-        '--version', action='version', version='%(prog)s v' + __version__)
+        '--loglevel', default=default_loglevel, choices=loglevels,
+        help='logging level (default: %(default)s)')
+    parser.add_argument(
+        '-q', '--quiet', dest='loglevel', action='store_const',
+        const='ERROR',
+        help='suppress standard output messages, only errors are printed '
+             'to screen (set "loglevel" to "ERROR")')
+    parser.add_argument(
+        '-v', '--verbose', dest='loglevel', action='store_const', const='INFO',
+        help='print verbose output messages (set "loglevel" to "INFO")')
+    parser.add_argument(
+        '--debug', dest='loglevel', action='store_const', const='DEBUG',
+        help='print debug messages (set "loglevel" to "DEBUG")')
 
-    # Command line options
+    return parser
+
+
+def get_info_parser(parser=None):
+    name = 'info'
+    synopsis = info.__doc__.splitlines()[0]
+    doc = info.__doc__
+
+    if parser is None:
+        parser = argparse.ArgumentParser(prog=name, description=doc)
+    else:
+        parser = parser.add_parser(name, description=doc, help=synopsis)
+
+    parser.set_defaults(func=info)
+
+    # command line options
+    parser.add_argument(
+        '-d', '--datadir', default=get_default_data_path(),
+        help='specifies where the model data are stored '
+             '(default: %(default)r).')
+    parser.add_argument(
+        '-a', '--all', dest='mode', action='store_const', const=EInfoMode.ALL,
+        default=EInfoMode.INFO,
+        help='show both versions and platform info and also information '
+             'about installed data')
+    parser.add_argument(
+        '--data', dest='mode', action='store_const', const=EInfoMode.DATA,
+        help='show info about installed data')
+
+    # positional arguments
+    # ...
+
+    return parser
+
+
+def get_install_data_parser(parser=None):
+    name = 'install-data'
+    synopsis = install_data.__doc__.splitlines()[0]
+    doc = install_data.__doc__
+
+    if parser is None:
+        parser = argparse.ArgumentParser(prog=name, description=doc)
+    else:
+        parser = parser.add_parser(name, description=doc, help=synopsis)
+
+    parser.set_defaults(func=install_data)
+
+    # command line options
     parser.add_argument(
         '-b', '--base-url', default=get_base_url(),
-        help='specifies the base URL for the download (default: %(default)s).')
+        help='specifies the base URL for the download (default: %(default)r).')
     parser.add_argument(
         '-d', '--datadir', default=get_default_data_path(),
         help='specifies where the datasets should be stored '
-             '(default: %(default)s).')
+             '(default: %(default)r).')
 
-    # Positional arguments
+    # positional arguments
     choices = [model.value for model in EModelGroup]
     choices.extend(model.value for model in EModelType)
     choices.extend(model.value for model in EGeoidModel)
@@ -52,6 +208,58 @@ used by the GeographicLib library for models computation.
     choices.extend(model.value for model in EMagneticModel)
     parser.add_argument(
         'model', choices=choices, help='model(s) to be installed')
+
+    return parser
+
+
+def get_test_parser(parser=None):
+    name = 'test'
+    synopsis = test.__doc__.splitlines()[0]
+    doc = synopsis
+
+    if parser is None:
+        parser = argparse.ArgumentParser(prog=name, description=doc)
+    else:
+        parser = parser.add_parser(name, description=doc, help=synopsis)
+
+    parser.set_defaults(func=test)
+
+    # command line options
+    parser.add_argument(
+        '-d', '--datadir', default=get_default_data_path(),
+        help='specifies where the model data are stored '
+             '(default: %(default)r).')
+    parser.add_argument(
+        '--verbosity', type=int, default=1,
+        help='verbosity level for the unittest runner (default: %(default)s).')
+    parser.add_argument(
+        '--failfast', action='store_true', default=False,
+        help='stop the test run on the first error or failure '
+             '(default: %(default)s).')
+
+    # positional arguments
+    # ...
+
+    return parser
+
+
+def get_parser():
+    """Instantiate the command line argument parser."""
+    parser = argparse.ArgumentParser(description=__doc__, prog=PROG)
+    parser.add_argument(
+        '--version', action='version', version='%(prog)s v' + __version__)
+
+    # Command line options
+    _set_logging_control_args(parser)
+
+    # Positional arguments
+    # ...
+
+    # Sub-command management
+    subparsers = parser.add_subparsers(title='sub-commands')  # dest='func'
+    get_info_parser(subparsers)
+    get_install_data_parser(subparsers)
+    get_test_parser(subparsers)
 
     if argcomplete:
         argcomplete.autocomplete(parser)
@@ -69,7 +277,17 @@ def parse_args(args=None, namespace=None, parser=None):
     # Common pre-processing of parsed arguments and consistency checks
     # ...
 
+    if getattr(args, 'func', None) is None:
+        parser.error('no sub-commnd specified.')
+
     return args
+
+
+def _get_kwargs(args):
+    kwargs = dict(args._get_kwargs())
+    kwargs.pop('loglevel')
+    kwargs.pop('func')
+    return kwargs
 
 
 def main(*argv):
@@ -78,28 +296,15 @@ def main(*argv):
     logging.captureWarnings(True)
 
     args = parse_args(argv if argv else None)
+    logging.getLogger().setLevel(args.loglevel)
 
     try:
         logging.debug('args: %s', args)
 
-        enums = (
-            EModelGroup,
-            EModelType,
-            EGeoidModel,
-            EGravityModel,
-            EModelType,
-        )
-        for enumtype in enums:
-            try:
-                model = enumtype(args.model)
-            except ValueError:
-                pass
-            else:
-                break
-        else:
-            raise RuntimeError('unexpected model: {!r}'.format(args.model))
+        func = args.func
+        kwargs = _get_kwargs(args)
+        return func(**kwargs)
 
-        install(model, args.datadir, args.base_url)
     except Exception as exc:
         logging.critical('{!r} {}'.format(type(exc).__name__, exc))
         logging.debug('stacktrace:', exc_info=True)

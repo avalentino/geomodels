@@ -87,7 +87,7 @@ setup(
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
-            'geomodels-download = geomodels.__main__:main'
+            'geomodels-cli = geomodels.__main__:main'
         ]
     },
     test_suite='geomodels.tests'

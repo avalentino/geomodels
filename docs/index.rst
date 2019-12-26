@@ -5,8 +5,17 @@
 
 
 .. include:: ../README.rst
-.. include:: reference.rst
-.. include:: NEWS.rst
+
+
+Documentation
+=============
+
+.. toctree::
+   :maxdepth: 2
+
+   reference
+   cli
+   NEWS
 
 
 Indices and tables

@@ -39,7 +39,7 @@ def test(verbosity: int = 1, failfast: bool = False):
         verbosity level (higher is more verbose).
         Default: 1.
     :param bool failfast:
-        Stop the test run on the first error or failure.
+        stop the test run on the first error or failure.
         Default: False.
     """
     print_versions()

@@ -58,7 +58,7 @@ check:
 
 
 pytest: ext
-	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
+	$(PYTHON) -m geomodels info
 	$(PYTHON) -m pytest geomodels
 
 
@@ -94,7 +94,7 @@ $(GEOGRAPHICLIB_SRC):
 
 
 data: ext
-	$(PYTHON) -m geomodels -d data recommended
+	$(PYTHON) -m geomodels install-data -d data recommended
 
 
 embed: $(GEOGRAPHICLIB_SRC)
@@ -104,7 +104,7 @@ sdist-embed: embed html sdist
 
 
 pytest-embed: embed ext data
-	$(PYTHON) -c "from geomodels.tests import print_versions; print_versions()"
+	$(PYTHON) -m geomodels info
 	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest geomodels
 
 

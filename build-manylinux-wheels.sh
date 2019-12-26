@@ -34,7 +34,7 @@ done
 # Install packages and test
 for PYBIN in /opt/python/cp3[6-9]*/bin/; do
     "${PYBIN}/pip" install ${PKG} --no-index -f /io/wheelhouse
-    "${PYBIN}/python" -m ${PKG} -d ${GEOGRAPHICLIB_DATA} recommended
+    "${PYBIN}/python" -m ${PKG} install-data -d ${GEOGRAPHICLIB_DATA} recommended
     env GEOGRAPHICLIB_DATA=${GEOGRAPHICLIB_DATA} \
     "${PYBIN}/python" -m pytest --pyargs ${PKG}
 done
