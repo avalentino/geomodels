@@ -28,7 +28,7 @@ EX_FAILURE = 1
 EX_INTERRUPT = 130
 
 
-PROG = __package__
+PROG = __package__ + '-cli'
 LOGFMT = '%(levelname)s: %(message)s'
 
 
@@ -71,17 +71,27 @@ def install_data(model, datadir=None, base_url=None):
 
     GeoModels uses external data to perform geoid, gravity and magnetic
     field computations.
+
     It is possible to install different subsets of data:
-    `minimal` only data for the default model of each kind (geoid,
-    gravity and magnetic field) are installed,
-    `recommended` install the `minimal` set of data (see above) plus
-    few additional and commonly used data (it is guaranteed that the
-    `recommended` subset always includes all data that are necessary
-    to run the test suite),
-    `all` install all available data (about 670MB of disk space required),
-    `geoids` install data for all supported geoids,
-    `gravity` install data for all supported gravity models,
-    `magnetic` install data for all supported magnetic field models.
+
+    :minimal:
+        only data for the default model of each kind (geoid,
+        gravity and magnetic field) are installed,
+    :recommended:
+        install the `minimal` set of data (see above) plus few
+        additional and commonly used data (it is guaranteed that
+        the `recommended` subset always includes all data that
+        are necessary to run the test suite),
+    :all:
+        install all available data (about 670MB of disk space
+        required),
+    :geoids:
+        install data for all supported geoids,
+    :gravity:
+        install data for all supported gravity models,
+    :magnetic:
+        install data for all supported magnetic field models.
+
     Additionally the it is possible to install data for a single model.
     """
     if datadir is None:
@@ -149,7 +159,7 @@ def _set_logging_control_args(parser, default_loglevel='WARNING'):
 
 def get_info_parser(parser=None):
     name = 'info'
-    synopsis = info.__doc__.splitlines()[0]
+    synopsis = info.__doc__.splitlines()[0].lower()
     doc = info.__doc__
 
     if parser is None:
@@ -181,13 +191,17 @@ def get_info_parser(parser=None):
 
 def get_install_data_parser(parser=None):
     name = 'install-data'
-    synopsis = install_data.__doc__.splitlines()[0]
+    synopsis = install_data.__doc__.splitlines()[0].lower()
     doc = install_data.__doc__
 
     if parser is None:
-        parser = argparse.ArgumentParser(prog=name, description=doc)
+        parser = argparse.ArgumentParser(
+            prog=name, description=doc,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
     else:
-        parser = parser.add_parser(name, description=doc, help=synopsis)
+        parser = parser.add_parser(
+            name, description=doc, help=synopsis,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.set_defaults(func=install_data)
 

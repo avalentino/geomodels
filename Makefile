@@ -18,7 +18,7 @@ PKG_VER=$(shell grep __version__ geomodels/__init__.py | cut -d "'" -f 2)
 PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
-.PHONY: ext build sdist wheel html check pytest apidoc clean distclean \
+.PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
         embed data sdidt-embed pytest-embed manylinux
 
 
@@ -51,6 +51,19 @@ docs/html: ext
 	$(MAKE) -C docs html
 	$(RM) -r docs/html
 	cp -R docs/_build/html docs/html
+
+
+man: docs/man/geomodels-cli.1
+
+
+docs/man/geomodels-cli.1: ext
+	mkdir -p docs/man
+	env PYTHONPATH=. argparse-manpage \
+	    --module geomodels.cli --function get_parser \
+	    --project-name "geomodels" \
+	    --url "https://github.com/avalentino/geomodels" \
+	    --author "Antonio Valentino" \
+	    --author-email "antonio dot valentino at tiscali.it" > $@
 
 
 check:

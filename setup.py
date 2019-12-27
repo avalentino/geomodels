@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import platform
 from setuptools import setup, Extension, find_packages
 
 
@@ -19,6 +20,16 @@ def get_version(filename, strip_extra=False):
         return '.'.join(map(str, version.version[:3]))
     else:
         return version.vstring
+
+
+if os.name == 'posix':
+    if platform.system() == 'FreeBSD':
+        mandir = 'man'
+    else:
+        mandir = os.path.join('share', 'man')
+    datafiles = [(os.path.join(mandir, 'man1'), ['docs/man/geomodels-cli.1'])]
+else:
+    datafiles = None
 
 
 EXTERNAL = 'external'
@@ -84,6 +95,7 @@ setup(
     ext_modules=extensions,
     setup_requires=['cython'],
     install_requires=['numpy'],
+    data_files=datafiles,
     extras_require={
         'download': 'tqdm',
         'cli': 'argcomplete',
