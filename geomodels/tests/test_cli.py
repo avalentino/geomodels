@@ -10,9 +10,9 @@ import subprocess
 from unittest import mock
 from contextlib import redirect_stdout
 
-from .. import cli
-from .. import get_default_data_path
-from .. import __package__ as PKG, __version__ as VERSION
+from geomodels import cli
+from geomodels import get_default_data_path
+from geomodels import __package__ as PKG, __version__ as VERSION
 
 import geomodels.data
 
@@ -24,23 +24,23 @@ def _make_cmd(*args):
 class MainTestCase(unittest.TestCase):
     def test_version(self):
         cmd = _make_cmd('--version')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        self.assertIn(VERSION, result.stdout.decode('utf-8'))
+        self.assertIn(VERSION, result.stdout)
 
     def test_help(self):
         cmd = _make_cmd('--help')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
 
     def test_h(self):
         cmd = _make_cmd('-h')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
 
@@ -53,18 +53,18 @@ class InfoSubCommandTestCase(unittest.TestCase):
 
     def test_help(self):
         cmd = _make_cmd('info', '--help')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('info', usage)
 
     def test_h(self):
         cmd = _make_cmd('info', '-h')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('info', usage)
@@ -114,18 +114,18 @@ class InstallDataSubCommandTestCase(unittest.TestCase):
 
     def test_help(self):
         cmd = _make_cmd('install-data', '--help')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('install-data', usage)
 
     def test_h(self):
         cmd = _make_cmd('install-data', '-h')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('install-data', usage)
@@ -182,18 +182,18 @@ class InstallDataSubCommandTestCase(unittest.TestCase):
 class TestSubCommandTestCase(unittest.TestCase):
     def test_help(self):
         cmd = _make_cmd('test', '--help')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('test', usage)
 
     def test_h(self):
         cmd = _make_cmd('test', '-h')
-        result = subprocess.run(cmd, capture_output=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
         self.assertEqual(result.returncode, 0)
-        usage = result.stdout.decode('utf-8').splitlines()[0]
+        usage = result.stdout.splitlines()[0]
         self.assertIn('usage:', usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn('test', usage)
