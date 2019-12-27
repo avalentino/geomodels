@@ -50,6 +50,7 @@ html: docs/html
 docs/html: ext
 	$(MAKE) -C docs html
 	$(RM) -r docs/html
+	$(MAKE) -C docs doctest
 	cp -R docs/_build/html docs/html
 
 

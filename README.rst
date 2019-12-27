@@ -108,7 +108,7 @@ The recommended way to test GeoModels with using PyTest_::
 Usage example
 -------------
 
-.. code-block:: python
+.. doctest::
 
    >>> from geomodels import GeoidModel
    >>> model_name = GeoidModel.default_geoid_name()
@@ -117,10 +117,7 @@ Usage example
    >>> model = GeoidModel(model_name)
    >>> model.description()
    'WGS84 EGM96, 5-minute grid'
-   >>> lat = 40.667
-   >>> lon = 16.6
-   >>> geoid_height = model(lat, lon)
-   >>> geoid_height
+   >>> model(lat=40.667, lon=16.6)  # -> geoid height
    45.914894760480024
 
 
