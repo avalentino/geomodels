@@ -22,9 +22,13 @@ def get_version(filename, strip_extra=False):
 
 
 EXTERNAL = 'external'
+IGNORE_BUNDLED_LIBS_STR = os.environ.get('GEOMODELS_IGNORE_BUNDLED_LIBS')
+IGNORE_BUNDLED_LIBS = bool(
+    IGNORE_BUNDLED_LIBS_STR in ('1', 'ON', 'TRUE', 'YES')
+)
 
 
-if os.path.exists(EXTERNAL):
+if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
     import glob
 
     geographiclib_src = glob.glob(
