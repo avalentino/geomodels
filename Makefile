@@ -25,8 +25,14 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 dafault: ext
 
 
-ext:
+ext: geomodels/_ext.cpp
 	$(PYTHON) setup.py build_ext --inplace
+
+
+geomodels/_ext.cpp: geomodels/geoid.pxd geomodels/geoid.pyx \
+                    geomodels/gravity.pxd geomodels/gravity.pyx \
+                    geomodels/magnetic.pxd geomodels/magnetic.pyx
+	$(PYTHON) -m cython -3 --cplus geomodels/_ext.pyx
 
 
 build:
