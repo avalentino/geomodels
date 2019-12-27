@@ -6,6 +6,9 @@ geomodels package
    :undoc-members:
    :show-inheritance:
 
+Geoid model
+-----------
+
 .. autoclass:: GeoidModel
    :members:
    :undoc-members:
@@ -16,15 +19,24 @@ geomodels package
    :undoc-members:
    :show-inheritance:
 
+Graviti model
+-------------
+
 .. autoclass:: GravityModel
    :members:
    :undoc-members:
    :show-inheritance:
 
+Magnetic filed model
+--------------------
+
 .. autoclass:: MagneticFieldModel
    :members:
    :undoc-members:
    :show-inheritance:
+
+Functions
+---------
 
 .. autofunction:: lib_version_info
 

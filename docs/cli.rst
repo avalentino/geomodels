@@ -1,5 +1,5 @@
-Command line tools
-==================
+Command line interface
+======================
 
 The GeoModel package also provides a command line interface that can be
 used to:

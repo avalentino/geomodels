@@ -4,23 +4,32 @@
    contain the root `toctree` directive.
 
 
-.. include:: ../README.rst
+:author:    Antonio Valentino
+:copyright: 2019 Antonio Valentino
+:license:   MIT
+:version:   |release|
+:url:       https://github.com/avalentino/geomodels
 
 
-Documentation
-=============
+=======================
+GeoModels Documentation
+=======================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   reference
+   quickstart
+   installation
    cli
+   API Reference <api/geomodels>
    NEWS
 
 
-Indices and tables
-==================
+.. only:: html
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Indices and tables
+   ==================
+
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`
