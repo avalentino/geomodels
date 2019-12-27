@@ -66,7 +66,7 @@ def info(mode=EInfoMode.ALL, datadir=None):
         print(_format_data_info(datadir))
 
 
-def install_data(model, datadir=None, base_url=None):
+def install_data(model, datadir=None, base_url=None, no_progress=False):
     """Download and install the data necessary for models computation.
 
     GeoModels uses external data to perform geoid, gravity and magnetic
@@ -116,7 +116,8 @@ def install_data(model, datadir=None, base_url=None):
     else:
         raise RuntimeError(f'unexpected model: {model!r}')
 
-    install(model, datadir, base_url)
+    progress = not no_progress
+    install(model, datadir, base_url, progress=progress)
 
 
 def test(datadir: Optional[str] = None,
@@ -213,6 +214,9 @@ def get_install_data_parser(parser=None):
         '-d', '--datadir', default=get_default_data_path(),
         help='specifies where the datasets should be stored '
              '(default: %(default)r).')
+    parser.add_argument(
+        '--no-progress', action='store_true', default=True,
+        help='suppress progress bar display')
 
     # positional arguments
     choices = [model.value for model in EModelGroup]
