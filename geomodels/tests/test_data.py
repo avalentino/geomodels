@@ -200,6 +200,45 @@ class InstallTestCase(unittest.TestCase):
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, 3)
         self.assertLessEqual(self.unpack_archive_mock.call_count, 7)
 
+    def test_install_geoid_models(self):
+        model = geomodels.data.EModelType.GEOID
+
+        with tempfile.TemporaryDirectory() as datadir:
+            geomodels.data.install(model, datadir, progress=False)
+
+        n_models = len(geomodels.data.EGeoidModel)
+        self.download_mock.assert_called()
+        self.assertEqual(self.download_mock.call_count, n_models)
+        self.unpack_archive_mock.assert_called_with(
+            mock.ANY, extract_dir=datadir)
+        self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
+
+    def test_install_gravity_models(self):
+        model = geomodels.data.EModelType.GRAVITY
+
+        with tempfile.TemporaryDirectory() as datadir:
+            geomodels.data.install(model, datadir, progress=False)
+
+        n_models = len(geomodels.data.EGravityModel)
+        self.download_mock.assert_called()
+        self.assertEqual(self.download_mock.call_count, n_models)
+        self.unpack_archive_mock.assert_called_with(
+            mock.ANY, extract_dir=datadir)
+        self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
+
+    def test_install_magnetic_models(self):
+        model = geomodels.data.EModelType.MAGNETIC
+
+        with tempfile.TemporaryDirectory() as datadir:
+            geomodels.data.install(model, datadir, progress=False)
+
+        n_models = len(geomodels.data.EMagneticModel)
+        self.download_mock.assert_called()
+        self.assertEqual(self.download_mock.call_count, n_models)
+        self.unpack_archive_mock.assert_called_with(
+            mock.ANY, extract_dir=datadir)
+        self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
+
     def test_install_skip(self):
         datadir = geomodels.data.get_default_data_path()
         model = geomodels.data.EMagneticModel.IGRF12
