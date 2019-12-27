@@ -93,7 +93,7 @@ class DownloadTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.datadir = pathlib.Path(tempfile.mkdtemp())
-        self.srcfile = self.datadir / 'fiename.txt'
+        self.srcfile = self.datadir / 'filename.txt'
         with open(self.srcfile, 'w') as fd:
             fd.write(self.DATA)
 
@@ -166,7 +166,7 @@ class InstallTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as datadir:
             geomodels.data.install(model, datadir, progress=False)
 
-        n_models = sum(len(m) for m in InstallTestCase.MODEL_TYPES)
+        n_models = sum(len(m) for m in self.MODEL_TYPES)
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
