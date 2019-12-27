@@ -37,6 +37,13 @@ class StaticMethodsTestCase(unittest.TestCase):
         self.assertTrue(GeoidModel.default_geoid_name() in names)
 
 
+class InstantiationTestCase00(unittest.TestCase):
+    def test_no_args(self):
+        model = GeoidModel()
+        self.assertIsInstance(model, GeoidModel)
+        self.assertEqual(model.geoid_name(), GeoidModel.default_geoid_name())
+
+
 class InstantiationTestCase(unittest.TestCase):
     MODEL_NAME = 'egm96-5'
 

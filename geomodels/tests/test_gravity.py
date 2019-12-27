@@ -34,6 +34,14 @@ class StaticMethodsTestCase(unittest.TestCase):
         self.assertTrue(GravityModel.default_gravity_name() in names)
 
 
+class InstantiationTestCase00(unittest.TestCase):
+    def test_no_args(self):
+        model = GravityModel()
+        self.assertIsInstance(model, GravityModel)
+        self.assertEqual(model.gravity_model_name(),
+                         GravityModel.default_gravity_name())
+
+
 class InstantiationTestCase(unittest.TestCase):
     MODEL_NAME = 'egm96'
 

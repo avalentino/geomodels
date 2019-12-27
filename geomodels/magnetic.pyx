@@ -55,10 +55,13 @@ cdef class MagneticFieldModel:
     """
     cdef CMagneticModel *_ptr
 
-    def __cinit__(self, name, path=''):
+    def __cinit__(self, name=None, path=''):
         # @TODO: support for 'earth' parameter (default: WGS84)
-        cdef string c_name = os.fsencode(name)
+        cdef string c_name = CMagneticModel.DefaultMagneticName()
         cdef string c_path = os.fsencode(path)
+
+        if name is not None:
+            c_name = os.fsencode(name)
 
         try:
             with nogil:

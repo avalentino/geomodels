@@ -89,9 +89,13 @@ cdef class GeoidModel:
     """
     cdef CGeoid *_ptr
 
-    def __cinit__(self, name, path='', bint cubic=True, bint threadsafe=False):
-        cdef string c_name = os.fsencode(name)
+    def __cinit__(self, name=None, path='',
+                  bint cubic=True, bint threadsafe=False):
+        cdef string c_name = CGeoid.DefaultGeoidName()
         cdef string c_path = os.fsencode(path)
+
+        if name is not None:
+            c_name = os.fsencode(name)
 
         try:
             with nogil:

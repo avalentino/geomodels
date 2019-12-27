@@ -38,6 +38,14 @@ class StaticMethodsTestCase(unittest.TestCase):
         self.assertTrue(MagneticFieldModel.default_magnetic_name() in names)
 
 
+class InstantiationTestCase00(unittest.TestCase):
+    def test_no_args(self):
+        model = MagneticFieldModel()
+        self.assertIsInstance(model, MagneticFieldModel)
+        self.assertEqual(model.magnetic_model_name(),
+                         MagneticFieldModel.default_magnetic_name())
+
+
 class InstantiationTestCase01(unittest.TestCase):
     MODEL_NAME = 'wmm2015'
 

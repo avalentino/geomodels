@@ -87,9 +87,12 @@ cdef class GravityModel:
 
     # @TODO: support GeographicLib v1.50
     # def __cinit__(self, name, path='', int Nmax=-1, int Mmax=-1):
-    def __cinit__(self, name, path=''):
-        cdef string c_name = os.fsencode(name)
+    def __cinit__(self, name=None, path=''):
+        cdef string c_name = CGravityModel.DefaultGravityName()
         cdef string c_path = os.fsencode(path)
+
+        if name is not None:
+            c_name = os.fsencode(name)
 
         try:
             with nogil:
