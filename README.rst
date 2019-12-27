@@ -111,13 +111,10 @@ Usage example
 .. doctest::
 
    >>> from geomodels import GeoidModel
-   >>> model_name = GeoidModel.default_geoid_name()
-   >>> model_name
-   'egm96-5'
-   >>> model = GeoidModel(model_name)
-   >>> model.description()
+   >>> geoid = GeoidModel()
+   >>> geoid.description()
    'WGS84 EGM96, 5-minute grid'
-   >>> model(lat=40.667, lon=16.6)  # -> geoid height
+   >>> geoid(lat=40.667, lon=16.6)  # -> geoid height
    45.914894760480024
 
 
