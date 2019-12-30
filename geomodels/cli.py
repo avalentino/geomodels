@@ -104,7 +104,7 @@ def install_data(model, datadir=None, base_url=None, no_progress=False):
         EModelType,
         EGeoidModel,
         EGravityModel,
-        EModelType,
+        EMagneticModel,
     )
     for enumtype in enums:
         try:
@@ -215,7 +215,7 @@ def get_install_data_parser(parser=None):
         help='specifies where the datasets should be stored '
              '(default: %(default)r).')
     parser.add_argument(
-        '--no-progress', action='store_true', default=True,
+        '--no-progress', action='store_true', default=False,
         help='suppress progress bar display')
 
     # positional arguments
