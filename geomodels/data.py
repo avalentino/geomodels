@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Tools for geographic models data download."""
+"""Tools for geographic models data download and installation."""
 
 import os
 import enum
@@ -13,6 +13,8 @@ import contextlib
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
 from typing import Dict, Union, Optional, Callable
+
+from ._typing import PathType
 
 
 __all__ = [
@@ -96,7 +98,6 @@ class EArchiveType(enum.Enum):
 
 
 GenericModelType = Union[EGeoidModel, EGravityModel, EMagneticModel]
-PathType = Union[str, os.PathLike]  # os.PathLike is new in Python v3.6
 ReportHookType = Callable[[int, int, int], None]
 
 
