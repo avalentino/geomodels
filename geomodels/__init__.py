@@ -7,6 +7,7 @@ from ._ext import GeoidModel, EHeightConvDir         # noqa
 from ._ext import GravityModel                       # noqa
 from ._ext import MagneticFieldModel                 # noqa
 from .data import *                                  # noqa
+from .wmmf import *                                  # noqa
 from .error import GeographicErr                     # noqa
 from .tests import test                              # noqa
 

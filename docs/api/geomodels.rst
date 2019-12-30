@@ -52,3 +52,4 @@ Submodules
    geomodels.cli
    geomodels.data
    geomodels.error
+   geomodels.wmmf

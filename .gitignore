@@ -106,5 +106,5 @@ venv.bak/
 # project
 *~
 .idea
-data
+/data
 # geomodels/*.cpp

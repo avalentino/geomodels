@@ -1,4 +1,5 @@
 numpy
+dataclasses;python_version<"3.7"
 cython
 tqdm
 argcomplete

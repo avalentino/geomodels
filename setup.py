@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import platform
 from setuptools import setup, Extension, find_packages
 
@@ -66,6 +67,12 @@ else:
 
 extensions = [geomodels_ext]
 
+
+requires = ['numpy']
+if sys.version_info[:2] < (3, 7):
+    requires.append('dataclasses')
+
+
 classifiers = [
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
@@ -94,7 +101,7 @@ setup(
     packages=find_packages(),
     ext_modules=extensions,
     setup_requires=['cython'],
-    install_requires=['numpy'],
+    install_requires=requires,
     data_files=datafiles,
     extras_require={
         'download': 'tqdm',
@@ -105,6 +112,9 @@ setup(
         'console_scripts': [
             'geomodels-cli = geomodels.__main__:main'
         ]
+    },
+    package_data={
+        'geomodels.tests': ['data/*.txt'],
     },
     test_suite='geomodels.tests'
 )
