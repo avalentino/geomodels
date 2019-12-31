@@ -170,7 +170,12 @@ ID              {id_}
 
 
 SphCoeffSet = namedtuple('SphCoeffSet', ['C', 'S'])
-SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
+
+# @COMPATIBILITY: typing.OrderedDict is new in Pythonv3.7.2
+if hasattr(typing, 'OrderedDict'):
+    SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
+else:
+    SphCoeffsType = typing.Dict[str, SphCoeffSet]
 
 
 class WmmData:
