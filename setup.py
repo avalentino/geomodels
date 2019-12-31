@@ -72,8 +72,10 @@ requires = ['numpy']
 if sys.version_info[:2] < (3, 7):
     requires.append('dataclasses')
 
+
 with open('README.rst') as fd:
     description = fd.read().replace('.. doctest', '').replace(':doc:', '')
+
 
 classifiers = [
     'Development Status :: 4 - Beta',

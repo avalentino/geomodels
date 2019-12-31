@@ -19,7 +19,7 @@ before_install:
   - sudo /usr/sbin/geographiclib-get-magnetic minimal
 
 install:
-  - pip install numpy cython pytest
+  - pip install -r requirements-dev.txt
   - python setup.py build_ext --inplace
 
 script:
