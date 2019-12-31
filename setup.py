@@ -72,6 +72,8 @@ requires = ['numpy']
 if sys.version_info[:2] < (3, 7):
     requires.append('dataclasses')
 
+with open('README.rst') as fd:
+    description = fd.read().replace('.. doctest', '').replace(':doc:', '')
 
 classifiers = [
     'Development Status :: 4 - Beta',
@@ -91,7 +93,7 @@ setup(
     name='geomodels',
     version=get_version('geomodels/__init__.py'),
     description='Python package for Earth data models management',
-    long_description=open('README.rst').read(),
+    long_description=description,
     long_description_content_type='text/x-rst',
     url='https://github.com/avalentino/geomodels',
     author='Antonio Valentino',
