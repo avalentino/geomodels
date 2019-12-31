@@ -9,6 +9,7 @@ See: https://geographiclib.sourceforge.io/html/magnetic.html#magneticformat
 and https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 """
 
+import os
 import typing
 import struct
 import fnmatch
@@ -19,6 +20,8 @@ import warnings
 from typing import Optional, List
 from collections import OrderedDict, namedtuple
 from dataclasses import dataclass
+from urllib.parse import urlsplit
+from urllib.request import urlopen
 
 import numpy as np
 
@@ -331,16 +334,26 @@ def _metadata_from_txt_header(header: str) -> MetaData:
     return metadata
 
 
-def import_igrf_txt(filename: PathType) -> WmmData:
-    """Decode a spherical harmonics coefficient file in text IGRF format."""
-    filename = pathlib.Path(filename)
+def import_igrf_txt(path: PathType) -> WmmData:
+    """Decode a spherical harmonics coefficient file in IGRF text format.
+
+    :param path:
+        the path to a local filename or a remote URL.
+    """
+    urlobj = urlsplit(os.fspath(path))
+    filename = pathlib.Path(urlobj.path)
 
     pattern = 'igrf[0-9][0-9]coeffs.txt'
     if not fnmatch.fnmatch(filename.name, pattern):
         raise ValueError(
             f'invalid file name ("{filename}"), expected pattern: {pattern!r}')
 
-    with open(filename) as fd:
+    if urlobj.scheme in ('', 'file'):
+        fd = open(filename)
+    else:
+        fd = urlopen(path)
+
+    with fd:
         for line in fd:
             if line.startswith('#'):
                 continue

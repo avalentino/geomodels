@@ -243,6 +243,15 @@ class ImportIgrfTxtTestCase(WmmDataTestCase):
                 self.assertEqual(value, getattr(metadata, name))
 
 
+NO_NETWORK = bool(
+    os.environ.get('GEOMODELS_NO_NETWORK') in ('1', 'OK', 'TRUE', 'YES'))
+
+
+@unittest.skipIf(NO_NETWORK, 'no network')
+class ImportRemoteIgrfTxtTestCase(WmmDataTestCase):
+    IGRFTXT = 'https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/igrf13coeffs.txt'
+
+
 class DataCrossCheckTestCase(unittest.TestCase):
     METADATAFILE = DATAPATH / 'igrf12.wmm'
     IGRFTXT = pathlib.Path(__file__).parent / 'data' / 'igrf12coeffs.txt'
@@ -270,12 +279,12 @@ class DataCrossCheckTestCase(unittest.TestCase):
             self.wmmbin.coeffs.values(),
             self.wmmtxt.coeffs.values(),
         )
-        for year, bin, txt in it:
+        for year, bin_, txt in it:
             with self.subTest(year=year):
-                self.assertEqual(bin.C.shape, txt.C.shape)
-                self.assertEqual(bin.S.shape, txt.S.shape)
-                npt.assert_allclose(bin.C, txt.C)
-                npt.assert_allclose(bin.S, txt.S)
+                self.assertEqual(bin_.C.shape, txt.C.shape)
+                self.assertEqual(bin_.S.shape, txt.S.shape)
+                npt.assert_allclose(bin_.C, txt.C)
+                npt.assert_allclose(bin_.S, txt.S)
 
     def test_bin_filesize(self):
         orig = pathlib.Path(self.METADATAFILE).with_suffix('.wmm.cof')
