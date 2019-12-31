@@ -45,10 +45,11 @@ cdef extern from "GeographicLib/Geoid.hpp" namespace "GeographicLib" nogil:
         real CacheSouth() const
 
         real EquatorialRadius() const
-        real MajorRadius () const       # DEPRECATED
+        real MajorRadius() const       # DEPRECATED
         real Flattening() const
 
         @staticmethod
         string DefaultGeoidPath()
+
         @staticmethod
         string DefaultGeoidName()

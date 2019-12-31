@@ -39,7 +39,8 @@ cdef extern from "GeographicLib/GravityModel.hpp" namespace "GeographicLib" nogi
                real& gammaX, real& gammaY, real& gammaZ) const
         real Phi(real X, real Y, real& fX, real& fY) const
 
-        # GravityCircle Circle(real lat, real h, unsigned caps=ALL) const except +
+        # GravityCircle Circle(real lat, real h,
+        #                      unsigned caps=ALL) const except +
         # const NormalGravity& ReferenceEllipsoid() const
 
         const string& Description() const

@@ -29,7 +29,7 @@ def as_contiguous_1d_llh(lat, lon, h, dtype=np.float64):
     if h.size > 1:
         h = np.ascontiguousarray(h.reshape([size]), dtype=dtype)
     else:
-        h = np.full([size], h, dtype)
+        h = np.full([size], h.item(), dtype)
 
     shape = shape if not is_scalar else None
 

@@ -190,9 +190,9 @@ cdef class MagneticFieldModel:
     #     """
     #     pass
 
+    @staticmethod
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    @staticmethod
     cdef compute_field_components(
             double[::1] vBx, double[::1] vBy, double[::1] vBz):
         cdef long size = vBx.size

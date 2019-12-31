@@ -157,7 +157,8 @@ cdef class GravityModel:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cdef compute_disturbance(self,
-                         double[::1] vlat, double[::1] vlon, double[::1] vh):
+                             double[::1] vlat, double[::1] vlon,
+                             double[::1] vh):
         cdef long size = vlat.size
         dtype = np.float64
 
@@ -606,7 +607,7 @@ cdef class GravityModel:
         return self._ptr.ReferenceMassConstant()
 
     def angular_velocity(self) -> float:
-        """The angular velocity of the model and the reference ellipsoid.
+        r"""The angular velocity of the model and the reference ellipsoid.
 
         :math:`[\omega] = rad/s`
         """

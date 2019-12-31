@@ -27,10 +27,10 @@ This class is typically `not` thread safe in that a single instantiation
 cannot be safely used by multiple threads because of the way the object
 reads the data set and because it maintains a single-cell cache.  If
 multiple threads need to calculate geoid heights they should all construct
-thread-local instantiations.  Alternatively, set the optional \e
+thread-local instantiations.  Alternatively, set the optional
 threadsafe parameter to true in the constructor.  This causes the
 constructor to read all the data into memory and to turn off the
-single-cell caching which results in a Geoid object which \e is thread
+single-cell caching which results in a Geoid object which is thread
 safe.
 
 See https://geographiclib.sourceforge.io/html/geoid.html.
@@ -228,7 +228,7 @@ cdef class GeoidModel:
 
         return out
 
-    def convert_height(self, lat, lon, h, dir: EHeightConvDir):
+    def convert_height(self, lat, lon, h, direction: EHeightConvDir):
         """Convert a height above the geoid to a height above the
         ellipsoid and vice versa.
 
@@ -238,7 +238,7 @@ cdef class GeoidModel:
             longitude of the point (degrees).
         :param h:
             height of the point (meters).
-        :param dir:
+        :param direction:
             a :class:`EHeightConvDir` specifying the direction of the
             conversion; :data:`EHeightConvDir.GEOIDTOELLIPSOID` means
             convert a height above the geoid to a height above the
@@ -250,11 +250,11 @@ cdef class GeoidModel:
         :returns:
             converted height (meters).
         """
-        dir = EHeightConvDir(dir)
+        direction = EHeightConvDir(direction)
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
 
-        out = self.core_convert_height(lat, lon, h, dir.value)
+        out = self.core_convert_height(lat, lon, h, direction.value)
 
         return reshape_components(shape, out)
 
