@@ -3,6 +3,7 @@
 import io
 import re
 import sys
+import pathlib
 import tempfile
 import unittest
 import subprocess
@@ -177,6 +178,43 @@ class InstallDataSubCommandTestCase(unittest.TestCase):
             mock.ANY, extract_dir=datadir)
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, 3)
         self.assertLessEqual(self.unpack_archive_mock.call_count, 7)
+
+
+class ImportIgrfSubCommandTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.wmmdata_mock = mock.Mock()
+        self.import_igrf_patcher = mock.patch(
+            'geomodels.cli.import_igrf_txt', return_value=self.wmmdata_mock)
+        self.import_igrf_mock = self.import_igrf_patcher.start()
+
+    def tearDown(self) -> None:
+        self.import_igrf_patcher.stop()
+
+    def test_help(self):
+        cmd = _make_cmd('import-igrf', '--help')
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
+        self.assertEqual(result.returncode, 0)
+        usage = result.stdout.splitlines()[0]
+        self.assertIn('usage:', usage)
+        self.assertIn(cli.PROG, usage)
+        self.assertIn('import-igrf', usage)
+
+    def test_h(self):
+        cmd = _make_cmd('import-igrf', '-h')
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding='utf-8')
+        self.assertEqual(result.returncode, 0)
+        usage = result.stdout.splitlines()[0]
+        self.assertIn('usage:', usage)
+        self.assertIn(cli.PROG, usage)
+        self.assertIn('import-igrf', usage)
+
+    def test_import_igrf_file(self):
+        path = pathlib.Path(__file__).parent / 'data' / 'igrf12coeffs.txt'
+        with tempfile.TemporaryDirectory() as outpath:
+            cli.main('import-igrf', '-o', outpath, str(path))
+
+        self.import_igrf_mock.assert_called_once_with(str(path))
+        self.wmmdata_mock.save.assert_called_once_with(outpath, False)
 
 
 class TestSubCommandTestCase(unittest.TestCase):

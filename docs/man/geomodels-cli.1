@@ -3,7 +3,7 @@
 geomodels-cli
 .SH SYNOPSIS
 .B geomodels-cli
-[-h] [--version] [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-q] [-v] [--debug] {info,install-data,test} ...
+[-h] [--version] [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-q] [-v] [--debug] {info,install-data,import-igrf,test} ...
 .SH DESCRIPTION
 Command Line Interface (CLI) for the geomodels package.
 .SH OPTIONS
@@ -39,6 +39,9 @@ provide information about the platform, library versions and
 \fBgeomodels-cli\fR \fI\,install-data\/\fR
 download and install the data necessary for models computation.
 .TP
+\fBgeomodels-cli\fR \fI\,import-igrf\/\fR
+Import magnetic field data from IGRF text format.
+.TP
 \fBgeomodels-cli\fR \fI\,test\/\fR
 Run the test suite for the geomodels package.
 .SH OPTIONS 'geomodels-cli info'
@@ -65,6 +68,7 @@ show info about installed data
 
 .SH OPTIONS 'geomodels-cli install-data'
 usage: geomodels-cli install-data [-h] [-b BASE_URL] [-d DATADIR]
+                                  [--no-progress]
                                   {all,minimal,recommended,geoids,gravity,magnetic,egm84-30,egm84-15,egm96-15,egm96-5,egm2008-5,egm2008-2_5,egm2008-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2020,igrf11,igrf12,emm2010,emm2015,emm2017}
 
 Download and install the data necessary for models computation.
@@ -136,6 +140,29 @@ specifies the base URL for the download (default:
 specifies where the datasets should be stored (default:
 .br
 '/usr/share/GeographicLib').
+
+.TP
+\fB\-\-no\-progress\fR
+suppress progress bar display
+
+.SH OPTIONS 'geomodels-cli import-igrf'
+usage: geomodels-cli import-igrf [-h] [-o OUTPATH] [--force] path
+
+Import magnetic field data from IGRF text format.
+
+.TP
+\fBpath\fR
+path or URL of the IGRF text file
+
+.TP
+\fB\-o\fR \fI\,OUTPATH\/\fR, \fB\-\-outpath\fR \fI\,OUTPATH\/\fR
+specifies the output data path (default:
+.br
+PosixPath('/usr/share/GeographicLib/magnetic')).
+
+.TP
+\fB\-\-force\fR
+overwrite existing files (default: False).
 
 .SH OPTIONS 'geomodels-cli test'
 usage: geomodels-cli test [-h] [-d DATADIR] [--verbosity VERBOSITY]

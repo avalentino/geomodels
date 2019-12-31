@@ -6,6 +6,7 @@ import os
 import enum
 import glob
 import logging
+import pathlib
 import argparse
 
 from typing import Optional
@@ -16,7 +17,9 @@ from .data import get_default_data_path, get_base_url, install
 from .data import (
     EModelGroup, EModelType, EGeoidModel, EGravityModel, EMagneticModel,
 )
+from .wmmf import import_igrf_txt
 from .tests import print_versions
+from ._typing import PathType
 
 try:
     import argcomplete
@@ -120,7 +123,24 @@ def install_data(model, datadir=None, base_url=None, no_progress=False):
     install(model, datadir, base_url, progress=progress)
 
 
-def test(datadir: Optional[str] = None,
+def import_igrf(path: PathType, outpath: Optional[PathType] = None,
+                force: bool = False):
+    """Import magnetic field data from IGRF text format.
+
+    Import Spherical Harmonics coefficients for the IGRF magnetic field
+    model from text file in IGRF standard format.
+
+    See: https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
+    """
+    wmmdata = import_igrf_txt(path)
+
+    if outpath is None:
+        outpath = pathlib.Path(get_default_data_path()) / 'magnetic'
+
+    wmmdata.save(outpath, force)
+
+
+def test(datadir: Optional[PathType] = None,
          verbosity: int = 1, failfast: bool = False):
     """Run the test suite for the geomodels package."""
     old_geographiclib_data = os.environ.get('GEOGRAPHICLIB_DATA')
@@ -230,10 +250,39 @@ def get_install_data_parser(parser=None):
     return parser
 
 
+def get_import_igrf_parser(parser=None):
+    name = 'import-igrf'
+    doc = import_igrf.__doc__.splitlines()[0]
+    synopsis = doc.lower()
+
+    if parser is None:
+        parser = argparse.ArgumentParser(prog=name, description=doc)
+    else:
+        parser = parser.add_parser(name, description=doc, help=synopsis)
+
+    parser.set_defaults(func=import_igrf)
+
+    # command line options
+    parser.add_argument(
+        '-o', '--outpath',
+        default=pathlib.Path(get_default_data_path()) / 'magnetic',
+        help='specifies the output data path (default: "%(default)s").')
+    parser.add_argument(
+        '--force', action='store_true', default=False,
+        help='overwrite existing files (default: %(default)s).')
+
+    # positional arguments
+    parser.add_argument(
+        'path',
+        help='path or URL of the IGRF text file')
+
+    return parser
+
+
 def get_test_parser(parser=None):
     name = 'test'
-    synopsis = test.__doc__.splitlines()[0]
-    doc = synopsis
+    doc = test.__doc__.splitlines()[0]
+    synopsis = doc.lower()
 
     if parser is None:
         parser = argparse.ArgumentParser(prog=name, description=doc)
@@ -277,6 +326,7 @@ def get_parser():
     subparsers = parser.add_subparsers(title='sub-commands')  # dest='func'
     get_info_parser(subparsers)
     get_install_data_parser(subparsers)
+    get_import_igrf_parser(subparsers)
     get_test_parser(subparsers)
 
     if argcomplete:

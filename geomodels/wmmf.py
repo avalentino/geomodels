@@ -296,7 +296,7 @@ class WmmData:
             for coeffs in self.coeffs.values():
                 self._save_sph_coeff_set(fd, coeffs)
 
-    def save(self, outpath: PathType) -> None:
+    def save(self, outpath: PathType, force: bool = False) -> None:
         """Save data in WMM format (metadata and binary)."""
         outpath = pathlib.Path(outpath)
         if outpath.is_dir():
@@ -304,6 +304,12 @@ class WmmData:
         else:
             filename = outpath
         bin_filename = filename.with_suffix(filename.suffix + '.cof')
+
+        if not force:
+            if filename.exists():
+                raise RuntimeError(f'"{filename}" already exists')
+            if bin_filename.exists():
+                raise RuntimeError(f'"{bin_filename}" already exists')
 
         self.metadata.save(filename)
         self._save_sph_coeffs(bin_filename)

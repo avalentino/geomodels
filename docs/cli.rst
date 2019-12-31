@@ -13,6 +13,7 @@ used to:
 * install model data that are used by the GeoModels and by the
   underlying GeographicLib_ library to perform geographic models
   computations
+* import magnetic field spherical harmonics coefficients for IGRF format
 * run the test suite
 
 .. _GeographicLib: https://geographiclib.sourceforge.io
@@ -42,7 +43,7 @@ follows::
   usage: geomodels [-h] [--version]
                    [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                    [-q] [-v] [--debug]
-                   {info,install-data,test} ...
+                   {info,install-data,import-igrf,test} ...
 
   Command Line Interface (CLI) for the geomodels package.
 
@@ -65,7 +66,8 @@ follows::
                           library versions and
       install-data        Download and install the data necessary for
                           models computation.
-      test                Run the test suite for the geomodels
+      import-igrf         import magnetic field data from igrf text format.
+      test                run the test suite for the geomodels
                           package.
 
 .. note::
@@ -194,6 +196,27 @@ The online help of the "install-data" tool::
                           specifies where the datasets should be
                           stored (default:
                           '/usr/local/share/GeographicLib').
+
+
+Import IGRF data tool
+---------------------
+
+The online help of the "import-igrf" tool::
+
+  $ python3 -m geomodels import-igrf -h
+  usage: geomodels-cli import-igrf [-h] [-o OUTPATH] [--force] path
+
+  Import magnetic field data from IGRF text format.
+
+  positional arguments:
+    path                  path or URL of the IGRF text file
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -o OUTPATH, --outpath OUTPATH
+                          specifies the output data path (default:
+                          "/usr/share/GeographicLib/magnetic").
+    --force               overwrite existing files (default: False).
 
 
 Test tool
