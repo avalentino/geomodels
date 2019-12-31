@@ -44,6 +44,7 @@ $(PKG_SRC_ARC):
 
 
 sdist: $(PKG_SRC_ARC)
+	cd dist && sha256sum -b *.tar.gz > $$(ls *.tar.gz).sha256
 
 
 wheel:
