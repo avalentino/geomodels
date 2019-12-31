@@ -19,7 +19,7 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
 .PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
-        embed data sdidt-embed pytest-embed manylinux
+        embed data fullsdidt manylinux
 
 
 dafault: ext
@@ -56,6 +56,7 @@ html: docs/html
 docs/html: ext
 	$(MAKE) -C docs html
 	$(RM) -r docs/html
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
 	$(MAKE) -C docs doctest
 	cp -R docs/_build/html docs/html
 
@@ -79,6 +80,7 @@ check:
 
 pytest: ext
 	$(PYTHON) -m geomodels info
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
 	$(PYTHON) -m pytest geomodels
 
 
@@ -120,14 +122,9 @@ data: ext
 embed: $(GEOGRAPHICLIB_SRC)
 
 
-sdist-embed: embed html sdist
+fullsdist: embed data html sdist
 
 
-pytest-embed: embed ext data
-	$(PYTHON) -m geomodels info
-	env GEOGRAPHICLIB_DATA=$${PWD}/data $(PYTHON) -m pytest geomodels
-
-
-manylinux: sdist-embed
+manylinux: fullsdist
 	docker pull quay.io/pypa/manylinux2010_x86_64
 	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh
