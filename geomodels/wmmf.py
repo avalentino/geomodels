@@ -171,7 +171,7 @@ ID              {id_}
 
 SphCoeffSet = namedtuple('SphCoeffSet', ['C', 'S'])
 
-# @COMPATIBILITY: typing.OrderedDict is new in Pythonv3.7.2
+# @COMPATIBILITY: typing.OrderedDict is new in Python v3.7.2
 if hasattr(typing, 'OrderedDict'):
     SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
 else:
