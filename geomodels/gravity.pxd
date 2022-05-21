@@ -55,7 +55,6 @@ cdef extern from "GeographicLib/GravityModel.hpp" namespace "GeographicLib" nogi
         real Flattening() const
         int Degree() const
         int Order() const
-        real MajorRadius() const
 
         @staticmethod
         string DefaultGravityPath()

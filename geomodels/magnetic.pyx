@@ -355,13 +355,13 @@ cdef class MagneticFieldModel:
         """
         return self._ptr.MaxTime()
 
-    def major_radius(self) -> float:
+    def equatorial_radius(self) -> float:
         """The equatorial radius of the ellipsoid (meters).
 
         This is the value of 'a' inherited from the Geocentric object
         used in the constructor.
         """
-        return self._ptr.MajorRadius()
+        return self._ptr.EquatorialRadius()
 
     def flattening(self) -> float:
         """The flattening of the ellipsoid.

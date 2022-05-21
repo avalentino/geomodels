@@ -363,14 +363,13 @@ cdef class GeoidModel:
         """
         return self._ptr.CacheSouth()
 
-    def equator_radius(self) -> float:
+    def equatorial_radius(self) -> float:
         """The equatorial radius of the ellipsoid (meters).
 
         (The WGS84 value is returned because the supported geoid
         models are all based on this ellipsoid.)
         """
-        # return self._ptr.EquatorialRadius() # GEOGRAPHICLIB_VERSION >= 105000
-        return self._ptr.MajorRadius()
+        return self._ptr.EquatorialRadius()
 
     def flattening(self) -> float:
         """The flattening of the ellipsoid.

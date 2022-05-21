@@ -40,7 +40,7 @@ cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib" nog
         real MaxHeight() const
         real MinTime() const
         real MaxTime() const
-        real MajorRadius() const
+        real EquatorialRadius() const
         real Flattening() const
 
         @staticmethod

@@ -583,8 +583,7 @@ cdef class GravityModel:
 
     def equatorial_radius(self) -> float:
         """The equatorial radius of the ellipsoid (meters)."""
-        # return self._ptr.EquatorialRadius()  # @TODO: new in v1.50
-        return self._ptr.MajorRadius()
+        return self._ptr.EquatorialRadius()
 
     def flattening(self) -> float:
         """The flattening of the ellipsoid."""

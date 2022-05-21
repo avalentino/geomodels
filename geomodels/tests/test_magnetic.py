@@ -169,8 +169,8 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertLess(self.model.min_time(), self.model.max_time())
 
     def test_major_radius(self):
-        self.assertIsInstance(self.model.major_radius(), float)
-        self.assertGreater(self.model.major_radius(), 5e6)
+        self.assertIsInstance(self.model.equatorial_radius(), float)
+        self.assertGreater(self.model.equatorial_radius(), 5e6)
 
     def test_flattening(self):
         self.assertIsInstance(self.model.flattening(), float)
