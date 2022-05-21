@@ -12,4 +12,4 @@ from .error import GeographicErr                     # noqa
 from .tests import test                              # noqa
 
 
-__version__ = '1.0.0b4'
+__version__ = '1.0.0b5'
