@@ -54,7 +54,7 @@ if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
         sources=['geomodels/_ext.pyx'] + geographiclib_src,
         include_dirs=[geographiclib_include],
         libraries=[],
-        language="c++",
+        language='c++',
         extra_compile_args=['-std=c++0x', '-Wall', '-Wextra'],
     )
 else:
@@ -62,7 +62,7 @@ else:
         'geomodels._ext',
         sources=['geomodels/_ext.pyx'],
         libraries=['Geographic'],
-        language="c++",
+        language='c++',
     )
 
 extensions = [geomodels_ext]
@@ -86,6 +86,8 @@ classifiers = [
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     "Topic :: Scientific/Engineering :: GIS",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
