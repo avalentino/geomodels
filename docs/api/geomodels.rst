@@ -48,6 +48,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 4
 
    geomodels.cli
    geomodels.data
