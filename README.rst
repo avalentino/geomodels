@@ -1,7 +1,7 @@
 GeoModels
 =========
 
-:copyright: 2019-2020 Antonio Valentino
+:copyright: 2019-2022 Antonio Valentino
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
@@ -72,7 +72,7 @@ If required data are not already available on the system than they can
 be downloaded and installed using the command line interface provided
 by the GeoModels package::
 
-  $ python -m geomodels install-data [-d DATADIR] recommended
+  $ python3 -m geomodels install-data [-d DATADIR] recommended
 
 The above command installs the `recommended` subset of data (about 20MB)
 into the specified `DATAROOT`folder.
