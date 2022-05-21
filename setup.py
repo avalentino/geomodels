@@ -41,6 +41,38 @@ IGNORE_BUNDLED_LIBS = bool(
 
 
 if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
+    def mkconfig(outpath):
+        configdata = """\
+#define GEOGRAPHICLIB_VERSION_STRING "2.0"
+#define GEOGRAPHICLIB_VERSION_MAJOR 2
+#define GEOGRAPHICLIB_VERSION_MINOR 0
+#define GEOGRAPHICLIB_VERSION_PATCH 0
+#define GEOGRAPHICLIB_DATA "/usr/local/share/GeographicLib"
+
+// These are macros which affect the building of the library
+#define GEOGRAPHICLIB_HAVE_LONG_DOUBLE {GEOGRAPHICLIB_HAVE_LONG_DOUBLE}
+#define GEOGRAPHICLIB_WORDS_BIGENDIAN {GEOGRAPHICLIB_WORDS_BIGENDIAN}
+#define GEOGRAPHICLIB_PRECISION 2
+
+#if !defined(GEOGRAPHICLIB_SHARED_LIB)
+#define GEOGRAPHICLIB_SHARED_LIB 0
+#endif
+"""
+        GEOGRAPHICLIB_HAVE_LONG_DOUBLE = 0
+        GEOGRAPHICLIB_WORDS_BIGENDIAN = 0 if sys.byteorder == 'little' else 1
+
+        data = configdata.format(
+            GEOGRAPHICLIB_HAVE_LONG_DOUBLE=GEOGRAPHICLIB_HAVE_LONG_DOUBLE,
+            GEOGRAPHICLIB_WORDS_BIGENDIAN=GEOGRAPHICLIB_WORDS_BIGENDIAN,
+        )
+
+        if not os.path.exists(outpath):
+            with open(outpath, 'w') as fd:
+                fd.write(data)
+            print('configuration file written to: ', outpath)
+        else:
+            print('configuration file already exists: ', outpath)
+
     import glob
 
     geographiclib_src = glob.glob(
@@ -57,6 +89,7 @@ if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
         language='c++',
         extra_compile_args=['-std=c++0x', '-Wall', '-Wextra'],
     )
+    mkconfig(os.path.join(geographiclib_include, 'GeographicLib', 'Config.h'))
 else:
     geomodels_ext = Extension(
         'geomodels._ext',

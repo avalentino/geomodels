@@ -31,7 +31,7 @@ from sources also requires:
 
 * Cython_
 * a C/C++ compiler
-* GeographicLib_ >= 1.49
+* GeographicLib_ >= 1.50
 
 The user is in charge of ensuring that Cython_ and the C++ compiler
 are properly installed and configured.

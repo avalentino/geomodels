@@ -3,11 +3,11 @@
 PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
 DOWNLOAD=curl -C - -O
-GEOGRAPHICLIB_VERSION=1.50.1
+GEOGRAPHICLIB_VERSION=2.0
 GEOGRAPHICLIB_BASEDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
 GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_BASEDIR).tar.gz
 GEOGRAPHICLIB_BASE_URL=\
-https://netcologne.dl.sourceforge.net/project/geographiclib/distrib
+https://netcologne.dl.sourceforge.net/project/geographiclib/distrib-C++
 GEOGRAPHICLIB_ARCHIVE_URL=$(GEOGRAPHICLIB_BASE_URL)/$(GEOGRAPHICLIB_ARCHIVE)
 
 EXTERNAL=external
@@ -22,7 +22,7 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
         embed data fullsdidt manylinux
 
 
-dafault: ext
+default: ext
 
 
 ext: geomodels/_ext.cpp
