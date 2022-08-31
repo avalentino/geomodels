@@ -6,3 +6,4 @@ argcomplete
 sphinx
 pytest
 argparse-manpage
+build>=0.8
