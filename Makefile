@@ -3,7 +3,7 @@
 PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
 DOWNLOAD=curl -C - -O
-GEOGRAPHICLIB_VERSION=2.0
+GEOGRAPHICLIB_VERSION=2.1.1
 GEOGRAPHICLIB_BASEDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
 GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_BASEDIR).tar.gz
 GEOGRAPHICLIB_BASE_URL=\
@@ -19,7 +19,7 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
 .PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
-        embed data fullsdidt manylinux
+        embed data fullsdist manylinux
 
 
 default: ext
@@ -35,12 +35,8 @@ geomodels/_ext.cpp: geomodels/geoid.pxd geomodels/geoid.pyx \
 	$(PYTHON) -m cython -3 --cplus geomodels/_ext.pyx
 
 
-build:
-	$(PYTHON) setup.py build
-
-
 $(PKG_SRC_ARC):
-	$(PYTHON) setup.py sdist
+	$(PYTHON) -m build --sdist
 
 
 sdist: $(PKG_SRC_ARC)
@@ -48,7 +44,7 @@ sdist: $(PKG_SRC_ARC)
 
 
 wheel:
-	$(PYTHON) setup.py bdist_wheel
+	$(PYTHON) -m build --wheel
 
 
 html: docs/html
@@ -75,8 +71,7 @@ docs/man/geomodels-cli.1: ext
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
 
-check:
-	$(PYTHON) setup.py test
+check: pytest
 
 
 pytest: ext

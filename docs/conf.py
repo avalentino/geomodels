@@ -15,20 +15,23 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 
-def get_version(filename='../geomodels/__init__.py', strip_extra=False):
+def get_version(filename='../geomodels/_version.py', strip_extra=False):
     import re
-    from distutils.version import LooseVersion
+    import packaging.version
 
-    data = open(filename).read()
+    with open(filename) as fd:
+        data = fd.read()
+
     mobj = re.search(
-        r'''^__version__\s*=\s*(?P<quote>['"])(?P<version>.*)(?P=quote)''',
+        r"""^__version__\s*=\s*(?P<quote>['"])(?P<version>.*)(?P=quote)""",
         data, re.MULTILINE)
-    version = LooseVersion(mobj.group('version'))
+    
+    version = packaging.version.parse(mobj.group('version'))
 
     if strip_extra:
-        return '.'.join(map(str, version.version[:3]))
+        return version.base_version
     else:
-        return version.vstring
+        return str(version)
 
 
 # -- Project information -----------------------------------------------------
