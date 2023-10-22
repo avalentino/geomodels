@@ -1,0 +1,3 @@
+[submodule "extern/geographiclib"]
+	path = extern/geographiclib
+	url = https://github.com/geographiclib/geographiclib.git

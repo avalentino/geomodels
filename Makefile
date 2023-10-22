@@ -2,16 +2,6 @@
 
 PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
-DOWNLOAD=curl -C - -O
-GEOGRAPHICLIB_VERSION=2.1.1
-GEOGRAPHICLIB_BASEDIR=GeographicLib-$(GEOGRAPHICLIB_VERSION)
-GEOGRAPHICLIB_ARCHIVE=$(GEOGRAPHICLIB_BASEDIR).tar.gz
-GEOGRAPHICLIB_BASE_URL=\
-https://netcologne.dl.sourceforge.net/project/geographiclib/distrib-C++
-GEOGRAPHICLIB_ARCHIVE_URL=$(GEOGRAPHICLIB_BASE_URL)/$(GEOGRAPHICLIB_ARCHIVE)
-
-EXTERNAL=external
-GEOGRAPHICLIB_SRC=$(EXTERNAL)/$(GEOGRAPHICLIB_BASEDIR)
 
 PKG=geomodels
 PKG_VER=$(shell grep __version__ geomodels/__init__.py | cut -d "'" -f 2)
@@ -19,7 +9,7 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
 .PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
-        embed data fullsdist manylinux
+        data fullsdist manylinux
 
 
 default: ext
@@ -91,34 +81,20 @@ clean:
 	$(RM) -r MANIFEST dist build geomodels.egg-info .pytest_cache
 	$(RM) -r geomodels/__pycache__ geomodels/tests/__pycache__ docs/_build
 	$(RM) geomodels/*.cpp geomodels/*.so
-	$(RM) $(GEOGRAPHICLIB_ARCHIVE)
+	$(RM) extern/geographiclib/include/GeographicLib/Config.h
 
 
 distclean: clean
 	$(RM) -r docs/html
-	$(RM) -r $(EXTERNAL)
 	$(RM) -r data
 	$(RM) -r wheelhouse
-
-
-$(GEOGRAPHICLIB_ARCHIVE):
-	$(DOWNLOAD) $(GEOGRAPHICLIB_ARCHIVE_URL)
-
-
-$(GEOGRAPHICLIB_SRC):
-	$(MAKE) $(GEOGRAPHICLIB_ARCHIVE)
-	mkdir -p $(EXTERNAL)
-	tar -C $(EXTERNAL) -xvf $(GEOGRAPHICLIB_ARCHIVE)
 
 
 data: ext
 	$(PYTHON) -m geomodels install-data -d data recommended
 
 
-embed: $(GEOGRAPHICLIB_SRC)
-
-
-fullsdist: embed data html sdist
+fullsdist: data html sdist
 
 
 manylinux: fullsdist

@@ -17,14 +17,14 @@ else:
     datafiles = None
 
 
-EXTERNAL = 'external'
+EXTERN = 'extern'
 IGNORE_BUNDLED_LIBS_STR = os.environ.get('GEOMODELS_IGNORE_BUNDLED_LIBS')
 IGNORE_BUNDLED_LIBS = bool(
     IGNORE_BUNDLED_LIBS_STR in ('1', 'ON', 'TRUE', 'YES')
 )
 
 
-if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
+if os.path.exists(EXTERN) and not IGNORE_BUNDLED_LIBS:
     def mkconfig(outpath):
         configdata = """\
 #define GEOGRAPHICLIB_VERSION_STRING "2.1.1"
@@ -60,9 +60,9 @@ if os.path.exists(EXTERNAL) and not IGNORE_BUNDLED_LIBS:
     import glob
 
     geographiclib_src = glob.glob(
-        os.path.join(EXTERNAL, 'GeographicLib*', 'src', '*.cpp'))
+        os.path.join(EXTERN, 'geographiclib*', 'src', '*.cpp'))
     geographiclib_include = glob.glob(
-        os.path.join(EXTERNAL, 'GeographicLib*', 'include'))
+        os.path.join(EXTERN, 'geographiclib*', 'include'))
     geographiclib_include = (
         geographiclib_include[0] if geographiclib_include else None)
     geomodels_ext = Extension(
