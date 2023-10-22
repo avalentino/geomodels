@@ -5,7 +5,7 @@ GeoModels
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
-.. image:: https://github.com/avalentino/geomodels/actions/workflows/main.yml/badge.svg
+.. image:: https://github.com/avalentino/geomodels/actions/workflows/ci.yml/badge.svg
     :alt: GHA status page
     :target: https://github.com/avalentino/geomodels/actions
 
