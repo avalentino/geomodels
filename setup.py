@@ -27,10 +27,10 @@ IGNORE_BUNDLED_LIBS = bool(
 if os.path.exists(EXTERN) and not IGNORE_BUNDLED_LIBS:
     def mkconfig(outpath):
         configdata = """\
-#define GEOGRAPHICLIB_VERSION_STRING "2.1.1"
+#define GEOGRAPHICLIB_VERSION_STRING "2.3.0"
 #define GEOGRAPHICLIB_VERSION_MAJOR 2
-#define GEOGRAPHICLIB_VERSION_MINOR 1
-#define GEOGRAPHICLIB_VERSION_PATCH 1
+#define GEOGRAPHICLIB_VERSION_MINOR 3
+#define GEOGRAPHICLIB_VERSION_PATCH 0
 #define GEOGRAPHICLIB_DATA "/usr/local/share/GeographicLib"
 
 // These are macros which affect the building of the library
