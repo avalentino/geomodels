@@ -5,4 +5,4 @@ include geomodels/*.pyx geomodels/*.pxd
 recursive-include docs *.py *.rst Makefile *.bat
 recursive-include docs/html *
 prune docs/_build
-recursive-include external *
+recursive-include extern *
