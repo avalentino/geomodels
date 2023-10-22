@@ -19,7 +19,7 @@ __all__ = ['lib_version_info', 'lib_version_str']
 VersionInfo = namedtuple('VersionInfo', ['major', 'minor', 'micro'])
 
 
-def lib_version_info() -> Tuple[int, int, int]:
+def lib_version_info() -> VersionInfo[int, int, int]:
     """Return the (major, minor, patch) version of GeographicLib.
 
     .. note::
