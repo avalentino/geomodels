@@ -9,7 +9,7 @@ PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
 .PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
-        data fullsdist manylinux
+        data manylinux
 
 
 default: ext
@@ -37,15 +37,10 @@ wheel:
 	$(PYTHON) -m build --wheel
 
 
-html: docs/html
-
-
-docs/html: ext
+html: ext
 	$(MAKE) -C docs html
-	$(RM) -r docs/html
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
 	$(MAKE) -C docs doctest
-	cp -R docs/_build/html docs/html
 
 
 man: docs/man/geomodels-cli.1
@@ -61,10 +56,7 @@ docs/man/geomodels-cli.1: ext
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
 
-check: pytest
-
-
-pytest: ext
+check: ext
 	$(PYTHON) -m geomodels info
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
 	$(PYTHON) -m pytest geomodels
@@ -85,7 +77,6 @@ clean:
 
 
 distclean: clean
-	$(RM) -r docs/html
 	$(RM) -r data
 	$(RM) -r wheelhouse
 
@@ -94,9 +85,6 @@ data: ext
 	$(PYTHON) -m geomodels install-data -d data recommended
 
 
-fullsdist: data html sdist
-
-
-manylinux: fullsdist
+manylinux: sdist
 	docker pull quay.io/pypa/manylinux2010_x86_64
 	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh

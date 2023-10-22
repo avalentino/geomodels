@@ -3,6 +3,5 @@ include Makefile requirements-dev.txt build-manylinux-wheels.sh
 include geomodels/*.pyx geomodels/*.pxd
 # include geomodels/*.cpp
 recursive-include docs *.py *.rst Makefile *.bat
-recursive-include docs/html *
 prune docs/_build
 recursive-include extern *
