@@ -5,9 +5,9 @@ GeoModels
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
-.. image:: https://travis-ci.org/avalentino/geomodels.svg?branch=master
-    :alt: Travis-CI status page
-    :target: https://travis-ci.org/avalentino/geomodels
+.. image:: https://github.com/avalentino/geomodels/actions/workflows/main.yml/badge.svg
+    :alt: GHA status page
+    :target: https://github.com/avalentino/geomodels/actions
 
 .. image:: https://img.shields.io/pypi/v/geomodels
     :alt: Latest Version
