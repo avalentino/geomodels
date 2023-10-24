@@ -8,7 +8,7 @@ PKG_VER=$(shell grep __version__ geomodels/__init__.py | cut -d "'" -f 2)
 PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
-.PHONY: ext build sdist wheel html man check pytest apidoc clean distclean \
+.PHONY: ext build dist sdist wheel html man check apidoc clean distclean \
         data manylinux
 
 
@@ -35,6 +35,9 @@ sdist: $(PKG_SRC_ARC)
 
 wheel:
 	$(PYTHON) -m build --wheel
+
+
+dist: sdist wheel
 
 
 html: ext
