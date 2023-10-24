@@ -1,79 +1,97 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
+import pathlib
 import platform
 from setuptools import setup, Extension
 
 
-if os.name == 'posix':
-    if platform.system() == 'FreeBSD':
-        mandir = 'man'
+def mkconfig(srcpath, outpath, have_lohg_double=0):
+    data = pathlib.Path(srcpath).joinpath('CMakeLists.txt').read_text()
+    mobj = re.search(r'''\
+set\s*\(\s*PROJECT_VERSION_MAJOR\s+(?P<VERSION_MAJOR>\d+)\s*\)\s*
+set\s*\(\s*PROJECT_VERSION_MINOR\s+(?P<VERSION_MINOR>\d+)\s*\)\s*
+set\s*\(\s*PROJECT_VERSION_PATCH\s+(?P<VERSION_PATCH>\d+)\s*\)\s*
+''',
+        data,
+        re.MULTILINE,
+    )
+
+    version_major = mobj.group('VERSION_MAJOR')
+    version_minor = mobj.group('VERSION_MINOR')
+    version_patch = mobj.group('VERSION_PATCH')
+
+    if version_patch == '0':
+        version_string = '.'.join([version_major, version_minor])
     else:
-        mandir = os.path.join('share', 'man')
-    datafiles = [(os.path.join(mandir, 'man1'), ['docs/man/geomodels-cli.1'])]
-else:
-    datafiles = None
+        version_string = '.'.join(
+            [version_major, version_minor, version_patch],
+        )
 
+    bigendian = 0 if sys.byteorder == 'little' else 1
 
-EXTERN = 'extern'
-IGNORE_BUNDLED_LIBS_STR = os.environ.get('GEOMODELS_IGNORE_BUNDLED_LIBS')
-IGNORE_BUNDLED_LIBS = bool(
-    IGNORE_BUNDLED_LIBS_STR in ('1', 'ON', 'TRUE', 'YES')
-)
-
-
-if os.path.exists(EXTERN) and not IGNORE_BUNDLED_LIBS:
-    def mkconfig(outpath):
-        configdata = """\
-#define GEOGRAPHICLIB_VERSION_STRING "2.3.0"
-#define GEOGRAPHICLIB_VERSION_MAJOR 2
-#define GEOGRAPHICLIB_VERSION_MINOR 3
-#define GEOGRAPHICLIB_VERSION_PATCH 0
+    configdata = f"""\
+#define GEOGRAPHICLIB_VERSION_STRING "{version_string}"
+#define GEOGRAPHICLIB_VERSION_MAJOR {version_major}
+#define GEOGRAPHICLIB_VERSION_MINOR {version_minor}
+#define GEOGRAPHICLIB_VERSION_PATCH {version_patch}
 #define GEOGRAPHICLIB_DATA "/usr/local/share/GeographicLib"
 
 // These are macros which affect the building of the library
-#define GEOGRAPHICLIB_HAVE_LONG_DOUBLE {GEOGRAPHICLIB_HAVE_LONG_DOUBLE}
-#define GEOGRAPHICLIB_WORDS_BIGENDIAN {GEOGRAPHICLIB_WORDS_BIGENDIAN}
+#define GEOGRAPHICLIB_HAVE_LONG_DOUBLE {have_lohg_double}
+#define GEOGRAPHICLIB_WORDS_BIGENDIAN {bigendian}
 #define GEOGRAPHICLIB_PRECISION 2
 
 #if !defined(GEOGRAPHICLIB_SHARED_LIB)
 #define GEOGRAPHICLIB_SHARED_LIB 0
 #endif
 """
-        GEOGRAPHICLIB_HAVE_LONG_DOUBLE = 0
-        GEOGRAPHICLIB_WORDS_BIGENDIAN = 0 if sys.byteorder == 'little' else 1
 
-        data = configdata.format(
-            GEOGRAPHICLIB_HAVE_LONG_DOUBLE=GEOGRAPHICLIB_HAVE_LONG_DOUBLE,
-            GEOGRAPHICLIB_WORDS_BIGENDIAN=GEOGRAPHICLIB_WORDS_BIGENDIAN,
+    outpath = pathlib.Path(outpath)
+    if not outpath.exists():
+        outpath.write_text(configdata)
+        print(f'configuration file written to: {outpath}')
+    else:
+        print(f'configuration file already exists: {outpath}')
+
+
+if os.name == 'posix':
+    if platform.system() == 'FreeBSD':
+        mandir = pathlib.Path('man')
+    else:
+        mandir = pathlib.Path('share/man')
+    datafiles = [
+        (
+            str(mandir / 'man1'),
+            ['docs/man/geomodels-cli.1'],
         )
+    ]
+else:
+    datafiles = None
 
-        if not os.path.exists(outpath):
-            with open(outpath, 'w') as fd:
-                fd.write(data)
-            print('configuration file written to: ', outpath)
-        else:
-            print('configuration file already exists: ', outpath)
 
-    import glob
+IGNORE_BUNDLED_LIBS_STR = os.environ.get('GEOMODELS_IGNORE_BUNDLED_LIBS')
+IGNORE_BUNDLED_LIBS = bool(
+    IGNORE_BUNDLED_LIBS_STR in ('1', 'ON', 'TRUE', 'YES')
+)
+SRCPATH = pathlib.Path('extern/geographiclib')
 
-    geographiclib_src = glob.glob(
-        os.path.join(EXTERN, 'geographiclib*', 'src', '*.cpp'))
-    geographiclib_include = glob.glob(
-        os.path.join(EXTERN, 'geographiclib*', 'include'))
-    geographiclib_include = (
-        geographiclib_include[0] if geographiclib_include else None)
+
+if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
+    geographiclib_src = SRCPATH.glob('src/*.cpp')
+    geographiclib_include = list(SRCPATH.glob('include'))[0]
     geomodels_ext = Extension(
         'geomodels._ext',
-        sources=['geomodels/_ext.pyx'] + geographiclib_src,
-        include_dirs=[geographiclib_include],
+        sources=['geomodels/_ext.pyx'] + [str(p) for p in geographiclib_src],
+        include_dirs=[str(geographiclib_include)],
         libraries=[],
         language='c++',
         extra_compile_args=['-std=c++0x', '-Wall', '-Wextra'],
     )
-    mkconfig(os.path.join(geographiclib_include, 'GeographicLib', 'Config.h'))
+    outpath = geographiclib_include / 'GeographicLib' / 'Config.h'
+    mkconfig(SRCPATH, outpath)
 else:
     geomodels_ext = Extension(
         'geomodels._ext',
@@ -82,16 +100,14 @@ else:
         language='c++',
     )
 
-extensions = [geomodels_ext]
 
-
-with open('README.rst') as fd:
-    description = fd.read().replace('.. doctest', '').replace(':doc:', '')
+description = pathlib.Path('README.rst').read_text()
+description = description.replace('.. doctest', '').replace(':doc:', '')
 
 
 setup(
     long_description=description,
     long_description_content_type='text/x-rst',
-    ext_modules=extensions,
+    ext_modules=[geomodels_ext],
     data_files=datafiles,
 )
