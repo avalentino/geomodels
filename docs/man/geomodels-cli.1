@@ -34,29 +34,35 @@ print debug messages (set "loglevel" to "DEBUG")
 \fBSub-commands\fR
 .TP
 \fBgeomodels-cli\fR \fI\,info\/\fR
-provide information about the platform, library versions and
+provide information about the installtion and environment.
 .TP
 \fBgeomodels-cli\fR \fI\,install-data\/\fR
 download and install the data necessary for models computation.
 .TP
 \fBgeomodels-cli\fR \fI\,import-igrf\/\fR
-Import magnetic field data from IGRF text format.
+import magnetic field data from igrf text format.
 .TP
 \fBgeomodels-cli\fR \fI\,test\/\fR
-Run the test suite for the geomodels package.
+run the test suite for the geomodels package.
 .SH OPTIONS 'geomodels-cli info'
 usage: geomodels-cli info [-h] [-d DATADIR] [-a] [--data]
 
-Provide information about the platform, library versions and
+Provide information about the installtion and environment.
+.br
+
+.br
+    Information provided include: the platform, the library versions and
 .br
     installed data.
+.br
+    
 
 
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
 specifies where the model data are stored (default:
 .br
-'/usr/share/GeographicLib').
+'/usr/local/share/GeographicLib').
 
 .TP
 \fB\-a\fR, \fB\-\-all\fR
@@ -69,7 +75,7 @@ show info about installed data
 .SH OPTIONS 'geomodels-cli install-data'
 usage: geomodels-cli install-data [-h] [-b BASE_URL] [-d DATADIR]
                                   [--no-progress]
-                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84-30,egm84-15,egm96-15,egm96-5,egm2008-5,egm2008-2_5,egm2008-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2020,igrf11,igrf12,emm2010,emm2015,emm2017}
+                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84-30,egm84-15,egm96-15,egm96-5,egm2008-5,egm2008-2_5,egm2008-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}
 
 Download and install the data necessary for models computation.
 .br
@@ -126,7 +132,7 @@ Download and install the data necessary for models computation.
     
 
 .TP
-\fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2020,igrf11,igrf12,emm2010,emm2015,emm2017}\fR
+\fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}\fR
 model(s) to be installed
 
 .TP
@@ -139,7 +145,7 @@ specifies the base URL for the download (default:
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
 specifies where the datasets should be stored (default:
 .br
-'/usr/share/GeographicLib').
+'/usr/local/share/GeographicLib').
 
 .TP
 \fB\-\-no\-progress\fR
@@ -158,7 +164,7 @@ path or URL of the IGRF text file
 \fB\-o\fR \fI\,OUTPATH\/\fR, \fB\-\-outpath\fR \fI\,OUTPATH\/\fR
 specifies the output data path (default:
 .br
-PosixPath('/usr/share/GeographicLib/magnetic')).
+"/usr/local/share/GeographicLib/magnetic").
 
 .TP
 \fB\-\-force\fR
@@ -175,7 +181,7 @@ Run the test suite for the geomodels package.
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
 specifies where the model data are stored (default:
 .br
-'/usr/share/GeographicLib').
+'/usr/local/share/GeographicLib').
 
 .TP
 \fB\-\-verbosity\fR \fI\,VERBOSITY\/\fR
