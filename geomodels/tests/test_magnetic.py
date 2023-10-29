@@ -521,7 +521,3 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(Bxt, self.BXT)
         npt.assert_allclose(Byt, self.BYT)
         npt.assert_allclose(Bzt, self.BZT)
-
-
-if __name__ == "__main__":
-    unittest.main()

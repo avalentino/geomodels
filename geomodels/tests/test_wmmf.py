@@ -322,7 +322,3 @@ class DataCrossCheckTestCase(unittest.TestCase):
         orig = pathlib.Path(self.METADATAFILE).with_suffix(".wmm.cof")
         new = pathlib.Path(self.tmpdir) / "igrf12.wmm.cof"
         self.assertEqual(orig.read_bytes(), new.read_bytes())
-
-
-if __name__ == "__main__":
-    unittest.main()

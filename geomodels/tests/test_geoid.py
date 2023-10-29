@@ -473,7 +473,3 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         dir_ = EHeightConvDir.NONE
         h = self.model.convert_height(self.LON, self.LAT, self.KHEIGHT, dir_)
         npt.assert_allclose(h, np.full_like(h, self.KHEIGHT))
-
-
-if __name__ == "__main__":
-    unittest.main()

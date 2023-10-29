@@ -292,7 +292,3 @@ class InstallTestCase(unittest.TestCase):
                 datadir,
                 progress=False,
             )
-
-
-if __name__ == "__main__":
-    unittest.main()

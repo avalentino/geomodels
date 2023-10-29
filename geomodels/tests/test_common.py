@@ -31,7 +31,3 @@ class GeographicLibCommonCase(unittest.TestCase):
         self.assertEqual(version_info.minor, int(mobj.group("minor")))
         if mobj.group("micro"):
             self.assertEqual(version_info.micro, int(mobj.group("micro")))
-
-
-if __name__ == "__main__":
-    unittest.main()

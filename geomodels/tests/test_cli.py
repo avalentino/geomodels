@@ -241,7 +241,3 @@ class TestSubCommandTestCase(unittest.TestCase):
         self.assertIn("usage:", usage)
         self.assertIn(cli.PROG, usage)
         self.assertIn("test", usage)
-
-
-if __name__ == "__main__":
-    unittest.main()
