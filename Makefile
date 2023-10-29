@@ -4,7 +4,7 @@ PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
 
 PKG=geomodels
-PKG_VER=$(shell grep __version__ geomodels/__init__.py | cut -d "'" -f 2)
+PKG_VER=$(shell grep __version__ geomodels/_version.py | cut -d '"' -f 2)
 PKG_SRC_ARC=dist/$(PKG)-$(PKG_VER).tar.gz
 
 
