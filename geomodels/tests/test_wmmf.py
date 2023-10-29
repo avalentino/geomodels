@@ -11,7 +11,6 @@ from numpy import testing as npt
 import geomodels
 from geomodels import wmmf
 
-
 DATAPATH = pathlib.Path(geomodels.MagneticFieldModel.default_magnetic_path())
 
 

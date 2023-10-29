@@ -8,13 +8,12 @@ and https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 """
 
 import os
-import typing
 import struct
+import typing
 import fnmatch
 import pathlib
 import datetime
 import warnings
-
 from typing import Optional, List
 from collections import OrderedDict, namedtuple
 from dataclasses import dataclass
@@ -24,7 +23,6 @@ from urllib.request import urlopen
 import numpy as np
 
 from ._typing import PathType
-
 
 __all__ = ["MetaData", "SphCoeffSet", "WmmData", "import_igrf_txt"]
 
@@ -199,6 +197,7 @@ class WmmData:
         return wmmdata
 
     def __init__(self, filename: Optional[PathType] = None) -> None:
+        """Initialize a WmmData instance."""
         self.metadata = MetaData()
         self.coeffs = OrderedDict()
 

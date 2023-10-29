@@ -14,15 +14,19 @@ See https://geographiclib.sourceforge.io/html/magnetic.html.
 """
 
 import os
+
 import numpy as np
 
 cimport cython
 from libcpp.string cimport string
 
 from .magnetic cimport CMagneticModel
+
 from .error import GeographicErr
 from ._utils import (
-    as_contiguous_1d_llh, as_contiguous_1d_components, reshape_components,
+    as_contiguous_1d_llh,
+    as_contiguous_1d_components,
+    reshape_components,
 )
 
 

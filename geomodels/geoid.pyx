@@ -45,11 +45,13 @@ cimport cython
 from libcpp.string cimport string
 
 from .geoid cimport CGeoid
+
 from .error import GeographicErr
 from ._utils import (
-    as_contiguous_1d_llh, as_contiguous_1d_components, reshape_components,
+    as_contiguous_1d_llh,
+    as_contiguous_1d_components,
+    reshape_components,
 )
-
 
 ctypedef CGeoid.convertflag ConvDir
 

@@ -5,15 +5,13 @@ import pathlib
 import tempfile
 import unittest
 import subprocess
-
 from unittest import mock
 from contextlib import redirect_stdout
 
-from geomodels import cli
-from geomodels import get_default_data_path
-from geomodels import __package__ as PKG, __version__ as VERSION  # noqa: N812
-
 import geomodels.data
+from geomodels import cli, get_default_data_path
+from geomodels import __package__ as PKG  # noqa: N812
+from geomodels import __version__ as VERSION
 
 
 def _make_cmd(*args):

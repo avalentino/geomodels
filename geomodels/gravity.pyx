@@ -54,9 +54,12 @@ cimport cython
 from libcpp.string cimport string
 
 from .gravity cimport CGravityModel
+
 from .error import GeographicErr
 from ._utils import (
-    as_contiguous_1d_llh, as_contiguous_1d_components, reshape_components,
+    as_contiguous_1d_llh,
+    as_contiguous_1d_components,
+    reshape_components,
 )
 
 

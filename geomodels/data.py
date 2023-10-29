@@ -7,13 +7,11 @@ import logging
 import pathlib
 import tempfile
 import contextlib
-
+from typing import Dict, Union, Optional, Callable
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
-from typing import Dict, Union, Optional, Callable
 
 from ._typing import PathType
-
 
 __all__ = [
     "EModelGroup",

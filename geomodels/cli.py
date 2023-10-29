@@ -6,13 +6,13 @@ import glob
 import logging
 import pathlib
 import argparse
-
 from typing import Optional
 
-from . import __version__
-from . import tests
-from .data import get_default_data_path, get_base_url, install
+from . import __version__, tests
 from .data import (
+    get_default_data_path,
+    get_base_url,
+    install,
     EModelGroup,
     EModelType,
     EGeoidModel,

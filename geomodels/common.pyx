@@ -11,7 +11,6 @@ from .common cimport (
     GEOGRAPHICLIB_VERSION_STRING,
 )
 
-
 __all__ = ['lib_version_info', 'lib_version_str']
 
 

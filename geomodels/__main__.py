@@ -4,7 +4,7 @@
 """Command Line Interface (CLI) for the geomodels package."""
 
 import sys
-from . import cli
 
+from . import cli
 
 sys.exit(cli.main())

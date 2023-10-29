@@ -3,9 +3,8 @@ import shutil
 import pathlib
 import tempfile
 import unittest
-
-from urllib.parse import urlsplit
 from unittest import mock
+from urllib.parse import urlsplit
 
 import geomodels.data
 
