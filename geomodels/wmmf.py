@@ -165,6 +165,7 @@ ID              {id_}
 """
 
     def save(self, filename: PathType) -> None:
+        """Save metadata in WMM format."""
         with open(filename, "w") as fd:
             fd.write(str(self))
 
@@ -190,6 +191,7 @@ class WmmData:
     def from_metadata_and_coeffs(
         cls, medadata: MetaData, coeffs: SphCoeffsType
     ) -> "WmmData":
+        """Instantiate a WmmData object from metadata and coefficients."""
         wmmdata = cls()
         wmmdata.metadata = medadata
         wmmdata.coeffs = coeffs
@@ -325,8 +327,10 @@ class WmmData:
 
 
 def _metadata_from_txt_header(header: str) -> MetaData:
-    """Build a MataData object from the header of a coeffs file
-    in text IGRF format."""
+    """Build a MataData object from the header of a coeff file.
+
+    The coeff file is expected to be in text IGRF format.
+    """
     parts = header.split()
     if parts[:3] != ["g/h", "n", "m"] or "-" not in parts[-1]:
         raise ValueError(f"invalid header line: {header!r}")

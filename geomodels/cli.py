@@ -38,6 +38,8 @@ LOGFMT = "%(levelname)s: %(message)s"
 
 
 class EInfoMode(enum.Enum):
+    """Enumeration describing which king of info shall be provided."""
+
     INFO = "info"
     DATA = "data"
     ALL = "all"
@@ -62,9 +64,11 @@ def _format_data_info(datadir=None):
 
 
 def info(mode=EInfoMode.ALL, datadir=None):
-    """Provide information about the platform, library versions and
-    installed data."""
+    """Provide information about the installtion and environment.
 
+    Information provided include: the platform, the library versions and
+    installed data.
+    """
     if mode in (EInfoMode.INFO, EInfoMode.ALL):
         print_versions()
     if mode in (EInfoMode.DATA, EInfoMode.ALL):
@@ -162,8 +166,7 @@ def test(
 
 
 def _set_logging_control_args(parser, default_loglevel="WARNING"):
-    """Setup command line options for logging control."""
-
+    """Set up command line options for logging control."""
     loglevels = [logging.getLevelName(level) for level in range(10, 60, 10)]
 
     parser.add_argument(
@@ -201,6 +204,7 @@ def _set_logging_control_args(parser, default_loglevel="WARNING"):
 
 
 def get_info_parser(parser=None):
+    """Return a CLI argument parser for the `info` sub-command."""
     name = "info"
     synopsis = info.__doc__.splitlines()[0].lower()
     doc = info.__doc__
@@ -245,6 +249,7 @@ def get_info_parser(parser=None):
 
 
 def get_install_data_parser(parser=None):
+    """Return a CLI argument parser for the `install-data` sub-command."""
     name = "install-data"
     synopsis = install_data.__doc__.splitlines()[0].lower()
     doc = install_data.__doc__
@@ -300,6 +305,7 @@ def get_install_data_parser(parser=None):
 
 
 def get_import_igrf_parser(parser=None):
+    """Return a CLI argument parser for the `import-igrf` sub-command."""
     name = "import-igrf"
     doc = import_igrf.__doc__.splitlines()[0]
     synopsis = doc.lower()
@@ -332,6 +338,7 @@ def get_import_igrf_parser(parser=None):
 
 
 def get_test_parser(parser=None):
+    """Return a CLI argument parser for the `test` sub-command."""
     name = "test"
     doc = test.__doc__.splitlines()[0]
     synopsis = doc.lower()
@@ -421,7 +428,7 @@ def _get_kwargs(args):
 
 
 def main(*argv):
-    """Main CLI interface."""
+    """Implement the main CLI interface."""
     logging.basicConfig(format=LOGFMT, level=logging.WARNING)
     logging.captureWarnings(True)
 

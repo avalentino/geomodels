@@ -11,7 +11,7 @@ from contextlib import redirect_stdout
 
 from geomodels import cli
 from geomodels import get_default_data_path
-from geomodels import __package__ as PKG, __version__ as VERSION
+from geomodels import __package__ as PKG, __version__ as VERSION  # noqa: N812
 
 import geomodels.data
 
