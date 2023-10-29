@@ -16,7 +16,7 @@ def as_contiguous_1d_llh(lat, lon, h, dtype=np.float64):
         dt = param.dtype
         if not (np.issubdtype(dt, np.floating) or
                 np.issubdtype(dt, np.integer)):
-            raise TypeError('{}: {!r}}'.format(name, param))
+            raise TypeError('{}: {!r}'.format(name, param))
 
     shape = lat.shape
     if lon.shape != shape or (h.size > 1 and h.shape != shape):
@@ -51,7 +51,7 @@ def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
         dt = param.dtype
         if not (np.issubdtype(dt, np.floating) or
                 np.issubdtype(dt, np.integer)):
-            raise TypeError('{}: {!r}}'.format(name, param))
+            raise TypeError('{}: {!r}'.format(name, param))
 
         if param.shape != shape:
             raise ValueError('not all components have the same shape')
