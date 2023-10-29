@@ -1,10 +1,6 @@
 numpy
-dataclasses;python_version<"3.7"
 cython
 tqdm
 argcomplete
-sphinx
-pytest
-argparse-manpage
 build>=0.8
 setuptools
