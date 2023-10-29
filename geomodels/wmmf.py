@@ -3,7 +3,7 @@
 Classes and function for reading and writing files in World Magnetic
 Model Format and in IGRF text format.
 
-See: https://geographiclib.sourceforge.io/html/magnetic.html#magneticformat
+See: https://geographiclib.sourceforge.io/C++/doc/magnetic.html#magneticformat
 and https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 """
 

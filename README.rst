@@ -124,4 +124,4 @@ License
 GeoModels is released under the terms of the `MIT/X11 License`_
 (see LICENSE file).
 
-.. _`MIT/X11 License`: https://opensource.org/licenses/MIT
+.. _`MIT/X11 License`: https://opensource.org/license/MIT

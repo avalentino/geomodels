@@ -80,10 +80,12 @@ class EMagneticModel(enum.Enum):
     """Enumerate magnetic field models."""
 
     WMM2010 = "wmm2010"
-    WMM2015 = "wmm2015"
-    WMM2020 = "wmm2020"  # new in GeographicLib v1.50.1
+    WMM2015 = "wmm2015"  # deprecated version of wmm2015v2
+    WMM2015V2 = "wmm2015v2"
+    WMM2020 = "wmm2020"
     IGRF11 = "igrf11"
     IGRF12 = "igrf12"
+    IGRF13 = "igrf13"  # new in GeographicLib v1.51
     EMM2010 = "emm2010"
     EMM2015 = "emm2015"
     EMM2017 = "emm2017"
@@ -146,7 +148,7 @@ def get_model_url(
         :class:`EGravityModel` or :class:`EMagneticModel`.
     :param str base_url:
         (optional) base URL for data download.
-        The full URL is build from this function starting form base_url
+        The full URL is build from this function starting from base_url
         and model information.
     :param EArchiveType archive_type:
         specifies the archive type that should be downloaded.
@@ -346,7 +348,7 @@ def install(
         by :func:`get_default_data_path` is assumed.
     :param str base_url:
         (optional) base URL for data download.
-        The full URL is built from this function starting form base_url
+        The full URL is built from this function starting from base_url
         and model information.
     :param EArchiveType archive_type:
         specifies the archive type that should be downloaded.

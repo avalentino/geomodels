@@ -23,37 +23,36 @@ options.
 .. _setuptools: https://github.com/pypa/setuptools
 
 
-Installation form sources
+Installation from sources
 -------------------------
 
 The GeoModels package provides some binary extensions so the installation
 from sources also requires:
 
 * Cython_
-* a C/C++ compiler
-* GeographicLib_ >= 1.50
+* a C++11 compiler
+* GeographicLib_ >= 2.0
 
-The user is in charge of ensuring that Cython_ and the C++ compiler
-are properly installed and configured.
+The user is in charge of ensuring that the C++ compiler is properly installed
+and configured.
 
-GeographicLib_ is bundled with the source tarball available on PyPi_
-(but included in the source tree available on the GeoModels `project page`_
+GeographicLib_ is bundled with the source tarball available on PyPi_ and
+included in the source tree available on the GeoModels `repository`_
 on GitHub_.
 
-The installation form sources can be done using the following command
+The installation from sources can be done using the following command
 from the root directory of the source tree::
 
-  $ python3 -m setup.py install
+  $ python3 -m pip install .
 
-Please refer to the distutils_ documentation for details about installation
+Please refer to the Pip_ documentation for details about installation
 options.
 
 .. _GeographicLib: https://geographiclib.sourceforge.io
 .. _Cython: https://cython.org
 .. _PyPI: https://pypi.org
-.. _`project page`: https://github.com/avalentino/geomodels
+.. _repository: https://github.com/avalentino/geomodels.git
 .. _GitHub: https://github.com
-.. _distutils: https://docs.python.org/3/library/distutils.html
 
 
 Using the system GeographicLib_
@@ -69,13 +68,12 @@ development files) can be installed as follows::
   $ sudo apt install libgeographic-dev
 
 To ensure that the system version of the libraries is used instead of
-the bundled copy of GeographicLib_ (if present) the
-`GEOMODELS_FORCE_SYSTEM_LIBS` environment variable shall be set to `TRUE`
-as in the following example::
+the bundled copy of GeographicLib_ the `GEOMODELS_FORCE_SYSTEM_LIBS`
+environment variable shall be set to `TRUE` as in the following example::
 
-  $ env GEOMODELS_IGNORE_BUNDLED_LIBS=TRUE python3 setup.py install
+  $ env GEOMODELS_IGNORE_BUNDLED_LIBS=TRUE python3 -m pip install .
 
-Also in this case, please refer to the distutils_ documentation for
+Also in this case, please refer to the Pip_ documentation for
 details about installation options.
 
 .. note::
@@ -85,7 +83,7 @@ details about installation options.
    `LDFLAGS` for the GNU GCC) to allow the compiler to find the
    `GeographicLib`_ header files and libraries.
 
-   Also, in this case, the used shall configure the environment to
+   Also, in this case, the user shall configure the environment to
    allow the system to find and load `GeographicLib`_ shared library
    (e.g. by setting the `LD_LIBRARY_PATH` on GNU/Linux systems).
 
@@ -93,7 +91,7 @@ details about installation options.
 
      $ env CPPFLAGS="-I${HOME}/.local/include" \
            LDFLAGS="-L${HOME}/.local/lib" \
-	   python3 setup.py install
+	   python3 -m pip install .
 
 
 .. _Debian: https://www.debian.org
@@ -145,7 +143,7 @@ install different subsets of data:
     It is guaranteed that the `recommended` subset always includes all
     data that are necessary to run the test suite.
 :all:
-    install all available data (about 670MB of disk space are required)
+    install all available data (about 645MB of disk space are required)
 :geoids:
     install data for all supported geoids
 :gravity:
@@ -165,8 +163,9 @@ line interface.
 Testing
 -------
 
-Once the GeoModels package, and `recommended` data, have been installed,
-it is possible to run the test suite to be sure that all works correctly.
+Once the GeoModels package, and `recommended` (see above) data, have been
+installed, it is possible to run the test suite to be sure that all works
+correctly.
 
 The recommended way to test GeoModels with using PyTest_::
 
