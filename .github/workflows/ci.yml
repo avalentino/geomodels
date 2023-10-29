@@ -36,7 +36,7 @@ jobs:
 
       - name: Prepare the environment
         run: |
-          make PYTHON=python ${{ env.GITHUB_WORKSPACE }}/data
+          make PYTHON=python data
 
       - name: Build package
         run: |
@@ -67,9 +67,7 @@ jobs:
       - name: Test
         run: |
           cd dist
-          python -m pytest --pyargs geomodels
-        env:
-          GEOGRAPHICLIB_DATA: ${{ env.GITHUB_WORKSPACE }}/data
+          env GEOGRAPHICLIB_DATA=${PWD}/../data python -m pytest --pyargs geomodels
 
       - name: Install docs dependencies
         run: |
