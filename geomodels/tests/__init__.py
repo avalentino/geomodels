@@ -9,15 +9,15 @@ def print_versions():
     """Print platform information and library version."""
     from .. import lib_version_str, __version__  # avoid circular imports
 
-    print("geomodels version:     %s" % __version__)
-    print("GeographicLib version: %s" % lib_version_str())
+    print(f"geomodels version:     {__version__}")
+    print(f"GeographicLib version: {lib_version_str()}")
 
-    print("Python version:        %s" % platform.python_version())
-    print("Platform:              %s" % platform.platform())
-    print("Byte-ordering:         %s" % sys.byteorder)
-    print("Default encoding:      %s" % sys.getdefaultencoding())
-    print("Default FS encoding:   %s" % sys.getfilesystemencoding())
-    print("Default locale:        (%s, %s)" % locale.getdefaultlocale())
+    print(f"Python version:        {platform.python_version()}")
+    print(f"Platform:              {platform.platform()}")
+    print(f"Byte-ordering:         {sys.byteorder}")
+    print(f"Default encoding:      {sys.getdefaultencoding()}")
+    print(f"Default FS encoding:   {sys.getfilesystemencoding()}")
+    print(f"Locale:                {locale.getlocale()}")
 
     print()
 
