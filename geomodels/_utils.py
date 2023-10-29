@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Internal utilities."""
 
 import numpy as np
@@ -16,7 +14,7 @@ def as_contiguous_1d_llh(lat, lon, h, dtype=np.float64):
         dt = param.dtype
         if not (np.issubdtype(dt, np.floating) or
                 np.issubdtype(dt, np.integer)):
-            raise TypeError('{}: {!r}'.format(name, param))
+            raise TypeError(f'{name}: {param!r}')
 
     shape = lat.shape
     if lon.shape != shape or (h.size > 1 and h.shape != shape):
@@ -51,7 +49,7 @@ def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
         dt = param.dtype
         if not (np.issubdtype(dt, np.floating) or
                 np.issubdtype(dt, np.integer)):
-            raise TypeError('{}: {!r}'.format(name, param))
+            raise TypeError(f'{name}: {param!r}')
 
         if param.shape != shape:
             raise ValueError('not all components have the same shape')

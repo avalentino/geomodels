@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Command Line Interface (CLI) for the geomodels package."""
 
 import os
@@ -374,7 +372,7 @@ def main(*argv):
         return func(**kwargs)
 
     except Exception as exc:
-        logging.critical('{!r} {}'.format(type(exc).__name__, exc))
+        logging.critical(f'{type(exc).__name__!r} {exc}')
         logging.debug('stacktrace:', exc_info=True)
         return EX_FAILURE
     except KeyboardInterrupt:

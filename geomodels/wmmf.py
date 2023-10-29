@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """World Magnetic Model Format tools.
 
 Classes and function for reading and writing files in World Magnetic

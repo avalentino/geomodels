@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Tools for geographic models data download and installation."""
 
 import os
@@ -232,7 +230,7 @@ try:
             )
             kargs.update(kwargs)
 
-            super(TqdmReportHook, self).__init__(**kargs)
+            super().__init__(**kargs)
 
         def __call__(self, count=1, block_size=1, total_size=None):
             if total_size not in (None, -1):
@@ -283,7 +281,7 @@ def download(url: str, path: PathType = '.',
 
     if path.exists() and not force:
         raise RuntimeError(
-            'download target path already exists: "{}"'.format(path))
+            f'download target path already exists: "{path}"')
 
     if progress is True and tqdm:
         try:
@@ -351,7 +349,7 @@ def install(model: InstallableModelType = EModelGroup.MINIMAL,
         datadir = pathlib.Path(datadir)
         if not datadir.is_dir():
             raise NotADirectoryError(
-                '"{}" is not a directory'.format(datadir))
+                f'"{datadir}" is not a directory')
 
     datadir = pathlib.Path(datadir)
     datadir.mkdir(parents=True, exist_ok=True)

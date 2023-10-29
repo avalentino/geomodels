@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import io
 import re
 import sys
@@ -49,7 +47,7 @@ class MainTestCase(unittest.TestCase):
 class InfoSubCommandTestCase(unittest.TestCase):
     VERSION_RE = re.compile(fr'^geomodels version:\s+{VERSION}$', re.MULTILINE)
     DATAPATH_RE = re.compile(
-        r'^data directory:\s+{!r}$'.format(get_default_data_path()),
+        fr'^data directory:\s+{get_default_data_path()!r}$',
         re.MULTILINE)
 
     def test_help(self):

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Geographic data models."""
 
 from ._version import __version__                    # noqa
