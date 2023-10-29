@@ -96,7 +96,7 @@ else:
     geomodels_ext = Extension(
         'geomodels._ext',
         sources=['geomodels/_ext.pyx'],
-        libraries=['Geographic'],
+        libraries=['GeographicLib'],
         language='c++',
     )
 
