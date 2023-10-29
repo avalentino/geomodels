@@ -74,6 +74,10 @@ version = {attr = "geomodels._version.__version__"}
 # addopts = --ignore-glob='GeographicLib*'
 
 
+[tool.pydocstyle]
+add-ignore = "D105"
+
+
 [tool.black]
 line-length = 79
 # target-version = ['py311']
