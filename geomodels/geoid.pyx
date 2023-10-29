@@ -89,8 +89,9 @@ cdef class GeoidModel:
     """
     cdef CGeoid *_ptr
 
-    def __cinit__(self, name=None, path='',
-                  bint cubic=True, bint threadsafe=False):
+    def __cinit__(
+        self, name=None, path='', bint cubic=True, bint threadsafe=False
+    ):
         cdef string c_name = CGeoid.DefaultGeoidName()
         cdef string c_path = os.fsencode(path)
 
@@ -204,15 +205,20 @@ cdef class GeoidModel:
         """
         dtype = np.float64
         lat, lon, shape = as_contiguous_1d_components(
-            lat, lon, labels=['lat', 'lon'], dtype=dtype)
+            lat, lon, labels=['lat', 'lon'], dtype=dtype
+        )
         h = self.compute(lat, lon)
         return reshape_components(shape, h)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef core_convert_height(self,
-                             double[::1] vlat, double[::1] vlon, double[::1] vh,
-                             ConvDir direction):
+    cdef core_convert_height(
+        self,
+        double[::1] vlat,
+        double[::1] vlon,
+        double[::1] vh,
+        ConvDir direction,
+    ):
         cdef long size = vlat.size
         out = np.empty(shape=[size], dtype=np.float64)
         cdef double[::1] vout = out
@@ -222,7 +228,8 @@ cdef class GeoidModel:
             with nogil:
                 for i in range(size):
                     vout[i] = self._ptr.ConvertHeight(
-                        vlat[i], vlon[i], vh[i], direction)
+                        vlat[i], vlon[i], vh[i], direction
+                    )
         except RecursionError as exc:
             raise GeographicErr(str(exc)) from exc
 
@@ -392,7 +399,7 @@ cdef class GeoidModel:
         return CGeoid.DefaultGeoidPath().decode('utf-8')
 
     @staticmethod
-    def default_geoid_name() ->  str:
+    def default_geoid_name() -> str:
         """The default name for the geoid.
 
         This is the value of the environment variable

@@ -15,8 +15,12 @@ cdef extern from "GeographicLib/Geoid.hpp" namespace "GeographicLib" nogil:
             NONE = 0,
             GEOIDTOELLIPSOID = 1
 
-        CGeoid(const string& name, const string& path, bool cubic,
-               bool threadsafe) except +
+        CGeoid(
+            const string& name,
+            const string& path,
+            bool cubic,
+            bool threadsafe,
+        ) except +
 
         void CacheArea(real south, real west, real north, real east) except +  # const
         void CacheAll() except +  # const

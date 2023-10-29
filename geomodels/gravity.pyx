@@ -107,8 +107,9 @@ cdef class GravityModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_gracity(self,
-                         double[::1] vlat, double[::1] vlon, double[::1] vh):
+    cdef compute_gracity(
+        self, double[::1] vlat, double[::1] vlon, double[::1] vh
+    ):
         cdef long size = vlat.size
         dtype = np.float64
 
@@ -125,8 +126,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                vW[i] = self._ptr.Gravity(vlat[i], vlon[i], vh[i],
-                                          vgx[i], vgy[i], vgz[i])
+                vW[i] = self._ptr.Gravity(
+                    vlat[i], vlon[i], vh[i], vgx[i], vgy[i], vgz[i]
+                )
 
         return W, gx, gy, gz
 
@@ -156,9 +158,9 @@ cdef class GravityModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_disturbance(self,
-                             double[::1] vlat, double[::1] vlon,
-                             double[::1] vh):
+    cdef compute_disturbance(
+        self, double[::1] vlat, double[::1] vlon, double[::1] vh
+    ):
         cdef long size = vlat.size
         dtype = np.float64
 
@@ -176,8 +178,8 @@ cdef class GravityModel:
         with nogil:
             for i in range(size):
                 vT[i] = self._ptr.Disturbance(
-                    vlat[i], vlon[i], vh[i],
-                    vdeltax[i], vdeltay[i], vdeltaz[i])
+                    vlat[i], vlon[i], vh[i], vdeltax[i], vdeltay[i], vdeltaz[i]
+                )
 
         return T, deltax, deltay, deltaz
 
@@ -235,7 +237,8 @@ cdef class GravityModel:
         results of the NGA codes are reproduced accurately.
         """
         lat, lon, shape = as_contiguous_1d_components(
-            lat, lon, dtype=np.float64)
+            lat, lon, dtype=np.float64
+        )
         h = self.compute_geoid_height(lat, lon)
         return reshape_components(shape, h)
 
@@ -257,8 +260,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                self._ptr.SphericalAnomaly(vlat[i], vlon[i], vh[i],
-                                           vDg01[i], vxi[i], veta[i])
+                self._ptr.SphericalAnomaly(
+                    vlat[i], vlon[i], vh[i], vDg01[i], vxi[i], veta[i]
+                )
 
         return Dg01, xi, eta
 
@@ -306,8 +310,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                vout[i] = self._ptr.W(vx[i], vy[i], vz[i],
-                                      vgx[i], vgy[i], vgz[i])
+                vout[i] = self._ptr.W(
+                    vx[i], vy[i], vz[i], vgx[i], vgy[i], vgz[i]
+                )
 
         return out, gx, gy, gz
 
@@ -329,7 +334,8 @@ cdef class GravityModel:
             * gz the z component of the acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
-            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64)
+            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
+        )
         out, gx, gy, gz = self.compute_w(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
@@ -352,8 +358,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                vout[i] = self._ptr.V(vx[i], vy[i], vz[i],
-                                      vgx[i], vgy[i], vgz[i])
+                vout[i] = self._ptr.V(
+                    vx[i], vy[i], vz[i], vgx[i], vgy[i], vgz[i]
+                )
 
         return out, gx, gy, gz
 
@@ -374,7 +381,8 @@ cdef class GravityModel:
             * gz the z component of the acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
-            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64)
+            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
+        )
         out, gx, gy, gz = self.compute_v(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
@@ -398,8 +406,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                vout[i] = self._ptr.T(vx[i], vy[i], vz[i],
-                                      vdeltax[i], vdeltay[i], vdeltaz[i])
+                vout[i] = self._ptr.T(
+                    vx[i], vy[i], vz[i], vdeltax[i], vdeltay[i], vdeltaz[i]
+                )
 
         return out, deltax, deltay, deltaz
 
@@ -424,7 +433,8 @@ cdef class GravityModel:
               ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
-            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64)
+            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
+        )
         out, gx, gy, gz = self.compute_t_components(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
@@ -458,7 +468,8 @@ cdef class GravityModel:
             anomalous potential) ([m**2 / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
-            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64)
+            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
+        )
         out = self.compute_t(x, y, z)
         return reshape_components(shape, out)
 
@@ -481,8 +492,9 @@ cdef class GravityModel:
         cdef long i = 0
         with nogil:
             for i in range(size):
-                vout[i] = self._ptr.U(vx[i], vy[i], vz[i],
-                                      vgammax[i], vgammay[i], vgammaz[i])
+                vout[i] = self._ptr.U(
+                    vx[i], vy[i], vz[i], vgammax[i], vgammay[i], vgammaz[i]
+                )
 
         return out, gammax, gammay, gammaz
 
@@ -504,7 +516,8 @@ cdef class GravityModel:
             * gammaZ the z component of the normal acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
-            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64)
+            x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
+        )
         out, gammax, gammay, gammaz = self.compute_u(x, y, z)
         return reshape_components(shape, out, gammax, gammay, gammaz)
 
@@ -542,7 +555,8 @@ cdef class GravityModel:
             * fy the y component of the centrifugal acceleration (m / s**2])
         """
         x, y, shape = as_contiguous_1d_components(
-            x, y, labels=['x', 'y'], dtype=np.float64)
+            x, y, labels=['x', 'y'], dtype=np.float64
+        )
         out, fx, fy = self.compute_phi(x, y)
         return reshape_components(shape, out, fx, fy)
 

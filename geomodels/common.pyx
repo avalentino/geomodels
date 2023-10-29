@@ -2,7 +2,6 @@
 # cython: language_level=3
 # distutils: language=c++
 
-from typing import Tuple
 from collections import namedtuple
 
 from .common cimport (
