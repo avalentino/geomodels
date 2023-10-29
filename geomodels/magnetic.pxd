@@ -30,6 +30,20 @@ cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib" nog
 
         # MagneticCircle Circle(real t, real lat, real h) const
 
+        # New in GeographicLib v1.52
+        # void FieldGeocentric(
+        #     real t,
+        #     real X,
+        #     real Y,
+        #     real Z,
+        #     real& BX,
+        #     real& BY,
+        #     real& BZ,
+        #     real& BXt,
+        #     real& BYt,
+        #     real& BZt,
+        # ) const
+
         @staticmethod
         void FieldComponents(
             real Bx, real By, real Bz, real& H, real& F, real& D, real& I
@@ -65,6 +79,9 @@ cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib" nog
         real MaxTime() const
         real EquatorialRadius() const
         real Flattening() const
+
+        # int Degree() const
+        # int Order() const
 
         @staticmethod
         string DefaultMagneticPath()

@@ -40,8 +40,9 @@ cdef extern from "GeographicLib/Geoid.hpp" namespace "GeographicLib" nogil:
         real RMSError() const
         real Offset() const
         real Scale() const
+        
         bool ThreadSafe() const
-
+        
         bool Cache() const
         real CacheWest() const
         real CacheEast() const

@@ -60,11 +60,13 @@ cdef extern from "GeographicLib/GravityModel.hpp" namespace "GeographicLib" nogi
         const string& GravityFile() const
         const string& GravityModelName() const
         const string& GravityModelDirectory() const
+
         real EquatorialRadius() const
         real MassConstant() const
         real ReferenceMassConstant() const
         real AngularVelocity() const
         real Flattening() const
+
         int Degree() const
         int Order() const
 
