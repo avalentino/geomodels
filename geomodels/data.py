@@ -16,38 +16,44 @@ from ._typing import PathType
 
 
 __all__ = [
-    'EModelGroup', 'EModelType', 'EGeoidModel', 'EGravityModel',
-    'EMagneticModel', 'EArchiveType',
-    'get_default_data_path', 'get_model_url', 'install',
+    "EModelGroup",
+    "EModelType",
+    "EGeoidModel",
+    "EGravityModel",
+    "EMagneticModel",
+    "EArchiveType",
+    "get_default_data_path",
+    "get_model_url",
+    "install",
 ]
 
 
 class EModelGroup(enum.Enum):
     """Model groups."""
 
-    ALL = 'all'
-    MINIMAL = 'minimal'
-    RECOMMENDED = 'recommended'
+    ALL = "all"
+    MINIMAL = "minimal"
+    RECOMMENDED = "recommended"
 
 
 class EModelType(enum.Enum):
     """Enumerate geographic model types."""
 
-    GEOID = 'geoids'
-    GRAVITY = 'gravity'
-    MAGNETIC = 'magnetic'
+    GEOID = "geoids"
+    GRAVITY = "gravity"
+    MAGNETIC = "magnetic"
 
 
 class EGeoidModel(enum.Enum):
     """Enumerate geoid models."""
 
-    EGM84_30 = 'egm84-30'
-    EGM84_15 = 'egm84-15'
-    EGM96_15 = 'egm96-15'
-    EGM96_5 = 'egm96-5'
-    EGM2008_5 = 'egm2008-5'
-    EGM2008_2_5 = 'egm2008-2_5'
-    EGM2008_1 = 'egm2008-1'
+    EGM84_30 = "egm84-30"
+    EGM84_15 = "egm84-15"
+    EGM96_15 = "egm96-15"
+    EGM96_5 = "egm96-5"
+    EGM2008_5 = "egm2008-5"
+    EGM2008_2_5 = "egm2008-2_5"
+    EGM2008_1 = "egm2008-1"
 
     @staticmethod
     def get_model_type() -> EModelType:
@@ -58,11 +64,11 @@ class EGeoidModel(enum.Enum):
 class EGravityModel(enum.Enum):
     """Enumerate gravity models."""
 
-    EGM84 = 'egm84'
-    EGM96 = 'egm96'
-    EGM2008 = 'egm2008'
+    EGM84 = "egm84"
+    EGM96 = "egm96"
+    EGM2008 = "egm2008"
     # GRS80 = 'grs80'
-    WGS84 = 'wgs84'
+    WGS84 = "wgs84"
 
     @staticmethod
     def get_model_type() -> EModelType:
@@ -73,14 +79,14 @@ class EGravityModel(enum.Enum):
 class EMagneticModel(enum.Enum):
     """Enumerate magnetic field models."""
 
-    WMM2010 = 'wmm2010'
-    WMM2015 = 'wmm2015'
-    WMM2020 = 'wmm2020'  # new in GeographicLib v1.50.1
-    IGRF11 = 'igrf11'
-    IGRF12 = 'igrf12'
-    EMM2010 = 'emm2010'
-    EMM2015 = 'emm2015'
-    EMM2017 = 'emm2017'
+    WMM2010 = "wmm2010"
+    WMM2015 = "wmm2015"
+    WMM2020 = "wmm2020"  # new in GeographicLib v1.50.1
+    IGRF11 = "igrf11"
+    IGRF12 = "igrf12"
+    EMM2010 = "emm2010"
+    EMM2015 = "emm2015"
+    EMM2017 = "emm2017"
 
     @staticmethod
     def get_model_type() -> EModelType:
@@ -91,8 +97,8 @@ class EMagneticModel(enum.Enum):
 class EArchiveType(enum.Enum):
     """Enumerate the archive type."""
 
-    ZIP = '.zip'
-    BZ2 = '.tar.bz2'
+    ZIP = ".zip"
+    BZ2 = ".tar.bz2"
 
 
 GenericModelType = Union[EGeoidModel, EGravityModel, EMagneticModel]
@@ -108,17 +114,18 @@ def get_default_data_path() -> str:
     If `GEOGRAPHICLIB_DATA` is not set, then then it is returned the
     path configured at build time.
     """
-    path = os.environ.get('GEOGRAPHICLIB_DATA')
+    path = os.environ.get("GEOGRAPHICLIB_DATA")
     if path is None:
         from . import MagneticFieldModel
+
         path = os.path.dirname(MagneticFieldModel.default_magnetic_path())
     return path
 
 
-_BASE_URL = 'https://downloads.sourceforge.net/project/geographiclib/'
-_URL_PATH_TEMPLATE = '{basepath}/{modeltype}-distrib/{filename}{ext}'
-_URL_QUERY = 'use_mirror=autoselect'
-_URL_FRAGMENT = ''
+_BASE_URL = "https://downloads.sourceforge.net/project/geographiclib/"
+_URL_PATH_TEMPLATE = "{basepath}/{modeltype}-distrib/{filename}{ext}"
+_URL_QUERY = "use_mirror=autoselect"
+_URL_FRAGMENT = ""
 
 
 def get_base_url():
@@ -126,8 +133,11 @@ def get_base_url():
     return _BASE_URL
 
 
-def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
-                  archive_type: EArchiveType = EArchiveType.BZ2) -> str:
+def get_model_url(
+    model: GenericModelType,
+    base_url: Optional[str] = None,
+    archive_type: EArchiveType = EArchiveType.BZ2,
+) -> str:
     """Return the download URL for the specified geographic model.
 
     :param model:
@@ -147,12 +157,12 @@ def get_model_url(model: GenericModelType, base_url: Optional[str] = None,
         query = _URL_QUERY
         fragment = _URL_FRAGMENT
     else:
-        query = ''
-        fragment = ''
+        query = ""
+        fragment = ""
 
     url = urlsplit(base_url)
     urlpath = _URL_PATH_TEMPLATE.format(
-        basepath=url.path.rstrip('/'),
+        basepath=url.path.rstrip("/"),
         modeltype=model.get_model_type().value,
         filename=model.value,
         ext=archive_type.value,
@@ -171,16 +181,18 @@ _MODELTYPE_MAP = {
 }
 
 
-def _get_url_map(model: InstallableModelType,
-                 base_url: Optional[str] = None,
-                 archive_type: EArchiveType = EArchiveType.BZ2
-                 ) -> Dict[GenericModelType, str]:
+def _get_url_map(
+    model: InstallableModelType,
+    base_url: Optional[str] = None,
+    archive_type: EArchiveType = EArchiveType.BZ2,
+) -> Dict[GenericModelType, str]:
     urls = {}
     if model is EModelGroup.ALL:
         for modeltype in EModelType:
             urls.update(_get_url_map(modeltype, base_url, archive_type))
     elif model is EModelGroup.MINIMAL:
         from . import GeoidModel, GravityModel, MagneticFieldModel
+
         models = [
             EGeoidModel(GeoidModel.default_geoid_name()),
             EGravityModel(GravityModel.default_gravity_name()),
@@ -217,16 +229,14 @@ try:
         """Tqdm based report hook for urllib.request.urlretrieve."""
 
         def __init__(self, **kwargs):
-            if 'iterable' in kwargs:
+            if "iterable" in kwargs:
                 raise TypeError(
-                    '{!r} argument is not allowed by TqdmReportHook.')
+                    "{!r} argument is not allowed by TqdmReportHook."
+                )
 
             # set defaults
             kargs = dict(
-                unit='B',
-                unit_scale=True,
-                unit_divisor=1024,
-                miniters=1
+                unit="B", unit_scale=True, unit_divisor=1024, miniters=1
             )
             kargs.update(kwargs)
 
@@ -247,9 +257,12 @@ except ImportError:
     tqdm = None
 
 
-def download(url: str, path: PathType = '.',
-             progress: Union[bool, ReportHookType] = True,
-             force: bool = False) -> str:
+def download(
+    url: str,
+    path: PathType = ".",
+    progress: Union[bool, ReportHookType] = True,
+    force: bool = False,
+) -> str:
     """Download the specified URL.
 
     :param str url:
@@ -273,15 +286,14 @@ def download(url: str, path: PathType = '.',
     """
     urlobj = urlsplit(url)
     if not urlobj.scheme:
-        urlobj = urlobj._replace(scheme='file')
+        urlobj = urlobj._replace(scheme="file")
 
     path = pathlib.Path(path)
     if path.is_dir():
         path /= pathlib.Path(urlobj.path).name
 
     if path.exists() and not force:
-        raise RuntimeError(
-            f'download target path already exists: "{path}"')
+        raise RuntimeError(f'download target path already exists: "{path}"')
 
     if progress is True and tqdm:
         try:
@@ -290,7 +302,7 @@ def download(url: str, path: PathType = '.',
             ncols = ncols - base_width if ncols >= base_width else 0
         except OSError:
             ncols = 0
-        desc = urlsplit(url)._replace(query='', fragment='').geturl()
+        desc = urlsplit(url)._replace(query="", fragment="").geturl()
         reporthook = TqdmReportHook(desc=desc[-ncols:], leave=False)
     elif callable(progress):
         reporthook = progress
@@ -308,10 +320,13 @@ def download(url: str, path: PathType = '.',
     return outpath
 
 
-def install(model: InstallableModelType = EModelGroup.MINIMAL,
-            datadir: Optional[PathType] = None, base_url: str = None,
-            archive_type: EArchiveType = EArchiveType.BZ2,
-            progress: bool = True):
+def install(
+    model: InstallableModelType = EModelGroup.MINIMAL,
+    datadir: Optional[PathType] = None,
+    base_url: str = None,
+    archive_type: EArchiveType = EArchiveType.BZ2,
+    progress: bool = True,
+):
     """Install the specified geographic model data.
 
     :param model:
@@ -344,25 +359,24 @@ def install(model: InstallableModelType = EModelGroup.MINIMAL,
     if not datadir:
         datadir = get_default_data_path()
         if datadir is None:
-            raise RuntimeError('no default data location found')
+            raise RuntimeError("no default data location found")
 
         datadir = pathlib.Path(datadir)
         if not datadir.is_dir():
-            raise NotADirectoryError(
-                f'"{datadir}" is not a directory')
+            raise NotADirectoryError(f'"{datadir}" is not a directory')
 
     datadir = pathlib.Path(datadir)
     datadir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tempdir:
         if progress and tqdm and len(urls) > 1:
-            urliterator = tqdm.tqdm(urls.items(), unit='file', desc='download')
+            urliterator = tqdm.tqdm(urls.items(), unit="file", desc="download")
         else:
             urliterator = urls.items()
 
         for model, url in urliterator:
             target = datadir / model.get_model_type().value / model.value
-            matches = list(target.parent.glob(f'{target.name}*'))
+            matches = list(target.parent.glob(f"{target.name}*"))
             if matches:
                 logging.debug('"%s" already exists: skip download', target)
                 continue

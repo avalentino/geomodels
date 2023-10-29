@@ -15,22 +15,21 @@ from geomodels.tests.utils import dms_to_dec
 
 class StaticMethodsTestCase(unittest.TestCase):
     def test_default_geoid_path(self):
-        self.assertIsInstance(
-            GeoidModel.default_geoid_path(), str)
+        self.assertIsInstance(GeoidModel.default_geoid_path(), str)
         self.assertEqual(
             GeoidModel.default_geoid_path(),
-            os.path.join(get_default_data_path(), 'geoids')
+            os.path.join(get_default_data_path(), "geoids"),
         )
 
     def test_default_geoid_name(self):
         names = (
-            'egm84-30',
-            'egm84-15',
-            'egm96-15',
-            'egm96-5',
-            'egm2008-5',
-            'egm2008-2_5',
-            'egm2008-1',
+            "egm84-30",
+            "egm84-15",
+            "egm96-15",
+            "egm96-5",
+            "egm2008-5",
+            "egm2008-2_5",
+            "egm2008-1",
         )
         self.assertTrue(GeoidModel.default_geoid_name() in names)
 
@@ -43,7 +42,7 @@ class InstantiationTestCase00(unittest.TestCase):
 
 
 class InstantiationTestCase(unittest.TestCase):
-    MODEL_NAME = 'egm96-5'
+    MODEL_NAME = "egm96-5"
 
     def test_name(self):
         model = GeoidModel(self.MODEL_NAME)
@@ -61,7 +60,7 @@ class InstantiationTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
+            for filename in default_path.glob(f"{self.MODEL_NAME}*"):
                 shutil.copy(filename, geoid_path)
 
             model = GeoidModel(self.MODEL_NAME, geoid_path)
@@ -73,54 +72,54 @@ class InstantiationTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
+            for filename in default_path.glob(f"{self.MODEL_NAME}*"):
                 shutil.copy(filename, geoid_path)
 
-            old_env = os.environ.get('GEOGRAPHICLIB_DATA')
-            os.environ['GEOGRAPHICLIB_DATA'] = dirname
+            old_env = os.environ.get("GEOGRAPHICLIB_DATA")
+            os.environ["GEOGRAPHICLIB_DATA"] = dirname
             try:
                 model = GeoidModel(self.MODEL_NAME)
                 self.assertEqual(model.geoid_name(), self.MODEL_NAME)
                 self.assertEqual(model.geoid_directory(), str(geoid_path))
             finally:
                 if old_env is None:
-                    del os.environ['GEOGRAPHICLIB_DATA']
+                    del os.environ["GEOGRAPHICLIB_DATA"]
                 else:
-                    os.environ['GEOGRAPHICLIB_DATA'] = old_env
+                    os.environ["GEOGRAPHICLIB_DATA"] = old_env
 
     def test_custom_path_from_env02(self):
         default_path = pathlib.Path(GeoidModel.default_geoid_path())
         with tempfile.TemporaryDirectory() as dirname:
             geoid_path = pathlib.Path(dirname) / default_path.name
             geoid_path.mkdir()
-            for filename in default_path.glob(f'{self.MODEL_NAME}*'):
+            for filename in default_path.glob(f"{self.MODEL_NAME}*"):
                 shutil.copy(filename, geoid_path)
 
-            old_env = os.environ.get('GEOGRAPHICLIB_GEOID_PATH')
-            os.environ['GEOGRAPHICLIB_GEOID_PATH'] = str(geoid_path)
+            old_env = os.environ.get("GEOGRAPHICLIB_GEOID_PATH")
+            os.environ["GEOGRAPHICLIB_GEOID_PATH"] = str(geoid_path)
             try:
                 model = GeoidModel(self.MODEL_NAME)
                 self.assertEqual(model.geoid_name(), self.MODEL_NAME)
                 self.assertEqual(model.geoid_directory(), str(geoid_path))
             finally:
                 if old_env is None:
-                    del os.environ['GEOGRAPHICLIB_GEOID_PATH']
+                    del os.environ["GEOGRAPHICLIB_GEOID_PATH"]
                 else:
-                    os.environ['GEOGRAPHICLIB_GEOID_PATH'] = old_env
+                    os.environ["GEOGRAPHICLIB_GEOID_PATH"] = old_env
 
     def test_cubic_true(self):
         path = GeoidModel.default_geoid_path()
         model = GeoidModel(self.MODEL_NAME, path, cubic=True)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
-        self.assertEqual(model.interpolation(), 'cubic')
+        self.assertEqual(model.interpolation(), "cubic")
 
     def test_cubic_false(self):
         path = GeoidModel.default_geoid_path()
         model = GeoidModel(self.MODEL_NAME, path, cubic=False)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
-        self.assertEqual(model.interpolation(), 'bilinear')
+        self.assertEqual(model.interpolation(), "bilinear")
 
     def test_threadsafe_true(self):
         path = GeoidModel.default_geoid_path()
@@ -141,7 +140,7 @@ class InstantiationTestCase(unittest.TestCase):
         model = GeoidModel(self.MODEL_NAME, path, True, False)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
-        self.assertEqual(model.interpolation(), 'cubic')
+        self.assertEqual(model.interpolation(), "cubic")
         self.assertFalse(model.threadsafe())
 
     def test_positional_false_true(self):
@@ -149,7 +148,7 @@ class InstantiationTestCase(unittest.TestCase):
         model = GeoidModel(self.MODEL_NAME, path, False, True)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
-        self.assertEqual(model.interpolation(), 'bilinear')
+        self.assertEqual(model.interpolation(), "bilinear")
         self.assertTrue(model.threadsafe())
 
 
@@ -162,14 +161,14 @@ class InfoMethodsTestCase(unittest.TestCase):
     def test_description(self):
         description = self.model.description()
         self.assertIsInstance(description, str)
-        self.assertNotEqual(description, 'NONE')
+        self.assertNotEqual(description, "NONE")
 
     def test_datetime(self):
         datestr = self.model.datetime()
         self.assertIsInstance(datestr, str)
-        self.assertNotEqual(datestr, 'UNKNOWN')
+        self.assertNotEqual(datestr, "UNKNOWN")
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d')
-        date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
+        date = datetime.datetime.strptime(datestr, "%Y-%m-%d %H:%M:%S")
         self.assertLess(date, datetime.datetime.now())
 
     def test_geoid_file(self):
@@ -186,7 +185,7 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertEqual(path, self.datapath)
 
     def test_interpolation(self):
-        self.assertIn(self.model.interpolation(), ['cubic', 'bilinear'])
+        self.assertIn(self.model.interpolation(), ["cubic", "bilinear"])
 
     def test_threadsafe(self):
         self.assertIsInstance(self.model.threadsafe(), bool)
@@ -288,11 +287,11 @@ class CacheTestCase(unittest.TestCase):
 
 
 class ComputationTestCase(unittest.TestCase):
-    LAT = +dms_to_dec(16, 46, 33)   # 16:46:33N
-    LON = -dms_to_dec(3, 0, 34)     # 03:00:34W
-    HEIGHT = +28.7068               # [m]
-    GHEIGHT = +300                  # [m]
-    EHEIGHT = HEIGHT + GHEIGHT      # [m]
+    LAT = +dms_to_dec(16, 46, 33)  # 16:46:33N
+    LON = -dms_to_dec(3, 0, 34)  # 03:00:34W
+    HEIGHT = +28.7068  # [m]
+    GHEIGHT = +300  # [m]
+    EHEIGHT = HEIGHT + GHEIGHT  # [m]
 
     # $ echo 16:46:33N 3:00:34W | GeoidEval
     # 28.7068
@@ -324,22 +323,30 @@ class ComputationTestCase(unittest.TestCase):
 
 
 class VectorComputationTestCase(unittest.TestCase):
-    LAT = np.asarray([
-        [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
-        [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
-    ])
-    LON = np.asarray([
-        [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
-        [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
-    ])
-    HEIGHT = np.asarray([
-        [+28.7068, +14.8866],
-        [+15.0314, +28.6599],
-    ])
-    GHEIGHT = np.asarray([
-        [+300, +400000],
-        [+400000, +300],
-    ])
+    LAT = np.asarray(
+        [
+            [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
+            [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
+        ]
+    )
+    LON = np.asarray(
+        [
+            [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
+            [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
+        ]
+    )
+    HEIGHT = np.asarray(
+        [
+            [+28.7068, +14.8866],
+            [+15.0314, +28.6599],
+        ]
+    )
+    GHEIGHT = np.asarray(
+        [
+            [+300, +400000],
+            [+400000, +300],
+        ]
+    )
     EHEIGHT = HEIGHT + GHEIGHT
     RTOL = 2.5e-6
 
@@ -358,8 +365,11 @@ class VectorComputationTestCase(unittest.TestCase):
     def test_geoid_to_ellipsoid_vector(self):
         dir_ = EHeightConvDir.GEOIDTOELLIPSOID
         h = self.model.convert_height(
-            self.LAT.flatten(), self.LON.flatten(), self.GHEIGHT.flatten(),
-            dir_)
+            self.LAT.flatten(),
+            self.LON.flatten(),
+            self.GHEIGHT.flatten(),
+            dir_,
+        )
         npt.assert_allclose(h, self.EHEIGHT.flatten(), rtol=self.RTOL)
 
     def test_geoid_to_ellipsoid_matrix(self):
@@ -370,8 +380,11 @@ class VectorComputationTestCase(unittest.TestCase):
     def test_ellipsoid_to_geoid_vector(self):
         dir_ = EHeightConvDir.ELLIPSOIDTOGEOID
         h = self.model.convert_height(
-            self.LAT.flatten(), self.LON.flatten(), self.EHEIGHT.flatten(),
-            dir_)
+            self.LAT.flatten(),
+            self.LON.flatten(),
+            self.EHEIGHT.flatten(),
+            dir_,
+        )
         npt.assert_allclose(h, self.GHEIGHT.flatten(), rtol=self.RTOL)
 
     def test_ellipsoid_to_geoid_matrix(self):
@@ -382,8 +395,11 @@ class VectorComputationTestCase(unittest.TestCase):
     def test_convert_height_dir_none_vector(self):
         dir_ = EHeightConvDir.NONE
         h = self.model.convert_height(
-            self.LON.flatten(), self.LAT.flatten(), self.EHEIGHT.flatten(),
-            dir_)
+            self.LON.flatten(),
+            self.LAT.flatten(),
+            self.EHEIGHT.flatten(),
+            dir_,
+        )
         npt.assert_allclose(h, self.EHEIGHT.flatten())
 
     def test_convert_height_dir_none_matrix(self):
@@ -393,18 +409,24 @@ class VectorComputationTestCase(unittest.TestCase):
 
 
 class ConstHeightVectorComputationTestCase(unittest.TestCase):
-    LAT = np.asarray([
-        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-    ])
-    LON = np.asarray([
-        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-    ])
-    HEIGHT = np.asarray([
-        [+28.7068, +28.6599],
-        [+28.7068, +28.6599],
-    ])
+    LAT = np.asarray(
+        [
+            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+        ]
+    )
+    LON = np.asarray(
+        [
+            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+        ]
+    )
+    HEIGHT = np.asarray(
+        [
+            [+28.7068, +28.6599],
+            [+28.7068, +28.6599],
+        ]
+    )
     KHEIGHT = +300
     RTOL = 2.5e-6
 
@@ -415,7 +437,8 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     def test_geoid_to_ellipsoid_vector(self):
         dir_ = EHeightConvDir.GEOIDTOELLIPSOID
         h = self.model.convert_height(
-            self.LAT.flatten(), self.LON.flatten(), self.KHEIGHT, dir_)
+            self.LAT.flatten(), self.LON.flatten(), self.KHEIGHT, dir_
+        )
         eheight = self.HEIGHT + self.KHEIGHT
         npt.assert_allclose(h, eheight.flatten(), rtol=self.RTOL)
 
@@ -428,7 +451,8 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     def test_ellipsoid_to_geoid_vector(self):
         dir_ = EHeightConvDir.ELLIPSOIDTOGEOID
         h = self.model.convert_height(
-            self.LAT.flatten(), self.LON.flatten(), self.KHEIGHT, dir_)
+            self.LAT.flatten(), self.LON.flatten(), self.KHEIGHT, dir_
+        )
         gheight = self.KHEIGHT - self.HEIGHT
         npt.assert_allclose(h, gheight.flatten(), rtol=self.RTOL)
 
@@ -441,7 +465,8 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     def test_convert_height_dir_none_vector(self):
         dir_ = EHeightConvDir.NONE
         h = self.model.convert_height(
-            self.LON.flatten(), self.LAT.flatten(), self.KHEIGHT, dir_)
+            self.LON.flatten(), self.LAT.flatten(), self.KHEIGHT, dir_
+        )
         npt.assert_allclose(h, np.full_like(h, self.KHEIGHT))
 
     def test_convert_height_dir_none_matrix(self):
@@ -450,5 +475,5 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(h, np.full_like(h, self.KHEIGHT))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

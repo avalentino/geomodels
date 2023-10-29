@@ -26,20 +26,20 @@ import numpy as np
 from ._typing import PathType
 
 
-__all__ = ['MetaData', 'SphCoeffSet', 'WmmData', 'import_igrf_txt']
+__all__ = ["MetaData", "SphCoeffSet", "WmmData", "import_igrf_txt"]
 
 
 @dataclass
 class MetaData:
     """World Magnetic Model Format metadata."""
 
-    Name: str = 'N/A'
-    Description: str = 'International Geomagnetic Reference Field'
-    URL: str = 'http://ngdc.noaa.gov/IAGA/vmod/igrf.html'
-    Publisher: str = 'International Association of Geomagnetism and Aeronomy'
-    ReleaseDate: str = 'N/A'
-    DataCutOff: str = 'N/A'
-    ConversionDate: str = 'N/A'
+    Name: str = "N/A"
+    Description: str = "International Geomagnetic Reference Field"
+    URL: str = "http://ngdc.noaa.gov/IAGA/vmod/igrf.html"
+    Publisher: str = "International Association of Geomagnetism and Aeronomy"
+    ReleaseDate: str = "N/A"
+    DataCutOff: str = "N/A"
+    ConversionDate: str = "N/A"
     DataVersion: int = 1
     Radius: int = 6371200
     NumModels: int = 0
@@ -51,14 +51,14 @@ class MetaData:
     MaxHeight: int = 600000
     NumConstants: int = 0
     Normalization: int = 1
-    ID: str = 'N/A'
-    Type = 'linear'
-    ByteOrder = 'little'
+    ID: str = "N/A"
+    Type = "linear"
+    ByteOrder = "little"
     N: int = 0
     M: int = 0
     FORMAT_VERSION: int = 1
 
-    _DATEFMT = '%Y-%m-%d'
+    _DATEFMT = "%Y-%m-%d"
 
     def load(self, filename: PathType) -> None:
         """Load a metadata file in WMM format and return a MetaData object."""
@@ -66,24 +66,25 @@ class MetaData:
         with open(filename) as fd:
             line = next(fd)
             format_ = line.rstrip()
-            if format_ not in ('WMMF-1', 'WMMF-2'):
-                raise RuntimeError(f'invalid format: {format_!r}')
+            if format_ not in ("WMMF-1", "WMMF-2"):
+                raise RuntimeError(f"invalid format: {format_!r}")
             else:
                 self.FORMAT_VERSION = int(format_[-1])
 
             for line in fd:
-                line = line.split('#', 1)[0]
+                line = line.split("#", 1)[0]
                 line = line.strip()
                 if not line:
                     continue
 
                 name, value = line.split(None, 1)
                 if not hasattr(self, name):
-                    warnings.warn(f'unexpected field: {name!r}')
+                    warnings.warn(f"unexpected field: {name!r}")
                     continue
                 if callable(getattr(self, name)):
                     warnings.warn(
-                        f'field name conflicts with method name: {name!r}')
+                        f"field name conflicts with method name: {name!r}"
+                    )
                     continue
                 field_type = type_map.get(name, str)
                 setattr(self, name, field_type(value))
@@ -93,32 +94,33 @@ class MetaData:
         years = range(
             self.Epoch,
             self.Epoch + self.DeltaEpoch * self.NumModels,
-            self.DeltaEpoch)
+            self.DeltaEpoch,
+        )
         return list(years)
 
     def _generation_str(self) -> str:
-        if self.Name and self.Name != 'N/A':
+        if self.Name and self.Name != "N/A":
             generation = str(int(self.Name[-2:]) - 1)
-            if generation == '1':
-                generation = f'{generation}st Generation'
-            elif generation == '2':
-                generation = f'{generation}nd Generation'
-            elif generation == '3':
-                generation = f'{generation}rd Generation'
+            if generation == "1":
+                generation = f"{generation}st Generation"
+            elif generation == "2":
+                generation = f"{generation}nd Generation"
+            elif generation == "3":
+                generation = f"{generation}rd Generation"
             else:
-                assert '0' <= generation[-1] <= '9'
-                generation = f'{generation}th Generation'
+                assert "0" <= generation[-1] <= "9"
+                generation = f"{generation}th Generation"
         else:
-            generation = ''
+            generation = ""
         return generation
 
     def get_id(self) -> str:
         """Return the model ID (eventually inferred by the model name)."""
-        if not self.ID or self.ID == 'N/A':
-            if not self.Name.startswith('igrf') or len(self.Name) != 6:
-                id_ = 'N/A'
+        if not self.ID or self.ID == "N/A":
+            if not self.Name.startswith("igrf") or len(self.Name) != 6:
+                id_ = "N/A"
             else:
-                id_ = self.Name.upper() + '-A'
+                id_ = self.Name.upper() + "-A"
         else:
             id_ = self.ID
         return id_
@@ -127,13 +129,13 @@ class MetaData:
         upper_name = self.Name.upper()
 
         description = self.Description
-        if description == 'International Geomagnetic Reference Field':
+        if description == "International Geomagnetic Reference Field":
             gen = self._generation_str()
-            description = f'{description} {gen}'
+            description = f"{description} {gen}"
 
         id_ = self.get_id()
 
-        return f'''\
+        return f"""\
 WMMF-{self.FORMAT_VERSION}
 # A World Magnetic Model (Format {self.FORMAT_VERSION}) file.  \
 For documentation on the
@@ -160,17 +162,17 @@ MaxHeight       {self.MaxHeight}
 # the name of this file.  The coefficients were obtained from {upper_name}.COF
 # in the geomag70 distribution.
 ID              {id_}
-'''
+"""
 
     def save(self, filename: PathType) -> None:
-        with open(filename, 'w') as fd:
+        with open(filename, "w") as fd:
             fd.write(str(self))
 
 
-SphCoeffSet = namedtuple('SphCoeffSet', ['C', 'S'])
+SphCoeffSet = namedtuple("SphCoeffSet", ["C", "S"])
 
 # @COMPATIBILITY: typing.OrderedDict is new in Python v3.7.2
-if hasattr(typing, 'OrderedDict'):
+if hasattr(typing, "OrderedDict"):
     SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
 else:
     SphCoeffsType = typing.Dict[str, SphCoeffSet]
@@ -186,7 +188,8 @@ class WmmData:
     #                 from __future__ import annotations
     @classmethod
     def from_metadata_and_coeffs(
-            cls, medadata: MetaData, coeffs: SphCoeffsType) -> 'WmmData':
+        cls, medadata: MetaData, coeffs: SphCoeffsType
+    ) -> "WmmData":
         wmmdata = cls()
         wmmdata.metadata = medadata
         wmmdata.coeffs = coeffs
@@ -204,15 +207,15 @@ class WmmData:
     def _check(self) -> None:
         years = list(self.coeffs.keys())
         rate = years.pop()
-        if rate != 'rate':
-            raise RuntimeError('rate coefficients not found')
+        if rate != "rate":
+            raise RuntimeError("rate coefficients not found")
         if years != [str(year) for year in self.metadata.get_years()]:
-            raise RuntimeError('coefficient years does not match metadata')
+            raise RuntimeError("coefficient years does not match metadata")
 
     @staticmethod
     def _load_sph_coeff_set(fd: typing.IO) -> SphCoeffSet:
         data = fd.read(2 * 4)
-        n, m = struct.unpack('<ii', data)
+        n, m = struct.unpack("<ii", data)
 
         nc = (m + 1) * (2 * n - m + 2) // 2
         data = np.fromfile(fd, dtype=np.float64, count=nc)
@@ -231,16 +234,17 @@ class WmmData:
         filename = pathlib.Path(filename)
         years = self.metadata.get_years()
 
-        with open(filename, 'rb') as fd:
-            id_ = fd.read(8).decode('utf-8')
+        with open(filename, "rb") as fd:
+            id_ = fd.read(8).decode("utf-8")
             if id_ != self.metadata.ID:
                 raise RuntimeError(
-                    f'data ID ({id_}) does not match '
-                    f'metadata ID ({self.metadata.ID})')
+                    f"data ID ({id_}) does not match "
+                    f"metadata ID ({self.metadata.ID})"
+                )
             data = OrderedDict()
             for year in years:
                 data[str(year)] = self._load_sph_coeff_set(fd)
-            data['rate'] = self._load_sph_coeff_set(fd)
+            data["rate"] = self._load_sph_coeff_set(fd)
 
         return data
 
@@ -249,26 +253,28 @@ class WmmData:
         filename = pathlib.Path(filename)
         # self.metadata = MetaData()  # @TODO: check
         self.metadata.load(filename)
-        bin_filename = filename.with_suffix(filename.suffix + '.cof')
+        bin_filename = filename.with_suffix(filename.suffix + ".cof")
         self.coeffs = self._load_sph_coeffs(bin_filename)
         self._check()
 
     @staticmethod
     def _save_sph_coeff_set(fd: typing.IO, coeffs: SphCoeffSet) -> None:
         if coeffs.C.ndim != 2:
-            raise TypeError('coefficients are not 2d arrays')
+            raise TypeError("coefficients are not 2d arrays")
         if coeffs.C.shape != coeffs.S.shape:
             raise ValueError(
-                'C and S coefficient do not have the same shape '
-                '(C: {}, S: {})'.format(coeffs.C.shape, coeffs.S.shape))
+                f"C and S coefficient do not have the same shape "
+                f"(C: {coeffs.C.shape}, S: {coeffs.S.shape})"
+            )
 
         n, m = coeffs.C.shape
         n -= 1
         m -= 1
         if m > n:
             raise TypeError(
-                f'invalid shape of coefficient arrays: '
-                f'n={n}, m={m}, expected m <= n')
+                f"invalid shape of coefficient arrays: "
+                f"n={n}, m={m}, expected m <= n"
+            )
 
         # compute the effective size (n, m)
         M = np.abs(coeffs.C) + np.abs(coeffs.S)
@@ -277,25 +283,25 @@ class WmmData:
         if m > n:
             m = n
 
-        data = struct.pack('<ii', n, m)
+        data = struct.pack("<ii", n, m)
         fd.write(data)
 
         data = coeffs.C.T[np.triu_indices(m + 1, 0, n + 1)]
-        data = np.ascontiguousarray(data, dtype='<f8')
+        data = np.ascontiguousarray(data, dtype="<f8")
         fd.write(data.tobytes())
 
         data = coeffs.S.T[1:, 1:][np.triu_indices(m, 0, n)]
-        data = np.ascontiguousarray(data, dtype='<f8')
+        data = np.ascontiguousarray(data, dtype="<f8")
         fd.write(data.tobytes())
 
     def _save_sph_coeffs(self, filename: PathType) -> None:
         """Store spherical harmonics coefficients in binary WMM format."""
         id_ = self.metadata.get_id()
         if len(id_) != 8:
-            raise ValueError(f'invalid id_ ({id_:r}): expected len(id_) == 8')
+            raise ValueError(f"invalid id_ ({id_:r}): expected len(id_) == 8")
 
-        with open(filename, 'wb') as fd:
-            fd.write(id_.encode('utf-8'))
+        with open(filename, "wb") as fd:
+            fd.write(id_.encode("utf-8"))
             for coeffs in self.coeffs.values():
                 self._save_sph_coeff_set(fd, coeffs)
 
@@ -303,10 +309,10 @@ class WmmData:
         """Save data in WMM format (metadata and binary)."""
         outpath = pathlib.Path(outpath)
         if outpath.is_dir():
-            filename = outpath / (self.metadata.Name + '.wmm')
+            filename = outpath / (self.metadata.Name + ".wmm")
         else:
             filename = outpath
-        bin_filename = filename.with_suffix(filename.suffix + '.cof')
+        bin_filename = filename.with_suffix(filename.suffix + ".cof")
 
         if not force:
             if filename.exists():
@@ -322,15 +328,15 @@ def _metadata_from_txt_header(header: str) -> MetaData:
     """Build a MataData object from the header of a coeffs file
     in text IGRF format."""
     parts = header.split()
-    if parts[:3] != ['g/h', 'n', 'm'] or '-' not in parts[-1]:
-        raise ValueError(f'invalid header line: {header!r}')
+    if parts[:3] != ["g/h", "n", "m"] or "-" not in parts[-1]:
+        raise ValueError(f"invalid header line: {header!r}")
 
     years = [float(item) for item in parts[3:-1]]
 
     # check uniform time sampling
     dyears = [b - a for a, b in zip(years[1:], years[:-1])]
     if max(dyears) != min(dyears):
-        raise RuntimeError('non uniform time sampling detected')
+        raise RuntimeError("non uniform time sampling detected")
 
     metadata = MetaData()
     metadata.ConversionDate = datetime.date.today().strftime(MetaData._DATEFMT)
@@ -352,64 +358,67 @@ def import_igrf_txt(path: PathType) -> WmmData:
     urlobj = urlsplit(os.fspath(path))
     filename = pathlib.Path(urlobj.path)
 
-    pattern = 'igrf[0-9][0-9]coeffs.txt'
+    pattern = "igrf[0-9][0-9]coeffs.txt"
     if not fnmatch.fnmatch(filename.name, pattern):
         raise ValueError(
-            f'invalid file name ("{filename}"), expected pattern: {pattern!r}')
+            f'invalid file name ("{filename}"), expected pattern: {pattern!r}'
+        )
 
-    if urlobj.scheme in ('', 'file'):
+    if urlobj.scheme in ("", "file"):
         fd = open(filename)
     else:
         fd = urlopen(path)
 
     with fd:
         for line in fd:
-            if line.startswith('#'):
+            if line.startswith("#"):
                 continue
-            elif line.startswith('g/h'):
-                assert filename.stem.endswith('coeffs')
+            elif line.startswith("g/h"):
+                assert filename.stem.endswith("coeffs")
                 metadata = _metadata_from_txt_header(line)
                 metadata.Name = filename.stem[:-6]
                 break
         else:
-            raise RuntimeError(f'header line not found in {filename}')
+            raise RuntimeError(f"header line not found in {filename}")
 
         years = metadata.get_years()
-        dtype = [
-            ('type', 'S1'),
-            ('n', 'int'),
-            ('m', 'int'),
-        ] + [(f'{year}', 'float64') for year in years] + [
-            ('rate', 'float64')
-        ]
+        dtype = (
+            [
+                ("type", "S1"),
+                ("n", "int"),
+                ("m", "int"),
+            ]
+            + [(f"{year}", "float64") for year in years]
+            + [("rate", "float64")]
+        )
         dtype = np.dtype(dtype)
 
         coeffs = np.loadtxt(fd, dtype=dtype)
 
-    n = np.max(coeffs['n'])
-    m = np.max(coeffs['m'])
+    n = np.max(coeffs["n"])
+    m = np.max(coeffs["m"])
 
-    g_idx = coeffs['type'] == b'g'
+    g_idx = coeffs["type"] == b"g"
     g = coeffs[g_idx]
-    h_idx = coeffs['type'] == b'h'
+    h_idx = coeffs["type"] == b"h"
     h = coeffs[h_idx]
 
     data = OrderedDict()
     for year in years:
         C = np.zeros((n + 1, m + 1))
-        C[g['n'], g['m']] = g[str(year)]
+        C[g["n"], g["m"]] = g[str(year)]
 
         S = np.zeros((n + 1, m + 1))
-        S[h['n'], h['m']] = h[str(year)]
+        S[h["n"], h["m"]] = h[str(year)]
 
         data[str(year)] = SphCoeffSet(C, S)
 
     C = np.zeros((n + 1, m + 1))
-    C[g['n'], g['m']] = g['rate']
+    C[g["n"], g["m"]] = g["rate"]
 
     S = np.zeros((n + 1, m + 1))
-    S[h['n'], h['m']] = h['rate']
+    S[h["n"], h["m"]] = h["rate"]
 
-    data['rate'] = SphCoeffSet(C, S)
+    data["rate"] = SphCoeffSet(C, S)
 
     return WmmData.from_metadata_and_coeffs(metadata, data)

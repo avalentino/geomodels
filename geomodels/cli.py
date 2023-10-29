@@ -13,7 +13,11 @@ from . import __version__
 from . import tests
 from .data import get_default_data_path, get_base_url, install
 from .data import (
-    EModelGroup, EModelType, EGeoidModel, EGravityModel, EMagneticModel,
+    EModelGroup,
+    EModelType,
+    EGeoidModel,
+    EGravityModel,
+    EMagneticModel,
 )
 from .wmmf import import_igrf_txt
 from .tests import print_versions
@@ -29,32 +33,32 @@ EX_FAILURE = 1
 EX_INTERRUPT = 130
 
 
-PROG = __package__ + '-cli'
-LOGFMT = '%(levelname)s: %(message)s'
+PROG = __package__ + "-cli"
+LOGFMT = "%(levelname)s: %(message)s"
 
 
 class EInfoMode(enum.Enum):
-    INFO = 'info'
-    DATA = 'data'
-    ALL = 'all'
+    INFO = "info"
+    DATA = "data"
+    ALL = "all"
 
 
 def _format_data_info(datadir=None):
     if datadir is None:
         datadir = get_default_data_path()
 
-    lines = [f'data directory: {datadir!r}']
+    lines = [f"data directory: {datadir!r}"]
     for modelenum in (EGeoidModel, EGravityModel, EMagneticModel):
         modeltype = modelenum.get_model_type().value
         modeltype_dir = os.path.join(datadir, modeltype)
-        lines.append(f'* model: {modeltype} ({modeltype_dir!r})')
+        lines.append(f"* model: {modeltype} ({modeltype_dir!r})")
         for item in modelenum:
-            pattern = os.path.join(modeltype_dir, item.value + '*')
+            pattern = os.path.join(modeltype_dir, item.value + "*")
             installed = bool(glob.glob(pattern))
-            installed = 'INSTALLED ' if installed else 'NOT INSTALLED'
-            lines.append(f'  {item.name:12s} - {installed}')
+            installed = "INSTALLED " if installed else "NOT INSTALLED"
+            lines.append(f"  {item.name:12s} - {installed}")
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def info(mode=EInfoMode.ALL, datadir=None):
@@ -115,14 +119,15 @@ def install_data(model, datadir=None, base_url=None, no_progress=False):
         else:
             break
     else:
-        raise RuntimeError(f'unexpected model: {model!r}')
+        raise RuntimeError(f"unexpected model: {model!r}")
 
     progress = not no_progress
     install(model, datadir, base_url, progress=progress)
 
 
-def import_igrf(path: PathType, outpath: Optional[PathType] = None,
-                force: bool = False):
+def import_igrf(
+    path: PathType, outpath: Optional[PathType] = None, force: bool = False
+):
     """Import magnetic field data from IGRF text format.
 
     Import Spherical Harmonics coefficients for the IGRF magnetic field
@@ -133,51 +138,70 @@ def import_igrf(path: PathType, outpath: Optional[PathType] = None,
     wmmdata = import_igrf_txt(path)
 
     if outpath is None:
-        outpath = pathlib.Path(get_default_data_path()) / 'magnetic'
+        outpath = pathlib.Path(get_default_data_path()) / "magnetic"
 
     wmmdata.save(outpath, force)
 
 
-def test(datadir: Optional[PathType] = None,
-         verbosity: int = 1, failfast: bool = False):
+def test(
+    datadir: Optional[PathType] = None,
+    verbosity: int = 1,
+    failfast: bool = False,
+):
     """Run the test suite for the geomodels package."""
-    old_geographiclib_data = os.environ.get('GEOGRAPHICLIB_DATA')
+    old_geographiclib_data = os.environ.get("GEOGRAPHICLIB_DATA")
     try:
         if datadir is not None:
-            os.environ['GEOGRAPHICLIB_DATA'] = str(datadir)
+            os.environ["GEOGRAPHICLIB_DATA"] = str(datadir)
         return tests.test(verbosity, failfast)
     finally:
         if old_geographiclib_data is None:
-            del os.environ['GEOGRAPHICLIB_DATA']
+            del os.environ["GEOGRAPHICLIB_DATA"]
         else:
-            os.environ['GEOGRAPHICLIB_DATA'] = old_geographiclib_data
+            os.environ["GEOGRAPHICLIB_DATA"] = old_geographiclib_data
 
 
-def _set_logging_control_args(parser, default_loglevel='WARNING'):
+def _set_logging_control_args(parser, default_loglevel="WARNING"):
     """Setup command line options for logging control."""
 
     loglevels = [logging.getLevelName(level) for level in range(10, 60, 10)]
 
     parser.add_argument(
-        '--loglevel', default=default_loglevel, choices=loglevels,
-        help='logging level (default: %(default)s)')
+        "--loglevel",
+        default=default_loglevel,
+        choices=loglevels,
+        help="logging level (default: %(default)s)",
+    )
     parser.add_argument(
-        '-q', '--quiet', dest='loglevel', action='store_const',
-        const='ERROR',
-        help='suppress standard output messages, only errors are printed '
-             'to screen (set "loglevel" to "ERROR")')
+        "-q",
+        "--quiet",
+        dest="loglevel",
+        action="store_const",
+        const="ERROR",
+        help="suppress standard output messages, only errors are printed "
+        'to screen (set "loglevel" to "ERROR")',
+    )
     parser.add_argument(
-        '-v', '--verbose', dest='loglevel', action='store_const', const='INFO',
-        help='print verbose output messages (set "loglevel" to "INFO")')
+        "-v",
+        "--verbose",
+        dest="loglevel",
+        action="store_const",
+        const="INFO",
+        help='print verbose output messages (set "loglevel" to "INFO")',
+    )
     parser.add_argument(
-        '--debug', dest='loglevel', action='store_const', const='DEBUG',
-        help='print debug messages (set "loglevel" to "DEBUG")')
+        "--debug",
+        dest="loglevel",
+        action="store_const",
+        const="DEBUG",
+        help='print debug messages (set "loglevel" to "DEBUG")',
+    )
 
     return parser
 
 
 def get_info_parser(parser=None):
-    name = 'info'
+    name = "info"
     synopsis = info.__doc__.splitlines()[0].lower()
     doc = info.__doc__
 
@@ -190,17 +214,29 @@ def get_info_parser(parser=None):
 
     # command line options
     parser.add_argument(
-        '-d', '--datadir', default=get_default_data_path(),
-        help='specifies where the model data are stored '
-             '(default: %(default)r).')
+        "-d",
+        "--datadir",
+        default=get_default_data_path(),
+        help="specifies where the model data are stored "
+        "(default: %(default)r).",
+    )
     parser.add_argument(
-        '-a', '--all', dest='mode', action='store_const', const=EInfoMode.ALL,
+        "-a",
+        "--all",
+        dest="mode",
+        action="store_const",
+        const=EInfoMode.ALL,
         default=EInfoMode.INFO,
-        help='show both versions and platform info and also information '
-             'about installed data')
+        help="show both versions and platform info and also information "
+        "about installed data",
+    )
     parser.add_argument(
-        '--data', dest='mode', action='store_const', const=EInfoMode.DATA,
-        help='show info about installed data')
+        "--data",
+        dest="mode",
+        action="store_const",
+        const=EInfoMode.DATA,
+        help="show info about installed data",
+    )
 
     # positional arguments
     # ...
@@ -209,32 +245,46 @@ def get_info_parser(parser=None):
 
 
 def get_install_data_parser(parser=None):
-    name = 'install-data'
+    name = "install-data"
     synopsis = install_data.__doc__.splitlines()[0].lower()
     doc = install_data.__doc__
 
     if parser is None:
         parser = argparse.ArgumentParser(
-            prog=name, description=doc,
-            formatter_class=argparse.RawDescriptionHelpFormatter)
+            prog=name,
+            description=doc,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+        )
     else:
         parser = parser.add_parser(
-            name, description=doc, help=synopsis,
-            formatter_class=argparse.RawDescriptionHelpFormatter)
+            name,
+            description=doc,
+            help=synopsis,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+        )
 
     parser.set_defaults(func=install_data)
 
     # command line options
     parser.add_argument(
-        '-b', '--base-url', default=get_base_url(),
-        help='specifies the base URL for the download (default: %(default)r).')
+        "-b",
+        "--base-url",
+        default=get_base_url(),
+        help="specifies the base URL for the download (default: %(default)r).",
+    )
     parser.add_argument(
-        '-d', '--datadir', default=get_default_data_path(),
-        help='specifies where the datasets should be stored '
-             '(default: %(default)r).')
+        "-d",
+        "--datadir",
+        default=get_default_data_path(),
+        help="specifies where the datasets should be stored "
+        "(default: %(default)r).",
+    )
     parser.add_argument(
-        '--no-progress', action='store_true', default=False,
-        help='suppress progress bar display')
+        "--no-progress",
+        action="store_true",
+        default=False,
+        help="suppress progress bar display",
+    )
 
     # positional arguments
     choices = [model.value for model in EModelGroup]
@@ -243,13 +293,14 @@ def get_install_data_parser(parser=None):
     choices.extend(model.value for model in EGravityModel)
     choices.extend(model.value for model in EMagneticModel)
     parser.add_argument(
-        'model', choices=choices, help='model(s) to be installed')
+        "model", choices=choices, help="model(s) to be installed"
+    )
 
     return parser
 
 
 def get_import_igrf_parser(parser=None):
-    name = 'import-igrf'
+    name = "import-igrf"
     doc = import_igrf.__doc__.splitlines()[0]
     synopsis = doc.lower()
 
@@ -262,23 +313,26 @@ def get_import_igrf_parser(parser=None):
 
     # command line options
     parser.add_argument(
-        '-o', '--outpath',
-        default=pathlib.Path(get_default_data_path()) / 'magnetic',
-        help='specifies the output data path (default: "%(default)s").')
+        "-o",
+        "--outpath",
+        default=pathlib.Path(get_default_data_path()) / "magnetic",
+        help='specifies the output data path (default: "%(default)s").',
+    )
     parser.add_argument(
-        '--force', action='store_true', default=False,
-        help='overwrite existing files (default: %(default)s).')
+        "--force",
+        action="store_true",
+        default=False,
+        help="overwrite existing files (default: %(default)s).",
+    )
 
     # positional arguments
-    parser.add_argument(
-        'path',
-        help='path or URL of the IGRF text file')
+    parser.add_argument("path", help="path or URL of the IGRF text file")
 
     return parser
 
 
 def get_test_parser(parser=None):
-    name = 'test'
+    name = "test"
     doc = test.__doc__.splitlines()[0]
     synopsis = doc.lower()
 
@@ -291,16 +345,25 @@ def get_test_parser(parser=None):
 
     # command line options
     parser.add_argument(
-        '-d', '--datadir', default=get_default_data_path(),
-        help='specifies where the model data are stored '
-             '(default: %(default)r).')
+        "-d",
+        "--datadir",
+        default=get_default_data_path(),
+        help="specifies where the model data are stored "
+        "(default: %(default)r).",
+    )
     parser.add_argument(
-        '--verbosity', type=int, default=1,
-        help='verbosity level for the unittest runner (default: %(default)s).')
+        "--verbosity",
+        type=int,
+        default=1,
+        help="verbosity level for the unittest runner (default: %(default)s).",
+    )
     parser.add_argument(
-        '--failfast', action='store_true', default=False,
-        help='stop the test run on the first error or failure '
-             '(default: %(default)s).')
+        "--failfast",
+        action="store_true",
+        default=False,
+        help="stop the test run on the first error or failure "
+        "(default: %(default)s).",
+    )
 
     # positional arguments
     # ...
@@ -312,7 +375,8 @@ def get_parser():
     """Instantiate the command line argument parser."""
     parser = argparse.ArgumentParser(description=__doc__, prog=PROG)
     parser.add_argument(
-        '--version', action='version', version='%(prog)s v' + __version__)
+        "--version", action="version", version="%(prog)s v" + __version__
+    )
 
     # Command line options
     _set_logging_control_args(parser)
@@ -321,7 +385,7 @@ def get_parser():
     # ...
 
     # Sub-command management
-    subparsers = parser.add_subparsers(title='sub-commands')  # dest='func'
+    subparsers = parser.add_subparsers(title="sub-commands")  # dest='func'
     get_info_parser(subparsers)
     get_install_data_parser(subparsers)
     get_import_igrf_parser(subparsers)
@@ -343,16 +407,16 @@ def parse_args(args=None, namespace=None, parser=None):
     # Common pre-processing of parsed arguments and consistency checks
     # ...
 
-    if getattr(args, 'func', None) is None:
-        parser.error('no sub-commnd specified.')
+    if getattr(args, "func", None) is None:
+        parser.error("no sub-commnd specified.")
 
     return args
 
 
 def _get_kwargs(args):
     kwargs = dict(args._get_kwargs())
-    kwargs.pop('loglevel')
-    kwargs.pop('func')
+    kwargs.pop("loglevel")
+    kwargs.pop("func")
     return kwargs
 
 
@@ -365,16 +429,16 @@ def main(*argv):
     logging.getLogger().setLevel(args.loglevel)
 
     try:
-        logging.debug('args: %s', args)
+        logging.debug("args: %s", args)
 
         func = args.func
         kwargs = _get_kwargs(args)
         return func(**kwargs)
 
     except Exception as exc:
-        logging.critical(f'{type(exc).__name__!r} {exc}')
-        logging.debug('stacktrace:', exc_info=True)
+        logging.critical(f"{type(exc).__name__!r} {exc}")
+        logging.debug("stacktrace:", exc_info=True)
         return EX_FAILURE
     except KeyboardInterrupt:
-        logging.warning('Keyboard interrupt received: exit the program')
+        logging.warning("Keyboard interrupt received: exit the program")
         return EX_INTERRUPT

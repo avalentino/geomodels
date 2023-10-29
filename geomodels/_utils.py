@@ -10,15 +10,16 @@ def as_contiguous_1d_llh(lat, lon, h, dtype=np.float64):
     lon = np.asarray(lon)
     h = np.asarray(h)
 
-    for name, param in (('lat', lat), ('lon', lon), ('h', h)):
+    for name, param in (("lat", lat), ("lon", lon), ("h", h)):
         dt = param.dtype
-        if not (np.issubdtype(dt, np.floating) or
-                np.issubdtype(dt, np.integer)):
-            raise TypeError(f'{name}: {param!r}')
+        if not (
+            np.issubdtype(dt, np.floating) or np.issubdtype(dt, np.integer)
+        ):
+            raise TypeError(f"{name}: {param!r}")
 
     shape = lat.shape
     if lon.shape != shape or (h.size > 1 and h.shape != shape):
-        raise ValueError('lat, lon and h shall have the same shape')
+        raise ValueError("lat, lon and h shall have the same shape")
 
     size = lat.size
 
@@ -36,7 +37,7 @@ def as_contiguous_1d_llh(lat, lon, h, dtype=np.float64):
 
 def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
     if labels is None:
-        labels = [f'component_{i}' for i in range(len(args))]
+        labels = [f"component_{i}" for i in range(len(args))]
 
     is_scalar = np.isscalar(args[0])
 
@@ -47,12 +48,13 @@ def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
     shape = args[0].shape
     for name, param in zip(labels, args):
         dt = param.dtype
-        if not (np.issubdtype(dt, np.floating) or
-                np.issubdtype(dt, np.integer)):
-            raise TypeError(f'{name}: {param!r}')
+        if not (
+            np.issubdtype(dt, np.floating) or np.issubdtype(dt, np.integer)
+        ):
+            raise TypeError(f"{name}: {param!r}")
 
         if param.shape != shape:
-            raise ValueError('not all components have the same shape')
+            raise ValueError("not all components have the same shape")
 
     size = args[0].size
     for i in range(len(args)):

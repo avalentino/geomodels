@@ -16,18 +16,18 @@ class DataPathTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(path))
 
     def test_default_data_path_from_env(self):
-        old_env = os.environ.get('GEOGRAPHICLIB_DATA')
-        dummy_path = '/dummy/path'
-        os.environ['GEOGRAPHICLIB_DATA'] = dummy_path
+        old_env = os.environ.get("GEOGRAPHICLIB_DATA")
+        dummy_path = "/dummy/path"
+        os.environ["GEOGRAPHICLIB_DATA"] = dummy_path
 
         try:
             path = geomodels.data.get_default_data_path()
             self.assertEqual(path, dummy_path)
         finally:
             if old_env is None:
-                del os.environ['GEOGRAPHICLIB_DATA']
+                del os.environ["GEOGRAPHICLIB_DATA"]
             else:
-                os.environ['GEOGRAPHICLIB_DATA'] = old_env
+                os.environ["GEOGRAPHICLIB_DATA"] = old_env
 
 
 class UrlTestCase(unittest.TestCase):
@@ -55,13 +55,14 @@ class UrlTestCase(unittest.TestCase):
                     self.assertTrue(url.path.endswith(archive_extension))
 
     def test_get_model_url_with_base_url(self):
-        base_url = 'https://dummy.url'
+        base_url = "https://dummy.url"
         archive_extension = geomodels.data.EArchiveType.BZ2.value
         for model_type in self.MODEL_TYPES:
             for model in model_type:
                 with self.subTest(model=model):
                     url = geomodels.data.get_model_url(
-                        model, base_url=base_url)
+                        model, base_url=base_url
+                    )
                     self.assertIsInstance(url, str)
                     self.assertTrue(url.startswith(base_url))
                     url = urlsplit(url)
@@ -77,7 +78,8 @@ class UrlTestCase(unittest.TestCase):
             for model in model_type:
                 with self.subTest(model=model):
                     url = geomodels.data.get_model_url(
-                        model, archive_type=archive_type)
+                        model, archive_type=archive_type
+                    )
                     self.assertIsInstance(url, str)
                     self.assertTrue(url.startswith(base_url))
                     url = urlsplit(url)
@@ -87,19 +89,19 @@ class UrlTestCase(unittest.TestCase):
 
 
 class DownloadTestCase(unittest.TestCase):
-    DATA = 'dummydata'
+    DATA = "dummydata"
 
     def setUp(self) -> None:
         self.datadir = pathlib.Path(tempfile.mkdtemp())
-        self.srcfile = self.datadir / 'filename.txt'
-        with open(self.srcfile, 'w') as fd:
+        self.srcfile = self.datadir / "filename.txt"
+        with open(self.srcfile, "w") as fd:
             fd.write(self.DATA)
 
     def tearDown(self) -> None:
         shutil.rmtree(self.datadir)
 
     def test_download_file(self):
-        dstdir = self.datadir / 'out'
+        dstdir = self.datadir / "out"
         dstdir.mkdir()
 
         dstfile = dstdir / self.srcfile.name
@@ -124,8 +126,9 @@ class InstallTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.download_patcher = mock.patch(
-            'geomodels.data.download', return_value='dummy')
-        self.unpack_archive_patcher = mock.patch('shutil.unpack_archive')
+            "geomodels.data.download", return_value="dummy"
+        )
+        self.unpack_archive_patcher = mock.patch("shutil.unpack_archive")
         self.download_mock = self.download_patcher.start()
         self.unpack_archive_mock = self.unpack_archive_patcher.start()
 
@@ -141,9 +144,11 @@ class InstallTestCase(unittest.TestCase):
             geomodels.data.install(model, datadir, progress=False)
 
         self.download_mock.assert_called_once_with(
-            url, mock.ANY, progress=False)
+            url, mock.ANY, progress=False
+        )
         self.unpack_archive_mock.assert_called_once_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
 
     def test_install_one_model_type(self):
         model = geomodels.data.EModelType.GRAVITY
@@ -155,7 +160,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_all_models(self):
@@ -168,7 +174,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_minimal_models(self):
@@ -181,7 +188,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_recommended_models(self):
@@ -194,7 +202,8 @@ class InstallTestCase(unittest.TestCase):
         self.assertGreaterEqual(self.download_mock.call_count, 3)
         self.assertLessEqual(self.download_mock.call_count, 7)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, 3)
         self.assertLessEqual(self.unpack_archive_mock.call_count, 7)
 
@@ -208,7 +217,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_gravity_models(self):
@@ -221,7 +231,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_magnetic_models(self):
@@ -234,7 +245,8 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, n_models)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertGreaterEqual(self.unpack_archive_mock.call_count, n_models)
 
     def test_install_skip(self):
@@ -254,8 +266,8 @@ class InstallTestCase(unittest.TestCase):
             model_dir.mkdir()
 
             igrf12 = geomodels.data.EMagneticModel.IGRF12
-            model_file = model_dir / (igrf12.name.lower() + '.dummyext')
-            open(model_file, 'w').close()  # touch
+            model_file = model_dir / (igrf12.name.lower() + ".dummyext")
+            open(model_file, "w").close()  # touch
 
             geomodels.data.install(model, datadir, progress=False)
 
@@ -263,9 +275,11 @@ class InstallTestCase(unittest.TestCase):
         self.download_mock.assert_called()
         self.assertEqual(self.download_mock.call_count, expected_call_count)
         self.unpack_archive_mock.assert_called_with(
-            mock.ANY, extract_dir=datadir)
+            mock.ANY, extract_dir=datadir
+        )
         self.assertEqual(
-            self.unpack_archive_mock.call_count, expected_call_count)
+            self.unpack_archive_mock.call_count, expected_call_count
+        )
 
     def test_install_invalid_01(self):
         model = None
@@ -273,8 +287,12 @@ class InstallTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as datadir:
             self.assertRaises(
                 (TypeError, AttributeError),
-                geomodels.data.install, model, datadir, progress=False)
+                geomodels.data.install,
+                model,
+                datadir,
+                progress=False,
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

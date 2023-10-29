@@ -8,7 +8,7 @@ class GeographicLibCommonCase(unittest.TestCase):
     def test_lib_version_str(self):
         version = geomodels.lib_version_str()
         self.assertIsInstance(version, str)
-        self.assertRegex(version, r'\d+\.\d+(\.\d+)?')
+        self.assertRegex(version, r"\d+\.\d+(\.\d+)?")
 
     def test_lib_version_info(self):
         info = geomodels.lib_version_info()
@@ -24,13 +24,14 @@ class GeographicLibCommonCase(unittest.TestCase):
         version_info = geomodels.lib_version_info()
 
         mobj = re.match(
-            r'(?P<major>\d+)\.(?P<minor>\d+)(\.(?P<micro>\d+))?', version_str)
+            r"(?P<major>\d+)\.(?P<minor>\d+)(\.(?P<micro>\d+))?", version_str
+        )
 
-        self.assertEqual(version_info.major, int(mobj.group('major')))
-        self.assertEqual(version_info.minor, int(mobj.group('minor')))
-        if mobj.group('micro'):
-            self.assertEqual(version_info.micro, int(mobj.group('micro')))
+        self.assertEqual(version_info.major, int(mobj.group("major")))
+        self.assertEqual(version_info.minor, int(mobj.group("minor")))
+        if mobj.group("micro"):
+            self.assertEqual(version_info.micro, int(mobj.group("micro")))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

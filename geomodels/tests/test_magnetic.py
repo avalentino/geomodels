@@ -14,24 +14,23 @@ from geomodels.tests.utils import dms_to_dec
 
 class StaticMethodsTestCase(unittest.TestCase):
     def test_default_magnetic_path(self):
-        self.assertIsInstance(
-            MagneticFieldModel.default_magnetic_path(), str)
+        self.assertIsInstance(MagneticFieldModel.default_magnetic_path(), str)
         self.assertEqual(
             MagneticFieldModel.default_magnetic_path(),
-            os.path.join(get_default_data_path(), 'magnetic')
+            os.path.join(get_default_data_path(), "magnetic"),
         )
 
     def test_default_magnetic_name(self):
         names = (
-            'wmm2010',
-            'wmm2015',
-            'wmm2015v2',
-            'wmm2020',
-            'igrf11',
-            'igrf12',
-            'emm2010',
-            'emm2015',
-            'emm2017',
+            "wmm2010",
+            "wmm2015",
+            "wmm2015v2",
+            "wmm2020",
+            "igrf11",
+            "igrf12",
+            "emm2010",
+            "emm2015",
+            "emm2017",
         )
         self.assertTrue(MagneticFieldModel.default_magnetic_name() in names)
 
@@ -40,12 +39,14 @@ class InstantiationTestCase00(unittest.TestCase):
     def test_no_args(self):
         model = MagneticFieldModel()
         self.assertIsInstance(model, MagneticFieldModel)
-        self.assertEqual(model.magnetic_model_name(),
-                         MagneticFieldModel.default_magnetic_name())
+        self.assertEqual(
+            model.magnetic_model_name(),
+            MagneticFieldModel.default_magnetic_name(),
+        )
 
 
 class InstantiationTestCase01(unittest.TestCase):
-    MODEL_NAME = 'wmm2015'
+    MODEL_NAME = "wmm2015"
 
     def test_name(self):
         model = MagneticFieldModel(self.MODEL_NAME)
@@ -62,7 +63,8 @@ class InstantiationTestCase01(unittest.TestCase):
         default_path = MagneticFieldModel.default_magnetic_path()
         with tempfile.TemporaryDirectory() as dirname:
             magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path))
+                dirname, os.path.basename(default_path)
+            )
             shutil.copytree(default_path, magnetic_path)
             model = MagneticFieldModel(self.MODEL_NAME, magnetic_path)
             self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
@@ -72,45 +74,49 @@ class InstantiationTestCase01(unittest.TestCase):
         default_path = MagneticFieldModel.default_magnetic_path()
         with tempfile.TemporaryDirectory() as dirname:
             magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path))
+                dirname, os.path.basename(default_path)
+            )
             shutil.copytree(default_path, magnetic_path)
 
-            old_env = os.environ.get('GEOGRAPHICLIB_DATA')
-            os.environ['GEOGRAPHICLIB_DATA'] = dirname
+            old_env = os.environ.get("GEOGRAPHICLIB_DATA")
+            os.environ["GEOGRAPHICLIB_DATA"] = dirname
             try:
                 model = MagneticFieldModel(self.MODEL_NAME)
                 self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
                 self.assertEqual(
-                    model.magnetic_model_directory(), magnetic_path)
+                    model.magnetic_model_directory(), magnetic_path
+                )
             finally:
                 if old_env is None:
-                    del os.environ['GEOGRAPHICLIB_DATA']
+                    del os.environ["GEOGRAPHICLIB_DATA"]
                 else:
-                    os.environ['GEOGRAPHICLIB_DATA'] = old_env
+                    os.environ["GEOGRAPHICLIB_DATA"] = old_env
 
     def test_custom_path_from_env02(self):
         default_path = MagneticFieldModel.default_magnetic_path()
         with tempfile.TemporaryDirectory() as dirname:
             magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path))
+                dirname, os.path.basename(default_path)
+            )
             shutil.copytree(default_path, magnetic_path)
 
-            old_env = os.environ.get('GEOGRAPHICLIB_MAGNETIC_PATH')
-            os.environ['GEOGRAPHICLIB_MAGNETIC_PATH'] = magnetic_path
+            old_env = os.environ.get("GEOGRAPHICLIB_MAGNETIC_PATH")
+            os.environ["GEOGRAPHICLIB_MAGNETIC_PATH"] = magnetic_path
             try:
                 model = MagneticFieldModel(self.MODEL_NAME)
                 self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
-                self.assertEqual(model.magnetic_model_directory(),
-                                 magnetic_path)
+                self.assertEqual(
+                    model.magnetic_model_directory(), magnetic_path
+                )
             finally:
                 if old_env is None:
-                    del os.environ['GEOGRAPHICLIB_MAGNETIC_PATH']
+                    del os.environ["GEOGRAPHICLIB_MAGNETIC_PATH"]
                 else:
-                    os.environ['GEOGRAPHICLIB_MAGNETIC_PATH'] = old_env
+                    os.environ["GEOGRAPHICLIB_MAGNETIC_PATH"] = old_env
 
 
 class InstantiationTestCase02(InstantiationTestCase01):
-    MODEL_NAME = 'igrf12'
+    MODEL_NAME = "igrf12"
 
 
 class InfoMethodsTestCase(unittest.TestCase):
@@ -122,13 +128,13 @@ class InfoMethodsTestCase(unittest.TestCase):
     def test_description(self):
         description = self.model.description()
         self.assertIsInstance(description, str)
-        self.assertNotEqual(description, 'NONE')
+        self.assertNotEqual(description, "NONE")
 
     def test_datetime(self):
         datestr = self.model.datetime()
         self.assertIsInstance(datestr, str)
-        self.assertNotEqual(datestr, 'UNKNOWN')
-        date = datetime.datetime.strptime(datestr, '%Y-%m-%d')
+        self.assertNotEqual(datestr, "UNKNOWN")
+        date = datetime.datetime.strptime(datestr, "%Y-%m-%d")
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
         self.assertLess(date, datetime.datetime.now())
 
@@ -178,19 +184,19 @@ class InfoMethodsTestCase(unittest.TestCase):
 
 class ComputationTestCase(unittest.TestCase):
     # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
-    MODEL_NAME = 'wmm2015'
+    MODEL_NAME = "wmm2015"
 
-    YEAR = 2016.0                   # 2016-01-01
-    LAT = +dms_to_dec(16, 46, 33)   # 16:46:33N
-    LON = -dms_to_dec(3, 0, 34)     # 03:00:34W
-    HEIGHT = +300                   # [m]
+    YEAR = 2016.0  # 2016-01-01
+    LAT = +dms_to_dec(16, 46, 33)  # 16:46:33N
+    LON = -dms_to_dec(3, 0, 34)  # 03:00:34W
+    HEIGHT = +300  # [m]
 
-    BX = -1251.3634113      # NOTE: east component (5th item)
-    BY = +33848.7341446     # NOTE: north component (4th item)
-    BZ = -7293.8535382      # NOTE: inverted sign
-    BXT = +53.6988656       # NOTE: east component (5th item, second line)
-    BYT = +33.7765829       # NOTE: north component (4th item, second line)
-    BZT = +41.3769946       # NOTE: inverted sign
+    BX = -1251.3634113  # NOTE: east component (5th item)
+    BY = +33848.7341446  # NOTE: north component (4th item)
+    BZ = -7293.8535382  # NOTE: inverted sign
+    BXT = +53.6988656  # NOTE: east component (5th item, second line)
+    BYT = +33.7765829  # NOTE: north component (4th item, second line)
+    BZT = +41.3769946  # NOTE: inverted sign
     H = +33871.8572503
     F = +34648.2757582
     D = -2.11721965
@@ -209,7 +215,8 @@ class ComputationTestCase(unittest.TestCase):
 
     def test_field_components(self):
         H, F, D, I = MagneticFieldModel.field_components(
-            self.BX, self.BY, self.BZ)
+            self.BX, self.BY, self.BZ
+        )
         npt.assert_allclose([H, F, D, I], [self.H, self.F, self.D, self.I])
 
     # @TODO
@@ -226,75 +233,103 @@ class ComputationTestCase(unittest.TestCase):
 
     def test_compute_scalar_with_rate(self):
         Bx, By, Bz, Bxt, Byt, Bzt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True)
+            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        )
         npt.assert_allclose([Bx, By, Bz], [self.BX, self.BY, self.BZ])
         npt.assert_allclose([Bxt, Byt, Bzt], [self.BXT, self.BYT, self.BZT])
 
 
 class VectorComputationTestCase(unittest.TestCase):
     # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
-    MODEL_NAME = 'wmm2015'
+    MODEL_NAME = "wmm2015"
 
     YEAR = 2016.0
-    LAT = np.asarray([
-        [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
-        [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
-    ])
-    LON = np.asarray([
-        [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
-        [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
-    ])
-    HEIGHT = np.asarray([
-        [+300, +400000],
-        [+400000, +300],
-    ])
-    BX = np.asarray([
-        [-1251.3634113, -2917.6087863],
-        [-2908.0688421, -1262.5153146],
-    ])
-    BY = np.asarray([
-        [+33848.7341446, +13455.1508250],
-        [+13378.9665352, +33836.6298435],
-    ])
-    BZ = np.asarray([
-        [-7293.85353820, +20132.4047379],
-        [+20169.4124889, -7539.67870600],
-    ])
-    BXT = np.asarray([
-        [+53.6988656, +48.1739432],
-        [+48.0353017, +53.7715374],
-    ])
-    BYT = np.asarray([
-        [+33.7765829, -37.4184172],
-        [-37.5102493, +33.9119117],
-    ])
-    BZT = np.asarray([
-        [+41.3769946, +28.8842256],
-        [+27.8740361, +41.1851008],
-    ])
-    H = np.asarray([
-        [+33871.8572503, +13767.8438673],
-        [+13691.3699073, +33860.1751928],
-    ])
-    F = np.asarray([
-        [+34648.2757582, +24389.9004772],
-        [+24377.4241889, +34689.4540037],
-    ])
-    D = np.asarray([
-        [-2.117219650, -12.23458341],
-        [-12.26312924, -2.136833910],
-    ])
-    I = np.asarray([
-        [+12.15231735, -55.63314796],
-        [-55.83061445, +12.55330784],
-    ])
+    LAT = np.asarray(
+        [
+            [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
+            [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
+        ]
+    )
+    LON = np.asarray(
+        [
+            [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
+            [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
+        ]
+    )
+    HEIGHT = np.asarray(
+        [
+            [+300, +400000],
+            [+400000, +300],
+        ]
+    )
+    BX = np.asarray(
+        [
+            [-1251.3634113, -2917.6087863],
+            [-2908.0688421, -1262.5153146],
+        ]
+    )
+    BY = np.asarray(
+        [
+            [+33848.7341446, +13455.1508250],
+            [+13378.9665352, +33836.6298435],
+        ]
+    )
+    BZ = np.asarray(
+        [
+            [-7293.85353820, +20132.4047379],
+            [+20169.4124889, -7539.67870600],
+        ]
+    )
+    BXT = np.asarray(
+        [
+            [+53.6988656, +48.1739432],
+            [+48.0353017, +53.7715374],
+        ]
+    )
+    BYT = np.asarray(
+        [
+            [+33.7765829, -37.4184172],
+            [-37.5102493, +33.9119117],
+        ]
+    )
+    BZT = np.asarray(
+        [
+            [+41.3769946, +28.8842256],
+            [+27.8740361, +41.1851008],
+        ]
+    )
+    H = np.asarray(
+        [
+            [+33871.8572503, +13767.8438673],
+            [+13691.3699073, +33860.1751928],
+        ]
+    )
+    F = np.asarray(
+        [
+            [+34648.2757582, +24389.9004772],
+            [+24377.4241889, +34689.4540037],
+        ]
+    )
+    D = np.asarray(
+        [
+            [-2.117219650, -12.23458341],
+            [-12.26312924, -2.136833910],
+        ]
+    )
+    I = np.asarray(
+        [
+            [+12.15231735, -55.63314796],
+            [-55.83061445, +12.55330784],
+        ]
+    )
 
     def setUp(self) -> None:
         self.model = MagneticFieldModel(self.MODEL_NAME)
 
     def test_field_components_vector(self):
         H, F, D, I = MagneticFieldModel.field_components(
-            self.BX.flatten(), self.BY.flatten(), self.BZ.flatten())
+            self.BX.flatten(), self.BY.flatten(), self.BZ.flatten()
+        )
         npt.assert_allclose(H, self.H.flatten())
         npt.assert_allclose(F, self.F.flatten())
         npt.assert_allclose(D, self.D.flatten())
@@ -302,7 +337,8 @@ class VectorComputationTestCase(unittest.TestCase):
 
     def test_field_components_matrix(self):
         H, F, D, I = MagneticFieldModel.field_components(
-            self.BX, self.BY, self.BZ)
+            self.BX, self.BY, self.BZ
+        )
         npt.assert_allclose(H, self.H)
         npt.assert_allclose(F, self.F)
         npt.assert_allclose(D, self.D)
@@ -319,7 +355,10 @@ class VectorComputationTestCase(unittest.TestCase):
     def test_compute_vector(self):
         Bx, By, Bz = self.model(
             self.YEAR,
-            self.LAT.flatten(), self.LON.flatten(), self.HEIGHT.flatten())
+            self.LAT.flatten(),
+            self.LON.flatten(),
+            self.HEIGHT.flatten(),
+        )
         npt.assert_allclose(Bx, self.BX.flatten())
         npt.assert_allclose(By, self.BY.flatten())
         npt.assert_allclose(Bz, self.BZ.flatten())
@@ -327,8 +366,11 @@ class VectorComputationTestCase(unittest.TestCase):
     def test_compute_vector_with_rate(self):
         Bx, By, Bz, Bxt, Byt, Bzt = self.model(
             self.YEAR,
-            self.LAT.flatten(), self.LON.flatten(), self.HEIGHT.flatten(),
-            rate=True)
+            self.LAT.flatten(),
+            self.LON.flatten(),
+            self.HEIGHT.flatten(),
+            rate=True,
+        )
         npt.assert_allclose(Bx, self.BX.flatten())
         npt.assert_allclose(By, self.BY.flatten())
         npt.assert_allclose(Bz, self.BZ.flatten())
@@ -344,7 +386,8 @@ class VectorComputationTestCase(unittest.TestCase):
 
     def test_compute_matrix_with_rate(self):
         Bx, By, Bz, Bxt, Byt, Bzt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True)
+            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        )
         npt.assert_allclose(Bx, self.BX)
         npt.assert_allclose(By, self.BY)
         npt.assert_allclose(Bz, self.BZ)
@@ -355,58 +398,82 @@ class VectorComputationTestCase(unittest.TestCase):
 
 class ConstHeightVectorComputationTestCase(unittest.TestCase):
     # MODEL_NAME = MagneticFieldModel.default_magnetic_name()
-    MODEL_NAME = 'wmm2015'
+    MODEL_NAME = "wmm2015"
 
     YEAR = 2016.0
-    LAT = np.asarray([
-        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-    ])
-    LON = np.asarray([
-        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-    ])
+    LAT = np.asarray(
+        [
+            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+        ]
+    )
+    LON = np.asarray(
+        [
+            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+        ]
+    )
     HEIGHT = +300
-    BX = np.asarray([
-        [-1251.3634113, -1262.5153146],
-        [-1251.3634113, -1262.5153146],
-    ])
-    BY = np.asarray([
-        [+33848.7341446, +33836.6298435],
-        [+33848.7341446, +33836.6298435],
-    ])
-    BZ = np.asarray([
-        [-7293.85353820, -7539.67870600],
-        [-7293.85353820, -7539.67870600],
-    ])
-    BXT = np.asarray([
-        [+53.6988656, +53.7715374],
-        [+53.6988656, +53.7715374],
-    ])
-    BYT = np.asarray([
-        [+33.7765829, +33.9119117],
-        [+33.7765829, +33.9119117],
-    ])
-    BZT = np.asarray([
-        [+41.3769946, +41.1851008],
-        [+41.3769946, +41.1851008],
-    ])
-    H = np.asarray([
-        [+33871.8572503, +33860.1751928],
-        [+33871.8572503, +33860.1751928],
-    ])
-    F = np.asarray([
-        [+34648.2757582, +34689.4540037],
-        [+34648.2757582, +34689.4540037],
-    ])
-    D = np.asarray([
-        [-2.11721965, -2.13683391],
-        [-2.11721965, -2.13683391],
-    ])
-    I = np.asarray([
-        [+12.15231735, +12.55330784],
-        [+12.15231735, +12.55330784],
-    ])
+    BX = np.asarray(
+        [
+            [-1251.3634113, -1262.5153146],
+            [-1251.3634113, -1262.5153146],
+        ]
+    )
+    BY = np.asarray(
+        [
+            [+33848.7341446, +33836.6298435],
+            [+33848.7341446, +33836.6298435],
+        ]
+    )
+    BZ = np.asarray(
+        [
+            [-7293.85353820, -7539.67870600],
+            [-7293.85353820, -7539.67870600],
+        ]
+    )
+    BXT = np.asarray(
+        [
+            [+53.6988656, +53.7715374],
+            [+53.6988656, +53.7715374],
+        ]
+    )
+    BYT = np.asarray(
+        [
+            [+33.7765829, +33.9119117],
+            [+33.7765829, +33.9119117],
+        ]
+    )
+    BZT = np.asarray(
+        [
+            [+41.3769946, +41.1851008],
+            [+41.3769946, +41.1851008],
+        ]
+    )
+    H = np.asarray(
+        [
+            [+33871.8572503, +33860.1751928],
+            [+33871.8572503, +33860.1751928],
+        ]
+    )
+    F = np.asarray(
+        [
+            [+34648.2757582, +34689.4540037],
+            [+34648.2757582, +34689.4540037],
+        ]
+    )
+    D = np.asarray(
+        [
+            [-2.11721965, -2.13683391],
+            [-2.11721965, -2.13683391],
+        ]
+    )
+    I = np.asarray(
+        [
+            [+12.15231735, +12.55330784],
+            [+12.15231735, +12.55330784],
+        ]
+    )
 
     def setUp(self) -> None:
         self.model = MagneticFieldModel(self.MODEL_NAME)
@@ -417,15 +484,20 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
 
     def test_compute_vector(self):
         Bx, By, Bz = self.model(
-            self.YEAR, self.LAT.flatten(), self.LON.flatten(), self.HEIGHT)
+            self.YEAR, self.LAT.flatten(), self.LON.flatten(), self.HEIGHT
+        )
         npt.assert_allclose(Bx, self.BX.flatten())
         npt.assert_allclose(By, self.BY.flatten())
         npt.assert_allclose(Bz, self.BZ.flatten())
 
     def test_compute_vector_with_rate(self):
         Bx, By, Bz, Bxt, Byt, Bzt = self.model(
-            self.YEAR, self.LAT.flatten(), self.LON.flatten(), self.HEIGHT,
-            rate=True)
+            self.YEAR,
+            self.LAT.flatten(),
+            self.LON.flatten(),
+            self.HEIGHT,
+            rate=True,
+        )
         npt.assert_allclose(Bx, self.BX.flatten())
         npt.assert_allclose(By, self.BY.flatten())
         npt.assert_allclose(Bz, self.BZ.flatten())
@@ -441,7 +513,8 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
 
     def test_compute_matrix_with_rate(self):
         Bx, By, Bz, Bxt, Byt, Bzt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True)
+            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        )
         npt.assert_allclose(Bx, self.BX)
         npt.assert_allclose(By, self.BY)
         npt.assert_allclose(Bz, self.BZ)
@@ -450,5 +523,5 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(Bzt, self.BZT)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
