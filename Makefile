@@ -38,14 +38,14 @@ dist:
 
 check: ext data
 	$(PYTHON) -m geomodels info
-	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
 	$(PYTHON) -m pytest $(TARGET)
 
 fullcheck: data
 	$(PYTHON) -m tox
 
 coverage: ext data
-	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
 	$(PYTHON) -m pytest --cov=$(TARGET) --cov-report=html --cov-report=term
 
 lint:
@@ -65,7 +65,7 @@ api: ext
 
 docs: ext man
 	$(MAKE) -C docs html
-	if [ -d data ]; then export GEOGRAPHICLIB_DATA=$(PWD)/data; fi && \
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
 	$(MAKE) -C docs doctest
 
 clean:
