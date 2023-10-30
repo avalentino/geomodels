@@ -165,6 +165,16 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(self.model.angular_velocity(), float)
         self.assertGreater(self.model.angular_velocity(), 0)
 
+    def test_degree(self):
+        self.assertIsInstance(self.model.degree(), int)
+        self.assertGreaterEqual(self.model.degree(), 0)
+        self.assertLessEqual(self.model.degree(), 360)
+
+    def test_order(self):
+        self.assertIsInstance(self.model.order(), int)
+        self.assertGreater(self.model.order(), 0)
+        self.assertLessEqual(self.model.order(), 360)
+
 
 class ComputationTestCase(unittest.TestCase):
     MODEL_NAME = "egm96"

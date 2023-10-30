@@ -80,8 +80,8 @@ cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib" nog
         real EquatorialRadius() const
         real Flattening() const
 
-        # int Degree() const
-        # int Order() const
+        int Degree() const
+        int Order() const
 
         @staticmethod
         string DefaultMagneticPath()

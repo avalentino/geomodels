@@ -27,6 +27,7 @@ class StaticMethodsTestCase(unittest.TestCase):
             "wmm2020",
             "igrf11",
             "igrf12",
+            "igrf13",
             "emm2010",
             "emm2015",
             "emm2017",
@@ -179,6 +180,16 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(self.model.flattening(), float)
         self.assertGreater(self.model.flattening(), 0)
         self.assertLess(self.model.flattening(), 1)
+
+    def test_degree(self):
+        self.assertIsInstance(self.model.degree(), int)
+        self.assertGreaterEqual(self.model.degree(), 0)
+        self.assertLessEqual(self.model.degree(), 360)
+
+    def test_order(self):
+        self.assertIsInstance(self.model.order(), int)
+        self.assertGreater(self.model.order(), 0)
+        self.assertLessEqual(self.model.order(), 12)
 
 
 class ComputationTestCase(unittest.TestCase):

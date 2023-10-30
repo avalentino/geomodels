@@ -629,14 +629,13 @@ cdef class GravityModel:
         """
         return self._ptr.AngularVelocity()
 
-    # @TODO: methods added in GeographicLib v1.50.
-    # def degree(self) -> int:
-    #     """The maximum degree of the components of the model (Nmax)."""
-    #     return self._ptr.Dergee()
-    #
-    # def order(self) -> int:
-    #     """The maximum order of the components of the model (Mmax)."""
-    #     return self._ptr.Order()
+    def degree(self) -> int:
+        """The maximum degree of the components of the model (Nmax)."""
+        return self._ptr.Degree()
+
+    def order(self) -> int:
+        """The maximum order of the components of the model (Mmax)."""
+        return self._ptr.Order()
 
     @staticmethod
     def default_gravity_path() -> str:
