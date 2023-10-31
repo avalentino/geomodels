@@ -9,28 +9,29 @@ from setuptools import setup, Extension
 
 
 def mkconfig(srcpath, outpath, have_lohg_double=0):
-    data = pathlib.Path(srcpath).joinpath('CMakeLists.txt').read_text()
-    mobj = re.search(r'''\
+    data = pathlib.Path(srcpath).joinpath("CMakeLists.txt").read_text()
+    mobj = re.search(
+        r"""\
 set\s*\(\s*PROJECT_VERSION_MAJOR\s+(?P<VERSION_MAJOR>\d+)\s*\)\s*
 set\s*\(\s*PROJECT_VERSION_MINOR\s+(?P<VERSION_MINOR>\d+)\s*\)\s*
 set\s*\(\s*PROJECT_VERSION_PATCH\s+(?P<VERSION_PATCH>\d+)\s*\)\s*
-''',
+""",
         data,
         re.MULTILINE,
     )
 
-    version_major = mobj.group('VERSION_MAJOR')
-    version_minor = mobj.group('VERSION_MINOR')
-    version_patch = mobj.group('VERSION_PATCH')
+    version_major = mobj.group("VERSION_MAJOR")
+    version_minor = mobj.group("VERSION_MINOR")
+    version_patch = mobj.group("VERSION_PATCH")
 
-    if version_patch == '0':
-        version_string = '.'.join([version_major, version_minor])
+    if version_patch == "0":
+        version_string = ".".join([version_major, version_minor])
     else:
-        version_string = '.'.join(
+        version_string = ".".join(
             [version_major, version_minor, version_patch],
         )
 
-    bigendian = 0 if sys.byteorder == 'little' else 1
+    bigendian = 0 if sys.byteorder == "little" else 1
 
     configdata = f"""\
 #define GEOGRAPHICLIB_VERSION_STRING "{version_string}"
@@ -52,62 +53,62 @@ set\s*\(\s*PROJECT_VERSION_PATCH\s+(?P<VERSION_PATCH>\d+)\s*\)\s*
     outpath = pathlib.Path(outpath)
     if not outpath.exists():
         outpath.write_text(configdata)
-        print(f'configuration file written to: {outpath}')
+        print(f"configuration file written to: {outpath}")
     else:
-        print(f'configuration file already exists: {outpath}')
+        print(f"configuration file already exists: {outpath}")
 
 
-if os.name == 'posix':
-    if platform.system() == 'FreeBSD':
-        mandir = pathlib.Path('man')
+if os.name == "posix":
+    if platform.system() == "FreeBSD":
+        mandir = pathlib.Path("man")
     else:
-        mandir = pathlib.Path('share/man')
+        mandir = pathlib.Path("share/man")
     datafiles = [
         (
-            str(mandir / 'man1'),
-            ['docs/man/geomodels-cli.1'],
+            str(mandir / "man1"),
+            ["docs/man/geomodels-cli.1"],
         )
     ]
 else:
     datafiles = None
 
 
-IGNORE_BUNDLED_LIBS_STR = os.environ.get('GEOMODELS_IGNORE_BUNDLED_LIBS')
+IGNORE_BUNDLED_LIBS_STR = os.environ.get("GEOMODELS_IGNORE_BUNDLED_LIBS")
 IGNORE_BUNDLED_LIBS = bool(
-    IGNORE_BUNDLED_LIBS_STR in ('1', 'ON', 'TRUE', 'YES')
+    IGNORE_BUNDLED_LIBS_STR in ("1", "ON", "TRUE", "YES")
 )
-SRCPATH = pathlib.Path('extern/geographiclib')
+SRCPATH = pathlib.Path("extern/geographiclib")
 
 
 if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
-    geographiclib_src = SRCPATH.glob('src/*.cpp')
-    geographiclib_include = list(SRCPATH.glob('include'))[0]
+    geographiclib_src = SRCPATH.glob("src/*.cpp")
+    geographiclib_include = list(SRCPATH.glob("include"))[0]
     geomodels_ext = Extension(
-        'geomodels._ext',
-        sources=['geomodels/_ext.pyx'] + [str(p) for p in geographiclib_src],
+        "geomodels._ext",
+        sources=["geomodels/_ext.pyx"] + [str(p) for p in geographiclib_src],
         include_dirs=[str(geographiclib_include)],
         libraries=[],
-        language='c++',
-        extra_compile_args=['-std=c++0x', '-Wall', '-Wextra'],
+        language="c++",
+        extra_compile_args=["-std=c++0x", "-Wall", "-Wextra"],
     )
-    outpath = geographiclib_include / 'GeographicLib' / 'Config.h'
+    outpath = geographiclib_include / "GeographicLib" / "Config.h"
     mkconfig(SRCPATH, outpath)
 else:
     geomodels_ext = Extension(
-        'geomodels._ext',
-        sources=['geomodels/_ext.pyx'],
-        libraries=['GeographicLib'],
-        language='c++',
+        "geomodels._ext",
+        sources=["geomodels/_ext.pyx"],
+        libraries=["GeographicLib"],
+        language="c++",
     )
 
 
-description = pathlib.Path('README.rst').read_text()
-description = description.replace('.. doctest', '').replace(':doc:', '')
+description = pathlib.Path("README.rst").read_text()
+description = description.replace(".. doctest", "").replace(":doc:", "")
 
 
 setup(
     long_description=description,
-    long_description_content_type='text/x-rst',
+    long_description_content_type="text/x-rst",
     ext_modules=[geomodels_ext],
     data_files=datafiles,
 )
