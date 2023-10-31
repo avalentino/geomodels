@@ -94,10 +94,11 @@ if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
     outpath = geographiclib_include / "GeographicLib" / "Config.h"
     mkconfig(SRCPATH, outpath)
 else:
+    libname = os.environ.get("GEOMODELS_GEOGRAPHICLIB_NAME", "GeographicLib")
     geomodels_ext = Extension(
         "geomodels._ext",
         sources=["geomodels/_ext.pyx"],
-        libraries=["GeographicLib"],
+        libraries=[libname],
         language="c++",
     )
 
