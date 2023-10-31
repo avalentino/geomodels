@@ -9,7 +9,7 @@ authors = [
     {name = "Antonio Valentino", email = "antonio.valentino@tiscali.it"},
 ]
 description = "Python package for Earth data models management"
-readme = {file = "README.rst", content-type = "text/x-rst"}
+# readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">= 3.8"
 keywords = [
     "geoid",
