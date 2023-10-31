@@ -34,10 +34,6 @@ jobs:
           python3 -m pip install build
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      - name: Prepare the environment
-        run: |
-          make PYTHON=python data
-
       - name: Build package
         run: |
           python -m build
@@ -54,6 +50,10 @@ jobs:
         run: |
           python -m pip install dist/*.whl
 
+      - name: Prepare the environment
+        run: |
+          geomodels-cli install-data -d data recommended
+
       - name: Install test dependencies
         run: |
           python -m pip install pytest pytest-cov
@@ -61,13 +61,12 @@ jobs:
 
       - name: Test CLI
         run: |
-          cd dist
-          python -m geomodels info
+          geomodels-cli info
 
       - name: Test
         run: |
           cd dist
-          env GEOGRAPHICLIB_DATA=${PWD}/../data python -m pytest --pyargs geomodels
+          env GEOGRAPHICLIB_DATA="${PWD}/../data" python -m pytest --pyargs geomodels
 
       - name: Install docs dependencies
         run: |
@@ -76,9 +75,9 @@ jobs:
 
       - name: Build docs
         run: |
+          # make docs include doctest
           make docs
           make -C docs linkcheck
-          make -C docs doctest
 
       - name: Install lint dependencies
         run: |
