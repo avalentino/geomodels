@@ -9,7 +9,7 @@ PKG_SRC_ARC=dist/$(TARGET)-$(PKG_VER).tar.gz
 
 
 .PHONY: default help dist check fullcheck coverage lint api docs clean cleaner distclean \
-        ext man data manylinux
+        ext man data wheels
 
 default: help
 
@@ -111,6 +111,6 @@ data: ext
 	$(PYTHON) -m geomodels install-data -d data recommended
 
 
-manylinux: dist
-	docker pull quay.io/pypa/manylinux2010_x86_64
-	docker run --rm -v $(shell pwd):/io quay.io/pypa/manylinux2010_x86_64 sh /io/build-manylinux-wheels.sh
+wheels:
+	# Requires docker
+	cibuildwheel --platform
