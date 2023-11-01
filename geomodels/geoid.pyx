@@ -2,40 +2,6 @@
 # cython: language_level=3
 # distutils: language=c++
 
-"""Looking up the height of the geoid above the ellipsoid.
-
-This class evaluates the height of one of the standard geoids, EGM84,
-EGM96, or EGM2008 by bilinear or cubic interpolation into a rectangular
-grid of data.
-
-See https://geographiclib.sourceforge.io/html/geoid.html.
-
-The geoids are defined in terms of spherical harmonics.  However in order
-to provide a quick and flexible method of evaluating the geoid heights,
-this class evaluates the height by interpolation into a grid of
-precomputed values.
-
-The height of the geoid above the ellipsoid, `N,` is sometimes called the
-geoid undulation.  It can be used to convert a height above the ellipsoid,
-`h`, to the corresponding height above the geoid (the orthometric height,
-roughly the height above mean sea level), `H`, using the relations::
-
-    h = N + H
-    H = -N + h
-
-This class is typically `not` thread safe in that a single instantiation
-cannot be safely used by multiple threads because of the way the object
-reads the data set and because it maintains a single-cell cache.  If
-multiple threads need to calculate geoid heights they should all construct
-thread-local instantiations.  Alternatively, set the optional
-threadsafe parameter to true in the constructor.  This causes the
-constructor to read all the data into memory and to turn off the
-single-cell caching which results in a Geoid object which is thread
-safe.
-
-See https://geographiclib.sourceforge.io/html/geoid.html.
-"""
-
 import os
 import enum
 
@@ -63,7 +29,38 @@ class EHeightConvDir(enum.IntEnum):
 
 
 cdef class GeoidModel:
-    """Geoid model.
+    """Looking up the height of the geoid above the ellipsoid.
+
+    This class evaluates the height of one of the standard geoids, `EGM84`,
+    `EGM96`, or `EGM2008` by bilinear or cubic interpolation into a
+    rectangular grid of data.
+
+    See https://geographiclib.sourceforge.io/html/geoid.html.
+
+    The geoids are defined in terms of spherical harmonics.  However in order
+    to provide a quick and flexible method of evaluating the geoid heights,
+    this class evaluates the height by interpolation into a grid of
+    precomputed values.
+
+    The height of the geoid above the ellipsoid, `N`, is sometimes called the
+    geoid undulation.  It can be used to convert a height above the ellipsoid,
+    `h`, to the corresponding height above the geoid (the orthometric height,
+    roughly the height above mean sea level), `H`, using the relations::
+
+        h = N + H
+        H = -N + h
+
+    This class is typically `not` thread safe in that a single instantiation
+    cannot be safely used by multiple threads because of the way the object
+    reads the data set and because it maintains a single-cell cache.  If
+    multiple threads need to calculate geoid heights they should all construct
+    thread-local instantiations.  Alternatively, set the optional
+    threadsafe parameter to true in the constructor.  This causes the
+    constructor to read all the data into memory and to turn off the
+    single-cell caching which results in a Geoid object which is thread
+    safe.
+
+    See https://geographiclib.sourceforge.io/html/geoid.html.
 
     :param name:
         the name of the geoid
@@ -88,6 +85,33 @@ cdef class GeoidModel:
     If the `threadsafe` parameter is True, the data set is read into
     memory, the data file is closed, and single-cell caching is turned
     off; this results in a :class:`Geoid` object which is thread safe.
+
+    Example
+    -------
+
+    ::
+
+        # Example of using the `geomodels.GeoidModel` class.
+        # This requires that the `egm96-5` geoid model be installed; see
+        # https://geographiclib.sourceforge.io/C++/doc/geoid.html#geoidinst
+
+        from geomodels import GeoidModel, EHeightConvDir
+
+        GEOIDTOELLIPSOID = EHeightConvDir.GEOIDTOELLIPSOID
+
+        egm96 = Geoid("egm96-5")
+
+        # Convert height above egm96 to height above the ellipsoid
+        lat = 42
+        lon = -75
+        height_above_geoid = 20
+
+        geoid_height = egm96(lat, lon)
+        height_above_ellipsoid = (
+            height_above_geoid + GEOIDTOELLIPSOID * geoid_height
+        )
+        
+        print(f"Height above ellipsoid: {height_above_ellipsoid}")
     """
     cdef CGeoid *_ptr
 

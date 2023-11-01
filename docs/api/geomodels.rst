@@ -19,7 +19,7 @@ Geoid model
    :undoc-members:
    :show-inheritance:
 
-Graviti model
+Gravity model
 -------------
 
 .. autoclass:: GravityModel

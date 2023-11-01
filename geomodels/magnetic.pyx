@@ -2,17 +2,6 @@
 # cython: language_level=3
 # distutils: language=c++
 
-"""Model of the earth's magnetic field.
-
-Evaluate the earth's magnetic field according to a model.  At present only
-internal magnetic fields are handled.  These are due to the earth's code
-and crust; these vary slowly (over many years).  Excluded are the effects
-of currents in the ionosphere and magnetosphere which have daily and
-annual variations.
-
-See https://geographiclib.sourceforge.io/html/magnetic.html.
-"""
-
 import os
 
 import numpy as np
@@ -31,7 +20,16 @@ from ._utils import (
 
 
 cdef class MagneticFieldModel:
-    """Magnetic Field Model.
+    """Model of the earth's magnetic field.
+
+    Evaluate the earth's magnetic field according to a model.  At present only
+    internal magnetic fields are handled.  These are due to the earth's code
+    and crust; these vary slowly (over many years).  Excluded are the effects
+    of currents in the ionosphere and magnetosphere which have daily and
+    annual variations.
+
+    See https://geographiclib.sourceforge.io/html/magnetic.html for details
+    of how to install the magnetic models and the data format.
 
     :param str name:
         the name of the model
@@ -56,6 +54,33 @@ cdef class MagneticFieldModel:
     The final earth argument to the constructor specifies an ellipsoid to
     allow geodetic coordinates to the transformed into the spherical
     coordinates used in the spherical harmonic sum.
+
+    Example
+    -------
+
+    ::
+
+        # Example of using the `geomodels.MagneticModel` class.
+        # This requires that the wmm2010 magnetic model be installed; see
+        # https://geographiclib.sourceforge.io/C++/doc/magnetic.html#magneticinst
+        
+        from geomodels import MagneticModel
+
+        mag MagneticModel("wmm2010")
+
+        # Mt Everest
+        lat = 27.99
+        lon = 86.93
+        h = 8820
+        t = 2012
+        
+        Bx, By, Bz = mag(t, lat,lon, h, Bx, By, Bz)
+        H, F, D, I = MagneticModel.compute_field_components(Bx, By, Bz)
+
+        print(f"horizontal magnetic field (nT): {H}")
+        print(f"total magnetic field (nT): {F}")
+        print(f"declination of the field (degrees east of north): {D}")
+        print(f"inclination of the field (degrees down from horizontal): {I}")
     """
     cdef CMagneticModel *_ptr
 

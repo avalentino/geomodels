@@ -2,50 +2,6 @@
 # cython: language_level=3
 # distutils: language=c++
 
-r"""Model of the earth's gravity field.
-
-Evaluate the earth's gravity field according to a model.  The supported
-models treat only the gravitational field exterior to the mass of the
-earth.  When computing the field at points near (but above) the surface
-of the earth a small correction can be applied to account for the mass
-of the atmosphere above the point in question; see \ref gravityatmos.
-Determining the height of the geoid above the ellipsoid entails
-correcting for the mass of the earth above the geoid.
-The egm96 and egm2008 include separate correction terms to account for
-this mass.
-
-Definitions and terminology (from Heiskanen and Moritz, Sec 2-13):
-
-* $V$ = gravitational potential
-* $\Phi$ = rotational potential
-* $W = V + \Phi = T + U$ = total potential
-* $V_{0}$ = normal gravitation potential
-* $U = V_{0} + \Phi$ = total normal potential
-* $T = W - U = V - V_{0}$ = anomalous or disturbing potential
-* $g = \nabla W = \gamma + \delta$
-* $f = \nabla \Phi$
-* $\Gamma = \nabla V_{0}$
-* $\gamma = &nabla U$
-* $\delta = \nabla T$ = gravity disturbance vector = $g_{P} - \gamma_{P}$
-* $\delta g$ = gravity disturbance = $g_{P} - \gamma_{P}$
-* $\Delta g$ = gravity anomaly vector = $g_{P} - \gamma_{Q}$
-  here the line $PQ$ is perpendicular to ellipsoid and the potential at
-  $P$ equals the normal potential at $Q$
-* $\Delta g$ = gravity anomaly = $g{P} - \gamma_{Q}$
-* $(\xi, \eta)$ deflection of the vertical, the difference in
-  directions of $g_{P}$ and $\gamma_{Q}, \xi = NS, \eta = EW$.
-* $X$, $Y$, $Z$, geocentric coordinates
-* $x$, $y$, $z$, local cartesian coordinates used to denote the east,
-  north and up directions.
-
-References:
-
-* W. A. Heiskanen and H. Moritz, Physical Geodesy (Freeman, San
-  Francisco, 1967).
-
-See https://geographiclib.sourceforge.io/html/gravity.html.
-"""
-
 import os
 
 import numpy as np
@@ -64,7 +20,51 @@ from ._utils import (
 
 
 cdef class GravityModel:
-    """Gravity model.
+    r"""Model of the earth's gravity field.
+
+    Evaluate the earth's gravity field according to a model.  The supported
+    models treat only the gravitational field exterior to the mass of the
+    earth.  When computing the field at points near (but above) the surface
+    of the earth a small correction can be applied to account for the mass
+    of the atmosphere above the point in question;
+    see `The effect of the mass of the atmosphere
+    <https://geographiclib.sourceforge.io/C++/doc/gravity.html#gravityatmos>`_.
+    Determining the height of the geoid above the ellipsoid entails
+    correcting for the mass of the earth above the geoid.
+    The egm96 and egm2008 include separate correction terms to account for
+    this mass.
+
+    Definitions and terminology (from Heiskanen and Moritz, Sec 2-13):
+
+    * :math:`V` = gravitational potential
+    * :math:`\Phi` = rotational potential
+    * :math:`W = V + \Phi = T + U` = total potential
+    * :math:`V_{0}` = normal gravitation potential
+    * :math:`U = V_{0} + \Phi` = total normal potential
+    * :math:`T = W - U = V - V_{0}` = anomalous or disturbing potential
+    * :math:`g = \nabla W = \gamma + \delta`
+    * :math:`f = \nabla \Phi`
+    * :math:`\Gamma = \nabla V_{0}`
+    * :math:`\gamma = \nabla U`
+    * :math:`\delta = \nabla T` = gravity disturbance vector =
+      :math:`g_{P} - \gamma_{P}`
+    * :math:`\delta g` = gravity disturbance = :math:`g_{P} - \gamma_{P}`
+    * :math:`\Delta g` = gravity anomaly vector = :math:`g_{P} - \gamma_{Q}`
+      here the line :math:`PQ` is perpendicular to ellipsoid and the potential
+      at :math:`P` equals the normal potential at :math:`Q`
+    * :math:`\Delta g` = gravity anomaly = :math:`g{P} - \gamma_{Q}`
+    * :math:`(\xi, \eta)` deflection of the vertical, the difference in
+      directions of :math:`g_{P}` and :math:`\gamma_{Q}, \xi = NS, \eta = EW`
+    * :math:`X`, :math:`Y`, :math:`Z`, geocentric coordinates
+    * :math:`x`, :math:`y`, :math:`z`, local cartesian coordinates used to
+      denote the east, north and up directions.
+
+    References:
+
+    * W. A. Heiskanen and H. Moritz, Physical Geodesy (Freeman, San
+      Francisco, 1967).
+
+    See https://geographiclib.sourceforge.io/html/gravity.html.
 
     :param str name:
         the name of the model
@@ -85,6 +85,31 @@ cdef class GravityModel:
     the model.  The coefficients for the spherical harmonic sums are
     obtained from a file obtained by appending ".cof" to metadata file
     (so the filename ends in ".egm.cof").
+
+    Example
+    -------
+
+    ::
+
+        # Example of using the `geomodels.GravityModel` class.
+        # This requires that the `egm96` gravity model be installed; see
+        # https://geographiclib.sourceforge.io/C++/doc/gravity.html#gravityinst
+        
+        from geomodels import GravityModel
+
+        grav = GravityModel("egm96")
+        
+        # Mt Everest
+        lat = 27.99
+        lon = 86.93
+        h = 8820
+        
+        w, gx, gy, gz = grav.gravity(lat, lon, h)
+
+        print(f"sum of the gravitational and centrifugal potentials (m**2/s**2): {w}")
+        print(f"easterly component of the acceleration (m/s**2): {gx}")
+        print(f"northerly component of the acceleration (m/s**2): {gy}")
+        print(f"upward component of the acceleration (m/s**2): {gz} (usually negative")
     """
     cdef CGravityModel *_ptr
 
@@ -110,7 +135,7 @@ cdef class GravityModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_gracity(
+    cdef compute_gravity(
         self, double[::1] vlat, double[::1] vlon, double[::1] vh
     ):
         cdef long size = vlat.size
@@ -156,7 +181,7 @@ cdef class GravityModel:
               this is usually negative
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
-        W, gx, gy, gz = self.compute_gracity(lat, lon, h)
+        W, gx, gy, gz = self.compute_gravity(lat, lon, h)
         return reshape_components(shape, W, gx, gy, gz)
 
     @cython.boundscheck(False)
