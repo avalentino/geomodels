@@ -13,7 +13,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+try:
+    import geomodels
+except ImportError:
+    sys.path.insert(0, os.path.abspath(".."))
 
 
 def get_version(filename="../geomodels/_version.py", strip_extra=False):
