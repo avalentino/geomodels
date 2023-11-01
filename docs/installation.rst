@@ -73,6 +73,19 @@ environment variable shall be set to `TRUE` as in the following example::
 
   $ env GEOMODELS_IGNORE_BUNDLED_LIBS=TRUE python3 -m pip install .
 
+Starting from GeographicLib v2.0 the name of the dynamic library has been
+changed from `libGeographic.so` to `libGeographicLib.so`.
+By default GeoModels uses the new name (and this is the reason why
+GeograohicLin >= 2.0 is reguired), but it is also possible to build geomodels
+agains GeographicLib >= 1.52. In the latter case the
+`GEOMODELS_GEOGRAPHICLIB_NAME` environment variable shall be used to set The
+name of the dynamic libraty::
+
+  $ exportGEOMODELS_GEOGRAPHICLIB_NAME=Geographic
+
+note, that the `lib` prefix and the `.so` (`.dylib` on Mac OS-X) extension
+are not specified.
+
 Also in this case, please refer to the Pip_ documentation for
 details about installation options.
 
@@ -81,7 +94,7 @@ details about installation options.
    if GeographicLib_ is installed into a non-standard path,
    the used shall set the environment (e.g. `CPPFLAGS`, `CXXFLAGS` and
    `LDFLAGS` for the GNU GCC) to allow the compiler to find the
-   `GeographicLib`_ header files and libraries.
+   GeographicLib_ header files and libraries.
 
    Also, in this case, the user shall configure the environment to
    allow the system to find and load `GeographicLib`_ shared library
