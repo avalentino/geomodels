@@ -12,12 +12,12 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  sdist:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-
+        python-version: ["3.x"]
+  
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,20 +31,50 @@ jobs:
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          python3 -m pip install build
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          python -m pip install build twine
 
       - name: Build package
         run: |
-          python -m build
+          python -m build --sdist
+          python -m twine check dist/*
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: dist-${{ matrix.python-version }}
+          name: sdist
           path: |
             dist/*.tar.gz
-        if:  ${{ matrix.python-version == '3.12' }}
+
+  build:
+    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    needs: sdist
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Get source distrubtion
+        uses: actions/download-artifact@v3
+        with:
+          name: sdist
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install twine
+
+      - name: Build package
+        run: |
+          python -m pip wheel --wheel-dir dist geomodels*.tar.gz
+          python -m twine check dist/*
 
       - name: Install
         run: |
@@ -68,16 +98,21 @@ jobs:
           cd dist
           env GEOGRAPHICLIB_DATA="${PWD}/../data" python -m pytest --pyargs geomodels
 
-      - name: Install docs dependencies
-        run: |
-          python -m pip install sphinx
-          if [ -f requirements-docs.txt ]; then pip install -r requirements-docs.txt; fi
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.x"]
 
-      - name: Build docs
-        run: |
-          # make docs include doctest
-          make docs
-          make -C docs linkcheck
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install lint dependencies
         run: |
@@ -87,3 +122,28 @@ jobs:
       - name: Lint
         run: |
           make lint
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install sphinx
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          if [ -f requirements-docs.txt ]; then pip install -r requirements-docs.txt; fi
+
+      - name: Build docs
+        run: |
+          # make docs include doctest
+          make docs
+          make -C docs linkcheck
