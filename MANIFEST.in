@@ -1,5 +1,6 @@
 include MANIFEST.in LICENSE
-include Makefile requirements-*.txt build-manylinux-wheels.sh
+include meson.build
+include Makefile requirements-*.txt
 include geomodels/*.pyx geomodels/*.pxd
 # include geomodels/*.cpp
 recursive-include docs *.py *.rst Makefile *.bat spelling_wordlist.txt

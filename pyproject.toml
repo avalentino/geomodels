@@ -1,7 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "cython"]
-build-backend = "setuptools.build_meta"
-
+requires = [
+    "meson-python",
+    "meson >= 1.1.0",
+    "cython",
+]
+build-backend = "mesonpy"
 
 [project]
 name = "geomodels"
@@ -33,7 +36,8 @@ classifiers = [
 dependencies = [
     "numpy",
 ]
-dynamic = ["version", "readme"]
+# dynamic = ["version", "readme"]
+version = "1.0.0b5"
 
 
 [project.optional-dependencies]
