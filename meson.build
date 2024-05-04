@@ -9,4 +9,4 @@ project(
   ],
 )
 
-subdir('geomodels')
+subdir(meson.project_name())
