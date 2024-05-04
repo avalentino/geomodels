@@ -4,10 +4,6 @@ PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
 TARGET=geomodels
 
-PKG_VER=$(shell grep __version__ $(TARGET)/_version.py | cut -d '"' -f 2)
-PKG_SRC_ARC=dist/$(TARGET)-$(PKG_VER).tar.gz
-
-
 .PHONY: default help dist check fullcheck coverage lint api docs clean cleaner distclean \
         ext man data wheels
 
@@ -30,7 +26,7 @@ help:
 	@echo "  ext       - build Python extensions inplace"
 	@echo "  man       - build man pages for CLI programs"
 	@echo "  data      - download data needed for testing"
-	@echo "  manylinux - build Python wheels"
+	@echo "  wheels    - build Python wheels"
 
 dist:
 	$(PYTHON) -m build
@@ -49,12 +45,12 @@ coverage: ext data
 	$(PYTHON) -m pytest --cov=$(TARGET) --cov-report=html --cov-report=term
 
 lint:
-	# temperary use --exit-zero
+	# temporary use --exit-zero
 	$(PYTHON) -m flake8 --count --statistics --exit-zero $(TARGET)
-	$(PYTHON) -m pydocstyle --count $(TARGET)/*.py
 	$(PYTHON) -m isort --check $(TARGET)
 	$(PYTHON) -m black --check $(TARGET)
 	# $(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports $(TARGET)
+	ruff check $(TARGET)
 
 api: ext
 	$(RM) -r docs/api
@@ -72,13 +68,16 @@ clean:
 	$(RM) -r *.*-info build
 	find . -name __pycache__ -type d -exec $(RM) -r {} +
 	# $(RM) -r __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__
-	$(MAKE) -C docs clean
+	$(RM) $(TARGET)/*.cpp $(TARGET)/*.so $(TARGET)/*.o
+	if [ -f docs/Makefile ] ; then $(MAKE) -C docs clean; fi
 	$(RM) -r docs/_build
-	$(RM) $(TARGET)/*.cpp $(TARGET)/*.so
 	$(RM) extern/geographiclib/include/GeographicLib/Config.h
 
 cleaner: clean
-	$(RM) -r .coverage htmlcov .pytest_cache .mypy_cache .tox .ipynb_checkpoints
+	$(RM) -r .coverage htmlcov
+	$(RM) -r .pytest_cache .tox
+	$(RM) -r .mypy_cache .ruff_cache
+	$(RM) -r .ipynb_checkpoints
 
 distclean: cleaner
 	$(RM) -r dist
