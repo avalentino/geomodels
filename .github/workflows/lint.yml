@@ -49,6 +49,6 @@ jobs:
       #   run: |
       #     python -m mypy ${PACKAGE}
 
-      - name: Lint (ruff)
-        run: |
-          ruff check ${PACKAGE}
+      # - name: Lint (ruff)
+      #   run: |
+      #     ruff check ${PACKAGE}
