@@ -24,7 +24,7 @@ jobs:
           submodules: 'true'
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -51,7 +51,7 @@ jobs:
           GEOMODELS_GEOGRAPHICLIB_NAME: Geographic
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist-no-embed-${{ matrix.python-version }}
           path: |
