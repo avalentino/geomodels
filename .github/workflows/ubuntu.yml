@@ -11,22 +11,20 @@ on:
 permissions:
   contents: read
 
+env:
+  PACKAGE: geomodels
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.x"]
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: 'true'
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.x"
 
       - name: Install APT dependencies
         run: |
@@ -34,14 +32,10 @@ jobs:
           sudo apt install libgeographic-dev
 
       - name: Install build dependencies
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          python3 -m pip install build
+          python -m pip install --upgrade pip setuptools build
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-
-      - name: Prepare the environment
-        run: |
-          make PYTHON=python data
 
       - name: Build package
         run: |
@@ -50,29 +44,27 @@ jobs:
           GEOMODELS_IGNORE_BUNDLED_LIBS: TRUE
           GEOMODELS_GEOGRAPHICLIB_NAME: Geographic
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist-no-embed-${{ matrix.python-version }}
-          path: |
-            dist/*.tar.gz
-            dist/*.whl
-
       - name: Install
         run: |
           python -m pip install dist/*.whl
 
+      - name: Prepare the environment
+        run: |
+          geomodels-cli install-data -d data recommended
+
       - name: Install test dependencies
+        shell: bash
         run: |
           python -m pip install pytest pytest-cov
           if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
 
       - name: Test CLI
         run: |
-          cd dist
-          python -m geomodels info
+          geomodels-cli info
 
       - name: Test
+        working-directory: dist
         run: |
-          cd dist
-          env GEOGRAPHICLIB_DATA=${PWD}/../data python -m pytest --pyargs geomodels
+          python -m pytest --pyargs ${PACKAGE}
+        env:
+          GEOGRAPHICLIB_DATA: "../data"
