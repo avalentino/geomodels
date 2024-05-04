@@ -1,18 +1,12 @@
 project(
-    'geomodels', 'cpp', 'cython',
+    'geomodels',
+    'cpp', 'cython',
     license: 'MIT License',
     meson_version: '>=1.3.0',
-    version: '1:0:0b5',
+    version: '1:0.0b5',
+    default_options: [
+        'cpp_std=c++11',
+  ],
 )
 
-py = import('python').find_installation(pure: false)
-
-geographiclib_dep = dependency('geographiclib')
-
-py.extension_module(
-    'geomodels._ext',
-    'geomodels/_ext.pyx',
-    dependencies: geographiclib_dep,
-    install: true,
-    override_options : ['cython_language=cpp'],
-)
+subdir('geomodels')

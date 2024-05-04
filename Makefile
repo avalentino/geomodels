@@ -53,6 +53,8 @@ clean:
 	if [ -f docs/Makefile ] ; then $(MAKE) -C docs clean; fi
 	$(RM) -r docs/_build
 	$(RM) extern/geographiclib/include/GeographicLib/Config.h
+	$(RM) $(TARGET)/.ninja* $(TARGET)/*.ninja $(TARGET)/compile_commands.json
+	$(RM) -r $(TARGET)/meson-* $(TARGET)/_ext.cpython*
 
 cleaner: clean
 	$(RM) -r .coverage htmlcov
@@ -99,7 +101,8 @@ docs/man/geomodels-cli.1: ext
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
 ext: geomodels/_ext.cpp
-	$(PYTHON) setup.py build_ext --inplace
+	meson setup $(TARGET)
+	meson compile -C $(TARGET)
 
 geomodels/_ext.cpp: $(TARGET)/geoid.pxd $(TARGET)/geoid.pyx \
                     $(TARGET)/gravity.pxd $(TARGET)/gravity.pyx \
@@ -107,6 +110,7 @@ geomodels/_ext.cpp: $(TARGET)/geoid.pxd $(TARGET)/geoid.pyx \
 	$(PYTHON) -m cython -3 --cplus $(TARGET)/_ext.pyx
 
 data: ext
+	pwd
 	$(PYTHON) -m geomodels install-data -d data recommended
 
 wheels:

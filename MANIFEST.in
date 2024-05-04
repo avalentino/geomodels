@@ -1,5 +1,5 @@
 include MANIFEST.in LICENSE
-include meson.build
+recursive-include . meson.build
 include Makefile requirements-*.txt
 include geomodels/*.pyx geomodels/*.pxd
 # include geomodels/*.cpp
