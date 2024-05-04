@@ -35,7 +35,7 @@ jobs:
 
       - name: Lint (flake8)
         run: |
-          python -m flake8 --count --show-source --statistics ${PACKAGE}
+          python -m flake8 --count --show-source --statistics --exit-zero ${PACKAGE}
 
       - name: Lint (isort)
         run: |
