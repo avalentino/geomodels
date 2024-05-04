@@ -34,7 +34,7 @@ classifiers = [
 dependencies = [
     "numpy",
 ]
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 
 
 [project.optional-dependencies]
