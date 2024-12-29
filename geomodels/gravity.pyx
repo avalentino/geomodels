@@ -94,16 +94,16 @@ cdef class GravityModel:
         # Example of using the `geomodels.GravityModel` class.
         # This requires that the `egm96` gravity model be installed; see
         # https://geographiclib.sourceforge.io/C++/doc/gravity.html#gravityinst
-        
+
         from geomodels import GravityModel
 
         grav = GravityModel("egm96")
-        
+
         # Mt Everest
         lat = 27.99
         lon = 86.93
         h = 8820
-        
+
         w, gx, gy, gz = grav.gravity(lat, lon, h)
 
         print(f"sum of the gravitational and centrifugal potentials (m**2/s**2): {w}")

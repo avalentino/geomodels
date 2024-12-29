@@ -1,3 +1,5 @@
+"""Unit tests for the geomodels package."""
+
 import os
 import sys
 import locale

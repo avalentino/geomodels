@@ -63,7 +63,7 @@ cdef class MagneticFieldModel:
         # Example of using the `geomodels.MagneticModel` class.
         # This requires that the wmm2010 magnetic model be installed; see
         # https://geographiclib.sourceforge.io/C++/doc/magnetic.html#magneticinst
-        
+
         from geomodels import MagneticModel
 
         mag MagneticModel("wmm2010")
@@ -73,7 +73,7 @@ cdef class MagneticFieldModel:
         lon = 86.93
         h = 8820
         t = 2012
-        
+
         Bx, By, Bz = mag(t, lat,lon, h, Bx, By, Bz)
         H, F, D, I = MagneticModel.compute_field_components(Bx, By, Bz)
 

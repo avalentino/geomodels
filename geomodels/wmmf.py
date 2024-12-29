@@ -14,7 +14,6 @@ import fnmatch
 import pathlib
 import datetime
 import warnings
-from typing import Optional, List
 from collections import OrderedDict, namedtuple
 from dataclasses import dataclass
 from urllib.parse import urlsplit
@@ -87,7 +86,7 @@ class MetaData:
                 field_type = type_map.get(name, str)
                 setattr(self, name, field_type(value))
 
-    def get_years(self) -> List[int]:
+    def get_years(self) -> list[int]:
         """Return the list of years associated to teh models."""
         years = range(
             self.Epoch,
@@ -124,6 +123,7 @@ class MetaData:
         return id_
 
     def __str__(self) -> str:
+        """Return the string representation of the MetaDAta object."""
         upper_name = self.Name.upper()
 
         description = self.Description
@@ -174,7 +174,7 @@ SphCoeffSet = namedtuple("SphCoeffSet", ["C", "S"])
 if hasattr(typing, "OrderedDict"):
     SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
 else:
-    SphCoeffsType = typing.Dict[str, SphCoeffSet]
+    SphCoeffsType = dict[str, SphCoeffSet]
 
 
 class WmmData:
@@ -196,7 +196,7 @@ class WmmData:
         wmmdata._check()
         return wmmdata
 
-    def __init__(self, filename: Optional[PathType] = None) -> None:
+    def __init__(self, filename: PathType | None = None) -> None:
         """Initialize a WmmData instance."""
         self.metadata = MetaData()
         self.coeffs = OrderedDict()
@@ -220,15 +220,15 @@ class WmmData:
 
         nc = (m + 1) * (2 * n - m + 2) // 2
         data = np.fromfile(fd, dtype=np.float64, count=nc)
-        C = np.zeros((n + 1, m + 1))
-        C.T[np.triu_indices(m + 1, 0, n + 1)] = data
+        cosine_coef = np.zeros((n + 1, m + 1))
+        cosine_coef.T[np.triu_indices(m + 1, 0, n + 1)] = data
 
         nc = m * (2 * n - m + 1) // 2
         data = np.fromfile(fd, dtype=np.float64, count=nc)
-        S = np.zeros((n + 1, m + 1))
-        S.T[1:, 1:][np.triu_indices(m, 0, n)] = data
+        sine_coef = np.zeros((n + 1, m + 1))
+        sine_coef.T[1:, 1:][np.triu_indices(m, 0, n)] = data
 
-        return SphCoeffSet(C, S)
+        return SphCoeffSet(cosine_coef, sine_coef)
 
     def _load_sph_coeffs(self, filename: PathType) -> SphCoeffsType:
         """Load spherical harmonics coeffs from a binary file in WMM format."""
@@ -278,9 +278,9 @@ class WmmData:
             )
 
         # compute the effective size (n, m)
-        M = np.abs(coeffs.C) + np.abs(coeffs.S)
-        n = np.where(np.sum(M, 0) > 0)[0][-1]
-        m = np.where(np.sum(M, 1) > 0)[0][-1]
+        size = np.abs(coeffs.C) + np.abs(coeffs.S)
+        n = np.where(np.sum(size, 0) > 0)[0][-1]
+        m = np.where(np.sum(size, 1) > 0)[0][-1]
         if m > n:
             m = n
 
@@ -408,20 +408,20 @@ def import_igrf_txt(path: PathType) -> WmmData:
 
     data = OrderedDict()
     for year in years:
-        C = np.zeros((n + 1, m + 1))
-        C[g["n"], g["m"]] = g[str(year)]
+        cosine_coef = np.zeros((n + 1, m + 1))
+        cosine_coef[g["n"], g["m"]] = g[str(year)]
 
-        S = np.zeros((n + 1, m + 1))
-        S[h["n"], h["m"]] = h[str(year)]
+        sine_coef = np.zeros((n + 1, m + 1))
+        sine_coef[h["n"], h["m"]] = h[str(year)]
 
-        data[str(year)] = SphCoeffSet(C, S)
+        data[str(year)] = SphCoeffSet(cosine_coef, sine_coef)
 
-    C = np.zeros((n + 1, m + 1))
-    C[g["n"], g["m"]] = g["rate"]
+    cosine_coef = np.zeros((n + 1, m + 1))
+    cosine_coef[g["n"], g["m"]] = g["rate"]
 
-    S = np.zeros((n + 1, m + 1))
-    S[h["n"], h["m"]] = h["rate"]
+    sine_coef = np.zeros((n + 1, m + 1))
+    sine_coef[h["n"], h["m"]] = h["rate"]
 
-    data["rate"] = SphCoeffSet(C, S)
+    data["rate"] = SphCoeffSet(cosine_coef, sine_coef)
 
     return WmmData.from_metadata_and_coeffs(metadata, data)

@@ -6,7 +6,6 @@ import glob
 import logging
 import pathlib
 import argparse
-from typing import Optional
 
 from . import __version__, tests
 from .data import (
@@ -130,7 +129,7 @@ def install_data(model, datadir=None, base_url=None, no_progress=False):
 
 
 def import_igrf(
-    path: PathType, outpath: Optional[PathType] = None, force: bool = False
+    path: PathType, outpath: PathType | None = None, force: bool = False
 ):
     """Import magnetic field data from IGRF text format.
 
@@ -148,7 +147,7 @@ def import_igrf(
 
 
 def test(
-    datadir: Optional[PathType] = None,
+    datadir: PathType | None = None,
     verbosity: int = 1,
     failfast: bool = False,
 ):
@@ -442,7 +441,7 @@ def main(*argv):
         kwargs = _get_kwargs(args)
         return func(**kwargs)
 
-    except Exception as exc:
+    except Exception as exc:  # noqa: B902
         logging.critical(f"{type(exc).__name__!r} {exc}")
         logging.debug("stacktrace:", exc_info=True)
         return EX_FAILURE

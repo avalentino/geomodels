@@ -210,21 +210,26 @@ class ComputationTestCase(unittest.TestCase):
     H = +33871.8572503
     F = +34648.2757582
     D = -2.11721965
-    I = +12.15231735
+    I = +12.15231735  # noqa: E741
 
     # $ echo 2016-01-01 16:46:33N 3:00:34W 300 | MagneticField -r -p 7
-    # -2.11721965 12.15231735 33871.8572503 33848.7341446 -1251.3634113 7293.8535382 34648.2757582
-    # 0.09288284 -0.07794874 31.7696715 33.7765829 53.6988656 -41.3769946 22.3474336
+    # -2.11721965 12.15231735 33871.8572503 33848.7341446 \
+    # -1251.3634113 7293.8535382 34648.2757582
+    # 0.09288284 -0.07794874 31.7696715 33.7765829 \
+    # 53.6988656 -41.3769946 22.3474336
     #
-    # $ echo 2016.0 16.775833333333335 -3.0094444444444446 300 | MagneticField -r -p 7
-    # -2.11721965 12.15231735 33871.8572503 33848.7341446 -1251.3634113 7293.8535382 34648.2757582
-    # 0.09288284 -0.07794874 31.7696715 33.7765829 53.6988656 -41.3769946 22.3474336
+    # $ echo 2016.0 16.775833333333335 -3.0094444444444446 300 | \
+    # MagneticField -r -p 7
+    # -2.11721965 12.15231735 33871.8572503 33848.7341446 \
+    # -1251.3634113 7293.8535382 34648.2757582
+    # 0.09288284 -0.07794874 31.7696715 33.7765829 \
+    # 53.6988656 -41.3769946 22.3474336
 
     def setUp(self) -> None:
         self.model = MagneticFieldModel(self.MODEL_NAME)
 
     def test_field_components(self):
-        H, F, D, I = MagneticFieldModel.field_components(
+        H, F, D, I = MagneticFieldModel.field_components(  # noqa: E741,N806
             self.BX, self.BY, self.BZ
         )
         npt.assert_allclose([H, F, D, I], [self.H, self.F, self.D, self.I])
@@ -238,15 +243,19 @@ class ComputationTestCase(unittest.TestCase):
     #     pass
 
     def test_compute_scalar(self):
-        Bx, By, Bz = self.model(self.YEAR, self.LAT, self.LON, self.HEIGHT)
-        npt.assert_allclose([Bx, By, Bz], [self.BX, self.BY, self.BZ])
+        fld_x, fld_y, fld_z = self.model(
+            self.YEAR, self.LAT, self.LON, self.HEIGHT
+        )
+        npt.assert_allclose([fld_x, fld_y, fld_z], [self.BX, self.BY, self.BZ])
 
     def test_compute_scalar_with_rate(self):
-        Bx, By, Bz, Bxt, Byt, Bzt = self.model(
+        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
             self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
         )
-        npt.assert_allclose([Bx, By, Bz], [self.BX, self.BY, self.BZ])
-        npt.assert_allclose([Bxt, Byt, Bzt], [self.BXT, self.BYT, self.BZT])
+        npt.assert_allclose([fld_x, fld_y, fld_z], [self.BX, self.BY, self.BZ])
+        npt.assert_allclose(
+            [fld_xt, fld_yt, fld_zt], [self.BXT, self.BYT, self.BZT]
+        )
 
 
 class VectorComputationTestCase(unittest.TestCase):
@@ -326,7 +335,7 @@ class VectorComputationTestCase(unittest.TestCase):
             [-12.26312924, -2.136833910],
         ]
     )
-    I = np.asarray(
+    I = np.asarray(  # noqa: E741
         [
             [+12.15231735, -55.63314796],
             [-55.83061445, +12.55330784],
@@ -337,7 +346,7 @@ class VectorComputationTestCase(unittest.TestCase):
         self.model = MagneticFieldModel(self.MODEL_NAME)
 
     def test_field_components_vector(self):
-        H, F, D, I = MagneticFieldModel.field_components(
+        H, F, D, I = MagneticFieldModel.field_components(  # noqa: E741,N806
             self.BX.flatten(), self.BY.flatten(), self.BZ.flatten()
         )
         npt.assert_allclose(H, self.H.flatten())
@@ -346,7 +355,7 @@ class VectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(I, self.I.flatten())
 
     def test_field_components_matrix(self):
-        H, F, D, I = MagneticFieldModel.field_components(
+        H, F, D, I = MagneticFieldModel.field_components(  # noqa: E741,N806
             self.BX, self.BY, self.BZ
         )
         npt.assert_allclose(H, self.H)
@@ -363,47 +372,49 @@ class VectorComputationTestCase(unittest.TestCase):
     #     pass
 
     def test_compute_vector(self):
-        Bx, By, Bz = self.model(
+        fld_x, fld_y, fld_z = self.model(
             self.YEAR,
             self.LAT.flatten(),
             self.LON.flatten(),
             self.HEIGHT.flatten(),
         )
-        npt.assert_allclose(Bx, self.BX.flatten())
-        npt.assert_allclose(By, self.BY.flatten())
-        npt.assert_allclose(Bz, self.BZ.flatten())
+        npt.assert_allclose(fld_x, self.BX.flatten())
+        npt.assert_allclose(fld_y, self.BY.flatten())
+        npt.assert_allclose(fld_z, self.BZ.flatten())
 
     def test_compute_vector_with_rate(self):
-        Bx, By, Bz, Bxt, Byt, Bzt = self.model(
+        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
             self.YEAR,
             self.LAT.flatten(),
             self.LON.flatten(),
             self.HEIGHT.flatten(),
             rate=True,
         )
-        npt.assert_allclose(Bx, self.BX.flatten())
-        npt.assert_allclose(By, self.BY.flatten())
-        npt.assert_allclose(Bz, self.BZ.flatten())
-        npt.assert_allclose(Bxt, self.BXT.flatten())
-        npt.assert_allclose(Byt, self.BYT.flatten())
-        npt.assert_allclose(Bzt, self.BZT.flatten())
+        npt.assert_allclose(fld_x, self.BX.flatten())
+        npt.assert_allclose(fld_y, self.BY.flatten())
+        npt.assert_allclose(fld_z, self.BZ.flatten())
+        npt.assert_allclose(fld_xt, self.BXT.flatten())
+        npt.assert_allclose(fld_yt, self.BYT.flatten())
+        npt.assert_allclose(fld_zt, self.BZT.flatten())
 
     def test_compute_matrix(self):
-        Bx, By, Bz = self.model(self.YEAR, self.LAT, self.LON, self.HEIGHT)
-        npt.assert_allclose(Bx, self.BX)
-        npt.assert_allclose(By, self.BY)
-        npt.assert_allclose(Bz, self.BZ)
+        fld_x, fld_y, fld_z = self.model(
+            self.YEAR, self.LAT, self.LON, self.HEIGHT
+        )
+        npt.assert_allclose(fld_x, self.BX)
+        npt.assert_allclose(fld_y, self.BY)
+        npt.assert_allclose(fld_z, self.BZ)
 
     def test_compute_matrix_with_rate(self):
-        Bx, By, Bz, Bxt, Byt, Bzt = self.model(
+        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
             self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
         )
-        npt.assert_allclose(Bx, self.BX)
-        npt.assert_allclose(By, self.BY)
-        npt.assert_allclose(Bz, self.BZ)
-        npt.assert_allclose(Bxt, self.BXT)
-        npt.assert_allclose(Byt, self.BYT)
-        npt.assert_allclose(Bzt, self.BZT)
+        npt.assert_allclose(fld_x, self.BX)
+        npt.assert_allclose(fld_y, self.BY)
+        npt.assert_allclose(fld_z, self.BZ)
+        npt.assert_allclose(fld_xt, self.BXT)
+        npt.assert_allclose(fld_yt, self.BYT)
+        npt.assert_allclose(fld_zt, self.BZT)
 
 
 class ConstHeightVectorComputationTestCase(unittest.TestCase):
@@ -478,7 +489,7 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
             [-2.11721965, -2.13683391],
         ]
     )
-    I = np.asarray(
+    I = np.asarray(  # noqa: E741
         [
             [+12.15231735, +12.55330784],
             [+12.15231735, +12.55330784],
@@ -493,41 +504,43 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     #     pass
 
     def test_compute_vector(self):
-        Bx, By, Bz = self.model(
+        fld_x, fld_y, fld_z = self.model(
             self.YEAR, self.LAT.flatten(), self.LON.flatten(), self.HEIGHT
         )
-        npt.assert_allclose(Bx, self.BX.flatten())
-        npt.assert_allclose(By, self.BY.flatten())
-        npt.assert_allclose(Bz, self.BZ.flatten())
+        npt.assert_allclose(fld_x, self.BX.flatten())
+        npt.assert_allclose(fld_y, self.BY.flatten())
+        npt.assert_allclose(fld_z, self.BZ.flatten())
 
     def test_compute_vector_with_rate(self):
-        Bx, By, Bz, Bxt, Byt, Bzt = self.model(
+        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
             self.YEAR,
             self.LAT.flatten(),
             self.LON.flatten(),
             self.HEIGHT,
             rate=True,
         )
-        npt.assert_allclose(Bx, self.BX.flatten())
-        npt.assert_allclose(By, self.BY.flatten())
-        npt.assert_allclose(Bz, self.BZ.flatten())
-        npt.assert_allclose(Bxt, self.BXT.flatten())
-        npt.assert_allclose(Byt, self.BYT.flatten())
-        npt.assert_allclose(Bzt, self.BZT.flatten())
+        npt.assert_allclose(fld_x, self.BX.flatten())
+        npt.assert_allclose(fld_y, self.BY.flatten())
+        npt.assert_allclose(fld_z, self.BZ.flatten())
+        npt.assert_allclose(fld_xt, self.BXT.flatten())
+        npt.assert_allclose(fld_yt, self.BYT.flatten())
+        npt.assert_allclose(fld_zt, self.BZT.flatten())
 
     def test_compute_matrix(self):
-        Bx, By, Bz = self.model(self.YEAR, self.LAT, self.LON, self.HEIGHT)
-        npt.assert_allclose(Bx, self.BX)
-        npt.assert_allclose(By, self.BY)
-        npt.assert_allclose(Bz, self.BZ)
+        fld_x, fld_y, fld_z = self.model(
+            self.YEAR, self.LAT, self.LON, self.HEIGHT
+        )
+        npt.assert_allclose(fld_x, self.BX)
+        npt.assert_allclose(fld_y, self.BY)
+        npt.assert_allclose(fld_z, self.BZ)
 
     def test_compute_matrix_with_rate(self):
-        Bx, By, Bz, Bxt, Byt, Bzt = self.model(
+        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
             self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
         )
-        npt.assert_allclose(Bx, self.BX)
-        npt.assert_allclose(By, self.BY)
-        npt.assert_allclose(Bz, self.BZ)
-        npt.assert_allclose(Bxt, self.BXT)
-        npt.assert_allclose(Byt, self.BYT)
-        npt.assert_allclose(Bzt, self.BZT)
+        npt.assert_allclose(fld_x, self.BX)
+        npt.assert_allclose(fld_y, self.BY)
+        npt.assert_allclose(fld_z, self.BZ)
+        npt.assert_allclose(fld_xt, self.BXT)
+        npt.assert_allclose(fld_yt, self.BYT)
+        npt.assert_allclose(fld_zt, self.BZT)

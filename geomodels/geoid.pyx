@@ -110,7 +110,7 @@ cdef class GeoidModel:
         height_above_ellipsoid = (
             height_above_geoid + GEOIDTOELLIPSOID * geoid_height
         )
-        
+
         print(f"Height above ellipsoid: {height_above_ellipsoid}")
     """
     cdef CGeoid *_ptr

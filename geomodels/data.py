@@ -7,9 +7,10 @@ import logging
 import pathlib
 import tempfile
 import contextlib
-from typing import Dict, Union, Optional, Callable
+from typing import Union
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
+from collections.abc import Callable
 
 from ._typing import PathType
 
@@ -135,7 +136,7 @@ def get_base_url():
 
 def get_model_url(
     model: GenericModelType,
-    base_url: Optional[str] = None,
+    base_url: str | None = None,
     archive_type: EArchiveType = EArchiveType.BZ2,
 ) -> str:
     """Return the download URL for the specified geographic model.
@@ -183,9 +184,9 @@ _MODELTYPE_MAP = {
 
 def _get_url_map(
     model: InstallableModelType,
-    base_url: Optional[str] = None,
+    base_url: str | None = None,
     archive_type: EArchiveType = EArchiveType.BZ2,
-) -> Dict[GenericModelType, str]:
+) -> dict[GenericModelType, str]:
     urls = {}
     if model is EModelGroup.ALL:
         for modeltype in EModelType:
@@ -235,9 +236,12 @@ try:
                 )
 
             # set defaults
-            kargs = dict(
-                unit="B", unit_scale=True, unit_divisor=1024, miniters=1
-            )
+            kargs = {
+                "unit": "B",
+                "unit_scale": True,
+                "unit_divisor": 1024,
+                "miniters": 1,
+            }
             kargs.update(kwargs)
 
             super().__init__(**kargs)
@@ -257,10 +261,29 @@ except ImportError:
     tqdm = None
 
 
+def _get_report_hook(progress: bool | ReportHookType, description: str):
+    if progress is True and tqdm:
+        try:
+            base_width = 50
+            ncols = os.get_terminal_size().columns
+            ncols = ncols - base_width if ncols >= base_width else 0
+        except OSError:
+            ncols = 0
+        report_hook = TqdmReportHook(desc=description[-ncols:], leave=False)
+    elif callable(progress):
+        report_hook = progress
+    # elif progress is False:
+    #     reporthook = None  # type: ignore
+    else:
+        report_hook = None  # type: ignore
+
+    return report_hook
+
+
 def download(
     url: str,
     path: PathType = ".",
-    progress: Union[bool, ReportHookType] = True,
+    progress: bool | ReportHookType = True,
     force: bool = False,
 ) -> str:
     """Download the specified URL.
@@ -295,34 +318,21 @@ def download(
     if path.exists() and not force:
         raise RuntimeError(f'download target path already exists: "{path}"')
 
-    if progress is True and tqdm:
-        try:
-            base_width = 50
-            ncols = os.get_terminal_size().columns
-            ncols = ncols - base_width if ncols >= base_width else 0
-        except OSError:
-            ncols = 0
-        desc = urlsplit(url)._replace(query="", fragment="").geturl()
-        reporthook = TqdmReportHook(desc=desc[-ncols:], leave=False)
-    elif callable(progress):
-        reporthook = progress
-    # elif progress is False:
-    #     reporthook = None  # type: ignore
-    else:
-        reporthook = None  # type: ignore
+    desc = urlsplit(url)._replace(query="", fragment="").geturl()
+    report_hook = _get_report_hook(progress=progress, description=desc)
 
-    if isinstance(reporthook, contextlib.AbstractContextManager):
-        with reporthook:
-            outpath, _ = urlretrieve(urlobj.geturl(), path, reporthook)
+    if isinstance(report_hook, contextlib.AbstractContextManager):
+        with report_hook:
+            outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
     else:
-        outpath, _ = urlretrieve(urlobj.geturl(), path, reporthook)
+        outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
 
     return outpath
 
 
 def install(
     model: InstallableModelType = EModelGroup.MINIMAL,
-    datadir: Optional[PathType] = None,
+    datadir: PathType | None = None,
     base_url: str = None,
     archive_type: EArchiveType = EArchiveType.BZ2,
     progress: bool = True,
