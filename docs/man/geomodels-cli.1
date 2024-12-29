@@ -1,25 +1,24 @@
-.TH geomodels-cli "1" Manual
+.TH GEOMODELS\-CLI "1" "2024\-12\-29" "geomodels" "Manual"
 .SH NAME
-geomodels-cli
+geomodels\-cli
 .SH SYNOPSIS
-.B geomodels-cli
+.B geomodels\-cli
 [-h] [--version] [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-q] [-v] [--debug] {info,install-data,import-igrf,test} ...
 .SH DESCRIPTION
 Command Line Interface (CLI) for the geomodels package.
-.SH OPTIONS
 
+.SH OPTIONS
 .TP
 \fB\-\-version\fR
 show program's version number and exit
 
 .TP
-\fB\-\-loglevel\fR {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+\fB\-\-loglevel\fR \fI\,{DEBUG,INFO,WARNING,ERROR,CRITICAL}\/\fR
 logging level (default: WARNING)
 
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 suppress standard output messages, only errors are printed to screen (set
-.br
 "loglevel" to "ERROR")
 
 .TP
@@ -30,39 +29,34 @@ print verbose output messages (set "loglevel" to "INFO")
 \fB\-\-debug\fR
 print debug messages (set "loglevel" to "DEBUG")
 
-.SS
-\fBSub-commands\fR
+.SH
+SUB-COMMANDS
 .TP
-\fBgeomodels-cli\fR \fI\,info\/\fR
+\fBgeomodels\-cli\fR \fI\,info\/\fR
 provide information about the installation and environment.
 .TP
-\fBgeomodels-cli\fR \fI\,install-data\/\fR
+\fBgeomodels\-cli\fR \fI\,install\-data\/\fR
 download and install the data necessary for models computation.
 .TP
-\fBgeomodels-cli\fR \fI\,import-igrf\/\fR
+\fBgeomodels\-cli\fR \fI\,import\-igrf\/\fR
 import magnetic field data from igrf text format.
 .TP
-\fBgeomodels-cli\fR \fI\,test\/\fR
+\fBgeomodels\-cli\fR \fI\,test\/\fR
 run the test suite for the geomodels package.
-.SH OPTIONS 'geomodels-cli info'
-usage: geomodels-cli info [-h] [-d DATADIR] [-a] [--data]
+
+.SH COMMAND \fI\,'geomodels\-cli info'\/\fR
+usage: geomodels\-cli info [\-h] [\-d DATADIR] [\-a] [\-\-data]
 
 Provide information about the installation and environment.
-.br
 
-.br
     Information provided include: the platform, the library versions and
-.br
     installed data.
-.br
 
 
-
+.SH OPTIONS \fI\,'geomodels\-cli info'\/\fR
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the model data are stored (default:
-.br
-'/usr/local/share/GeographicLib').
+specifies where the model data are stored.
 
 .TP
 \fB\-a\fR, \fB\-\-all\fR
@@ -72,87 +66,59 @@ show both versions and platform info and also information about installed data
 \fB\-\-data\fR
 show info about installed data
 
-.SH OPTIONS 'geomodels-cli install-data'
-usage: geomodels-cli install-data [-h] [-b BASE_URL] [-d DATADIR]
-                                  [--no-progress]
-                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84-30,egm84-15,egm96-15,egm96-5,egm2008-5,egm2008-2_5,egm2008-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}
+.SH COMMAND \fI\,'geomodels\-cli install\-data'\/\fR
+usage: geomodels\-cli install\-data [\-h] [\-b BASE_URL] [\-d DATADIR]
+                                  [\-\-no\-progress]
+                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}
 
 Download and install the data necessary for models computation.
-.br
 
-.br
     GeoModels uses external data to perform geoid, gravity and magnetic
-.br
     field computations.
-.br
 
-.br
     It is possible to install different subsets of data:
-.br
 
-.br
     :minimal:
-.br
         only data for the default model of each kind (geoid,
-.br
         gravity and magnetic field) are installed,
-.br
     :recommended:
-.br
         install the `minimal` set of data (see above) plus few
-.br
         additional and commonly used data (it is guaranteed that
-.br
         the `recommended` subset always includes all data that
-.br
         are necessary to run the test suite),
-.br
     :all:
-.br
         install all available data (about 670MB of disk space
-.br
         required),
-.br
     :geoids:
-.br
         install data for all supported geoids,
-.br
     :gravity:
-.br
         install data for all supported gravity models,
-.br
     :magnetic:
-.br
         install data for all supported magnetic field models.
-.br
 
-.br
     Additionally the it is possible to install data for a single model.
-.br
 
 
 .TP
 \fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}\fR
 model(s) to be installed
 
+.SH OPTIONS \fI\,'geomodels\-cli install\-data'\/\fR
 .TP
 \fB\-b\fR \fI\,BASE_URL\/\fR, \fB\-\-base\-url\fR \fI\,BASE_URL\/\fR
 specifies the base URL for the download (default:
-.br
-'https://downloads.sourceforge.net/project/geographiclib/').
+https://downloads.sourceforge.net/project/geographiclib).
 
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the datasets should be stored (default:
-.br
-'/usr/local/share/GeographicLib').
+specifies where the datasets should be stored.
 
 .TP
 \fB\-\-no\-progress\fR
 suppress progress bar display
 
-.SH OPTIONS 'geomodels-cli import-igrf'
-usage: geomodels-cli import-igrf [-h] [-o OUTPATH] [--force] path
+.SH COMMAND \fI\,'geomodels\-cli import\-igrf'\/\fR
+usage: geomodels\-cli import\-igrf [\-h] [\-o OUTPATH] [\-\-force] path
 
 Import magnetic field data from IGRF text format.
 
@@ -160,28 +126,25 @@ Import magnetic field data from IGRF text format.
 \fBpath\fR
 path or URL of the IGRF text file
 
+.SH OPTIONS \fI\,'geomodels\-cli import\-igrf'\/\fR
 .TP
 \fB\-o\fR \fI\,OUTPATH\/\fR, \fB\-\-outpath\fR \fI\,OUTPATH\/\fR
-specifies the output data path (default:
-.br
-"/usr/local/share/GeographicLib/magnetic").
+specifies the output data path.
 
 .TP
 \fB\-\-force\fR
 overwrite existing files (default: False).
 
-.SH OPTIONS 'geomodels-cli test'
-usage: geomodels-cli test [-h] [-d DATADIR] [--verbosity VERBOSITY]
-                          [--failfast]
+.SH COMMAND \fI\,'geomodels\-cli test'\/\fR
+usage: geomodels\-cli test [\-h] [\-d DATADIR] [\-\-verbosity VERBOSITY]
+                          [\-\-failfast]
 
 Run the test suite for the geomodels package.
 
-
+.SH OPTIONS \fI\,'geomodels\-cli test'\/\fR
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the model data are stored (default:
-.br
-'/usr/local/share/GeographicLib').
+specifies where the model data are stored.
 
 .TP
 \fB\-\-verbosity\fR \fI\,VERBOSITY\/\fR
@@ -191,9 +154,14 @@ verbosity level for the unittest runner (default: 1).
 \fB\-\-failfast\fR
 stop the test run on the first error or failure (default: False).
 
-.SH AUTHORS
-.B geomodels
-was written by Antonio Valentino <antonio dot valentino at tiscali.it>.
+.SH AUTHOR
+.nf
+Antonio Valentino
+.fi
+.nf
+antonio dot valentino at tiscali.it
+.fi
+
 .SH DISTRIBUTION
 The latest version of geomodels may be downloaded from
 .UR https://github.com/avalentino/geomodels

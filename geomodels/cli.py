@@ -180,8 +180,10 @@ def _set_logging_control_args(parser, default_loglevel="WARNING"):
         dest="loglevel",
         action="store_const",
         const="ERROR",
-        help="suppress standard output messages, only errors are printed "
-        'to screen (set "loglevel" to "ERROR")',
+        help=(
+            "suppress standard output messages, only errors are printed "
+            'to screen (set "loglevel" to "ERROR")'
+        ),
     )
     parser.add_argument(
         "-v",
@@ -220,8 +222,9 @@ def get_info_parser(parser=None):
         "-d",
         "--datadir",
         default=get_default_data_path(),
-        help="specifies where the model data are stored "
-        "(default: %(default)r).",
+        help=(
+            "specifies where the model data are stored (default: %(default)r)."
+        ),
     )
     parser.add_argument(
         "-a",
@@ -230,8 +233,10 @@ def get_info_parser(parser=None):
         action="store_const",
         const=EInfoMode.ALL,
         default=EInfoMode.INFO,
-        help="show both versions and platform info and also information "
-        "about installed data",
+        help=(
+            "show both versions and platform info and also information "
+            "about installed data"
+        ),
     )
     parser.add_argument(
         "--data",
@@ -280,8 +285,10 @@ def get_install_data_parser(parser=None):
         "-d",
         "--datadir",
         default=get_default_data_path(),
-        help="specifies where the datasets should be stored "
-        "(default: %(default)r).",
+        help=(
+            "specifies where the datasets should be stored "
+            "(default: %(default)r)."
+        ),
     )
     parser.add_argument(
         "--no-progress",
@@ -367,8 +374,10 @@ def get_test_parser(parser=None):
         "--failfast",
         action="store_true",
         default=False,
-        help="stop the test run on the first error or failure "
-        "(default: %(default)s).",
+        help=(
+            "stop the test run on the first error or failure "
+            "(default: %(default)s)."
+        ),
     )
 
     # positional arguments
