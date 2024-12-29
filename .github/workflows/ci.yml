@@ -78,7 +78,6 @@ jobs:
           python -m twine check dist/*
 
       - name: Install
-        # shell: bash
         run: |
           python -m pip install dist/*.whl
 
@@ -103,3 +102,51 @@ jobs:
           GEOGRAPHICLIB_DATA: "../data"
         run: |
           python -m pytest --cov=${PACKAGE} --cov-report=html --cov-report=term --pyargs ${PACKAGE}
+
+  ubuntu:
+    runs-on: ubuntu-24.04
+    name: ubuntu-syslibs
+    needs: sdist
+
+    steps:
+      - name: Get source distribution
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: sdist
+          path: dist
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            pip twine libgeographiclib-dev geographiclib-tools \
+            python3-numpy python3-pytest python3-tqdm
+
+      - name: Build package
+        env:
+          GEOMODELS_IGNORE_BUNDLED_LIBS: "TRUE"
+        run: |
+          python -m pip wheel --wheel-dir dist dist/${PACKAGE}*.tar.gz
+          python -m twine check dist/*
+
+      - name: Install
+        run: |
+          python -m pip install dist/*.whl
+
+      - name: Prepare the environment
+        run: |
+          sudo /usr/sbin/geographiclib-get-geoids egm96-5
+          sudo /usr/sbin/geographiclib-get-gravity egm96
+          sudo /usr/sbin/geographiclib-get-magnetic igrf12
+          sudo /usr/sbin/geographiclib-get-magnetic wmm2015
+          sudo /usr/sbin/geographiclib-get-magnetic wmm2020
+
+      - name: Test CLI
+        run: |
+          geomodels-cli info
+
+      - name: Test
+        working-directory: dist
+        shell: bash
+        run: |
+          python -m pytest --pyargs ${PACKAGE}
