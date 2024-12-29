@@ -38,6 +38,7 @@ check: ext data
 	$(PYTHON) -m pytest --doctest-modules $(TARGET)
 
 fullcheck: data
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
 	$(PYTHON) -m tox run
 
 coverage: ext data
