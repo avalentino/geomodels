@@ -14,13 +14,14 @@ import os
 import sys
 
 try:
-    import geomodels
+    import geomodels  # noqa: F401
 except ImportError:
     sys.path.insert(0, os.path.abspath(".."))
 
 
 def get_version(filename="../geomodels/_version.py", strip_extra=False):
     import re
+
     import packaging.version
 
     with open(filename) as fd:

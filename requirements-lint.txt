@@ -1,5 +1,5 @@
-flake8
-pydocstyle
-isort
 black
+flake8
+isort
 mypy
+pydocstyle

@@ -64,7 +64,7 @@ jobs:
           python3 -m sphinx -W -b doctest . _build/doctest
         working-directory: docs
         env:
-          GEOGRAPHICLIB_DATA: "../data" 
+          GEOGRAPHICLIB_DATA: "../data"
 
       # - name: Spellcheck
       #   run: |

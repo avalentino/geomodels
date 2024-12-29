@@ -1,6 +1,6 @@
-numpy
-cython
-tqdm
 argcomplete
 build>=0.8
+cython
+numpy
 setuptools
+tqdm

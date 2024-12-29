@@ -4,8 +4,8 @@ PYTHON=python3
 SPHINX_APIDOC=sphinx-apidoc
 TARGET=geomodels
 
-.PHONY: default help dist check fullcheck coverage lint api docs clean cleaner distclean \
-        ext man data wheels
+.PHONY: default help dist check fullcheck coverage clean cleaner distclean \
+        lint docs api man ext data wheels
 
 default: help
 
@@ -17,14 +17,14 @@ help:
 	@echo "  check     - run a full test (using pytest)"
 	@echo "  fullcheck - run a full test (using tox)"
 	@echo "  coverage  - run tests and generate the coverage report"
-	@echo "  lint      - perform check with code linter (flake8, black)"
-	@echo "  api       - update the API source files in the documentation"
-	@echo "  docs      - generate the sphinx documentation"
 	@echo "  clean     - clean build artifacts"
 	@echo "  cleaner   - clean cache files and working directories of al tools"
 	@echo "  distclean - clean all the generated files"
-	@echo "  ext       - build Python extensions inplace"
+	@echo "  lint      - perform check with code linter (flake8, black)"
+	@echo "  docs      - generate the sphinx documentation"
+	@echo "  api       - update the API source files in the documentation"
 	@echo "  man       - build man pages for CLI programs"
+	@echo "  ext       - build Python extensions inplace"
 	@echo "  data      - download data needed for testing"
 	@echo "  wheels    - build Python wheels"
 
@@ -35,34 +35,14 @@ dist:
 check: ext data
 	$(PYTHON) -m geomodels info
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
-	$(PYTHON) -m pytest $(TARGET)
+	$(PYTHON) -m pytest --doctest-modules $(TARGET)
 
 fullcheck: data
-	$(PYTHON) -m tox
+	$(PYTHON) -m tox run
 
 coverage: ext data
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
-	$(PYTHON) -m pytest --cov=$(TARGET) --cov-report=html --cov-report=term
-
-lint:
-	# temporary use --exit-zero
-	$(PYTHON) -m flake8 --count --statistics --exit-zero $(TARGET)
-	$(PYTHON) -m isort --check $(TARGET)
-	$(PYTHON) -m black --check $(TARGET)
-	# $(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports $(TARGET)
-	ruff check $(TARGET)
-
-api: ext
-	$(RM) -r docs/api
-	$(SPHINX_APIDOC) --module-first --separate --no-toc -o docs/api \
-	  --doc-project "$(TARGET) API" --templatedir docs/_templates/apidoc \
-	  $(TARGET) \
-      $(TARGET)/tests $(TARGET)/*.pyx
-
-docs: ext data man
-	$(MAKE) -C docs html
-	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
-	$(MAKE) -C docs doctest
+	$(PYTHON) -m pytest --doctest-modules --cov=$(TARGET) --cov-report=html --cov-report=term
 
 clean:
 	$(RM) -r *.*-info build
@@ -84,18 +64,27 @@ distclean: cleaner
 	$(RM) -r data
 	$(RM) -r wheelhouse
 
-ext: geomodels/_ext.cpp
-	$(PYTHON) setup.py build_ext --inplace
+lint:
+	$(PYTHON) -m flake8 --count --statistics $(TARGET)
+	$(PYTHON) -m pydocstyle --count $(TARGET)
+	$(PYTHON) -m isort --check $(TARGET)
+	$(PYTHON) -m black --check $(TARGET)
+	# $(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports $(TARGET)
+	ruff check $(TARGET)
 
+api: ext
+	$(RM) -r docs/api
+	$(SPHINX_APIDOC) --module-first --separate --no-toc -o docs/api \
+	  --doc-project "$(TARGET) API" --templatedir docs/_templates/apidoc \
+	  $(TARGET) $(TARGET)/tests $(TARGET)/*.pyx
 
-geomodels/_ext.cpp: $(TARGET)/geoid.pxd $(TARGET)/geoid.pyx \
-                    $(TARGET)/gravity.pxd $(TARGET)/gravity.pyx \
-                    $(TARGET)/magnetic.pxd $(TARGET)/magnetic.pyx
-	$(PYTHON) -m cython -3 --cplus $(TARGET)/_ext.pyx
-
+docs: ext data man
+	mkdir -p docs/_static
+	$(MAKE) -C docs html
+	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
+	$(MAKE) -C docs doctest
 
 man: docs/man/geomodels-cli.1
-
 
 docs/man/geomodels-cli.1: ext
 	mkdir -p docs/man
@@ -106,9 +95,16 @@ docs/man/geomodels-cli.1: ext
 	    --author "Antonio Valentino" \
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
+ext: geomodels/_ext.cpp
+	$(PYTHON) setup.py build_ext --inplace
+
+geomodels/_ext.cpp: $(TARGET)/geoid.pxd $(TARGET)/geoid.pyx \
+                    $(TARGET)/gravity.pxd $(TARGET)/gravity.pyx \
+                    $(TARGET)/magnetic.pxd $(TARGET)/magnetic.pyx
+	$(PYTHON) -m cython -3 --cplus $(TARGET)/_ext.pyx
+
 data: ext
 	$(PYTHON) -m geomodels install-data -d data recommended
-
 
 wheels:
 	# Requires docker

@@ -51,12 +51,12 @@ jobs:
     needs: sdist
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         # os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - name: Get source distribtion
+      - name: Get source distribution
         uses: actions/download-artifact@v4.1.8
         with:
           name: sdist
@@ -100,6 +100,6 @@ jobs:
         working-directory: dist
         shell: bash
         env:
-          GEOGRAPHICLIB_DATA: "../data" 
+          GEOGRAPHICLIB_DATA: "../data"
         run: |
           python -m pytest --cov=${PACKAGE} --cov-report=html --cov-report=term --pyargs ${PACKAGE}
