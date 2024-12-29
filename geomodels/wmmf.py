@@ -87,7 +87,7 @@ class MetaData:
                 setattr(self, name, field_type(value))
 
     def get_years(self) -> list[int]:
-        """Return the list of years associated to teh models."""
+        """Return the list of years associated to the models."""
         years = range(
             self.Epoch,
             self.Epoch + self.DeltaEpoch * self.NumModels,

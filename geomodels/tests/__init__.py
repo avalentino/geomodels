@@ -11,8 +11,11 @@ def print_versions():
     """Print platform information and library version."""
     from .. import lib_version_str, __version__  # avoid circular imports
 
+    geographiclib_data = os.environ.get("GEOGRAPHICLIB_DATA", "not specified")
+
     print(f"geomodels version:     {__version__}")
     print(f"GeographicLib version: {lib_version_str()}")
+    print(f"GEOGRAPHICLIB_DATA:    {geographiclib_data}")
 
     print(f"Python version:        {platform.python_version()}")
     print(f"Platform:              {platform.platform()}")

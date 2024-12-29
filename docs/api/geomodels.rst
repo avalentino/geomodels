@@ -44,8 +44,8 @@ Functions
 
 .. autofunction:: test
 
-Submodules
-----------
+Sub-modules
+-----------
 
 .. toctree::
    :maxdepth: 4

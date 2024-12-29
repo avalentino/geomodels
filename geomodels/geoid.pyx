@@ -32,7 +32,7 @@ cdef class GeoidModel:
     """Looking up the height of the geoid above the ellipsoid.
 
     This class evaluates the height of one of the standard geoids, `EGM84`,
-    `EGM96`, or `EGM2008` by bilinear or cubic interpolation into a
+    `EGM96`, or `EGM2008` by bi-linear or cubic interpolation into a
     rectangular grid of data.
 
     See https://geographiclib.sourceforge.io/html/geoid.html.
@@ -40,7 +40,7 @@ cdef class GeoidModel:
     The geoids are defined in terms of spherical harmonics.  However in order
     to provide a quick and flexible method of evaluating the geoid heights,
     this class evaluates the height by interpolation into a grid of
-    precomputed values.
+    pre-computed values.
 
     The height of the geoid above the ellipsoid, `N`, is sometimes called the
     geoid undulation.  It can be used to convert a height above the ellipsoid,
@@ -55,7 +55,7 @@ cdef class GeoidModel:
     reads the data set and because it maintains a single-cell cache.  If
     multiple threads need to calculate geoid heights they should all construct
     thread-local instantiations.  Alternatively, set the optional
-    threadsafe parameter to true in the constructor.  This causes the
+    thread-safe parameter to true in the constructor.  This causes the
     constructor to read all the data into memory and to turn off the
     single-cell caching which results in a Geoid object which is thread
     safe.
@@ -151,7 +151,7 @@ cdef class GeoidModel:
         :raises GeographicErr:
             if there's a problem reading the data.
         :raises GeographicErr:
-            if this is called on a threadsafe :class:`Geoid`.
+            if this is called on a thread-safe :class:`Geoid`.
 
         Cache the data for the specified "rectangular" area bounded by
         the parallels `south` and `north` and the meridians `west` and
@@ -176,7 +176,7 @@ cdef class GeoidModel:
         :raises GeographicErr:
             if there's a problem reading the data.
         :raises GeographicErr:
-            if this is called on a threadsafe :class:`Geoid`.
+            if this is called on a thread-safe :class:`Geoid`.
 
         On most computers, this is fast for data sets with grid
         resolution of 5' or coarser. For a 1' grid, the required RAM is
@@ -322,7 +322,7 @@ cdef class GeoidModel:
         return self._ptr.GeoidDirectory().decode('utf-8')
 
     def interpolation(self) -> str:
-        """Return interpolation method ("cubic" or "bilinear")."""
+        """Return interpolation method (`cubic` or `bilinear`)."""
         # @TODO: use an enum
         return self._ptr.Interpolation().decode('utf-8')
 

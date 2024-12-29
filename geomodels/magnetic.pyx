@@ -418,11 +418,11 @@ cdef class MagneticFieldModel:
         return self._ptr.Flattening()
 
     def degree(self) -> int:
-        """The maximum degree of the components of the model (Nmax)."""
+        """The maximum degree of the components of the model (`Nmax`)."""
         return self._ptr.Degree()
 
     def order(self) -> int:
-        """The maximum order of the components of the model (Mmax)."""
+        """The maximum order of the components of the model (`Mmax`)."""
         return self._ptr.Order()
 
     @staticmethod

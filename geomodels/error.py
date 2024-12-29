@@ -1,4 +1,4 @@
-"""Error management utils."""
+"""Error management utilities."""
 
 
 class GeographicErr(RuntimeError):

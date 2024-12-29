@@ -173,11 +173,11 @@ cdef class GravityModel:
         :param h:
             the height above the ellipsoid (meters)
         :returns:
-            * W the sum of the gravitational and centrifugal potentials
+            * `W`: the sum of the gravitational and centrifugal potentials
               ([m**2 / s**2])
-            * gx the easterly component of the acceleration ([m / s**2])
-            * gy the northerly component of the acceleration ([m / s**2])
-            * gz the upward component of the acceleration ([m / s**2]);
+            * `gx`: the easterly component of the acceleration ([m / s**2])
+            * `gy`: the northerly component of the acceleration ([m / s**2])
+            * `gz`: the upward component of the acceleration ([m / s**2]);
               this is usually negative
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
@@ -222,12 +222,12 @@ cdef class GravityModel:
         :param h:
             the height above the ellipsoid (meters)
         :returns:
-            * T the corresponding disturbing potential ([m**2 / s**2])
-            * deltax the easterly component of the disturbance vector
+            * `T`: the corresponding disturbing potential ([m**2 / s**2])
+            * `delta_x`: the easterly component of the disturbance vector
               ([m / s**2])
-            * deltay the northerly component of the disturbance vector
+            * `delta_y`: the northerly component of the disturbance vector
               ([m / s**2])
-            * deltaz the upward component of the disturbance vector
+            * `delta_z`: the upward component of the disturbance vector
               ([m / s**2])
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
@@ -305,10 +305,10 @@ cdef class GravityModel:
         :param h:
             the height above the ellipsoid (meters)
         :returns:
-            * Dg01 the gravity anomaly ([m / s**2])
-            * xi the northerly component of the deflection of the
+            * `Dg01`: the gravity anomaly ([m / s**2])
+            * `xi`: the northerly component of the deflection of the
               vertical (degrees)
-            * eta the easterly component of the deflection of the
+            * `eta`: the easterly component of the deflection of the
               vertical (degrees).
 
         The spherical approximation (see Heiskanen and Moritz,
@@ -355,11 +355,11 @@ cdef class GravityModel:
         :param z:
             geocentric coordinate of point (meters)
         :returns:
-            * W = V + Phi, the sum of the gravitational and centrifugal
+            * `W = V + Phi`: the sum of the gravitational and centrifugal
               potentials ([m**2 /  s**2])
-            * gx the x component of the acceleration ([m / s**2])
-            * gy the y component of the acceleration ([m / s**2])
-            * gz the z component of the acceleration ([m / s**2])
+            * `gx`: the x component of the acceleration ([m / s**2])
+            * `gy`: the y component of the acceleration ([m / s**2])
+            * `gz`: the z component of the acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
@@ -403,10 +403,10 @@ cdef class GravityModel:
         :param z:
             geocentric coordinate of point (meters)
         :returns:
-            * V = W - Phi, the gravitational potential ([m**2 /  s**2])
-            * gx the x component of the acceleration ([m / s**2])
-            * gy the y component of the acceleration ([m / s**2])
-            * gz the z component of the acceleration ([m / s**2])
+            * `V = W - Phi`: the gravitational potential ([m**2 /  s**2])
+            * `gx`: the x component of the acceleration ([m / s**2])
+            * `gy`: the y component of the acceleration ([m / s**2])
+            * `gz`: the z component of the acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
@@ -451,13 +451,13 @@ cdef class GravityModel:
         :param z:
             geocentric coordinate of point (meters)
         :returns:
-            * T = W - U, the disturbing potential (also called the
+            * `T = W - U`: the disturbing potential (also called the
               anomalous potential) ([m**2 / s**2])
-            * deltaX the x component of the gravity disturbance
+            * `delta_x`: the x component of the gravity disturbance
               ([m / s**2])
-            * deltaY the Y component of the gravity disturbance
+            * `delta_y`: the Y component of the gravity disturbance
               ([m / s**2])
-            * deltaZ the Z component of the gravity disturbance
+            * `delta_z`: the Z component of the gravity disturbance
               ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
@@ -537,11 +537,11 @@ cdef class GravityModel:
         :param z:
             geocentric coordinate of point (meters)
         :returns:
-            * U = V0 + Phi, the sum of the normal gravitational and
+            * `U = V0 + Phi`:` the sum of the normal gravitational and
               centrifugal potentials ([m**2 / s**2])
-            * gammaX the x component of the normal acceleration ([m / s**2])
-            * gammaY the y component of the normal acceleration ([m / s**2])
-            * gammaZ the z component of the normal acceleration ([m / s**2])
+            * `gamma_x`: the x component of the normal acceleration ([m / s**2])
+            * `gamma_y`: the y component of the normal acceleration ([m / s**2])
+            * `gamma_z`: the z component of the normal acceleration ([m / s**2])
         """
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
@@ -578,9 +578,9 @@ cdef class GravityModel:
         :param y:
             geocentric coordinate of point (meters)
         :returns:
-            * Phi, the centrifugal potential ([m**2 / s**2])
-            * fx the x component of the centrifugal acceleration (m / s**2])
-            * fy the y component of the centrifugal acceleration (m / s**2])
+            * `Phi`: the centrifugal potential ([m**2 / s**2])
+            * `fx`: the x component of the centrifugal acceleration (m / s**2])
+            * `fy`: the y component of the centrifugal acceleration (m / s**2])
         """
         x, y, shape = as_contiguous_1d_components(
             x, y, labels=['x', 'y'], dtype=np.float64
@@ -655,11 +655,11 @@ cdef class GravityModel:
         return self._ptr.AngularVelocity()
 
     def degree(self) -> int:
-        """The maximum degree of the components of the model (Nmax)."""
+        """The maximum degree of the components of the model (`Nmax`)."""
         return self._ptr.Degree()
 
     def order(self) -> int:
-        """The maximum order of the components of the model (Mmax)."""
+        """The maximum order of the components of the model (`Mmax`)."""
         return self._ptr.Order()
 
     @staticmethod

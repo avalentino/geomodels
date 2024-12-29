@@ -76,10 +76,10 @@ environment variable shall be set to `TRUE` as in the following example::
 Starting from GeographicLib v2.0 the name of the dynamic library has been
 changed from `libGeographic.so` to `libGeographicLib.so`.
 By default GeoModels uses the new name (and this is the reason why
-GeograohicLin >= 2.0 is reguired), but it is also possible to build geomodels
-agains GeographicLib >= 1.52. In the latter case the
+GeograohicLin >= 2.0 is required), but it is also possible to build geomodels
+against GeographicLib >= 1.52. In the latter case the
 `GEOMODELS_GEOGRAPHICLIB_NAME` environment variable shall be used to set The
-name of the dynamic libraty::
+name of the dynamic library::
 
   $ exportGEOMODELS_GEOGRAPHICLIB_NAME=Geographic
 
@@ -169,7 +169,7 @@ a single model. See the command line help for details::
 
   $ python3 -m geomodels install-data -h
 
-Please refer to :doc:`cli` for a complete desciption of the command
+Please refer to :doc:`cli` for a complete description of the command
 line interface.
 
 

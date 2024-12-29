@@ -63,7 +63,7 @@ def _format_data_info(datadir=None):
 
 
 def info(mode=EInfoMode.ALL, datadir=None):
-    """Provide information about the installtion and environment.
+    """Provide information about the installation and environment.
 
     Information provided include: the platform, the library versions and
     installed data.
