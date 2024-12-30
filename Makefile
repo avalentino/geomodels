@@ -100,17 +100,12 @@ docs/man/geomodels-cli.1: ext
 	    --author "Antonio Valentino" \
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
-ext: geomodels/_ext.cpp
-	meson setup $(TARGET)
-	meson compile -C $(TARGET)
-
-geomodels/_ext.cpp: $(TARGET)/geoid.pxd $(TARGET)/geoid.pyx \
-                    $(TARGET)/gravity.pxd $(TARGET)/gravity.pyx \
-                    $(TARGET)/magnetic.pxd $(TARGET)/magnetic.pyx
-	$(PYTHON) -m cython -3 --cplus $(TARGET)/_ext.pyx
+ext:
+	meson setup build
+	meson compile -C build
+	cp build/$(TARGET)/_ext.*.so $(TARGET)
 
 data: ext
-	pwd
 	$(PYTHON) -m geomodels install-data -d data recommended
 
 wheels:

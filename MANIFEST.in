@@ -1,8 +1,0 @@
-include MANIFEST.in LICENSE
-recursive-include . meson.build
-include Makefile requirements-*.txt
-include geomodels/*.pyx geomodels/*.pxd
-# include geomodels/*.cpp
-recursive-include docs *.py *.rst Makefile *.bat spelling_wordlist.txt
-prune docs/_build
-recursive-include extern *

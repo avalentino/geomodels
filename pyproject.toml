@@ -12,7 +12,7 @@ authors = [
     {name = "Antonio Valentino", email = "antonio.valentino@tiscali.it"},
 ]
 description = "Python package for Earth data models management"
-# readme = {file = "README.rst", content-type = "text/x-rst"}
+readme = {file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">= 3.10"
 keywords = [
     "geoid",
@@ -57,18 +57,6 @@ Documentation = "https://geomodels.readthedocs.io"
 Repository = "https://github.com/avalentino/geomodels.git"
 Changelog = "https://github.com/avalentino/geomodels/blob/main/docs/NEWS.rst"
 Issues = "https://github.com/avalentino/geomodels/issues"
-
-
-[tool.setuptools]
-packages = ["geomodels", "geomodels.tests", "geomodels.tests.data"]
-
-
-[tool.setuptools.dynamic]
-version = {attr = "geomodels._version.__version__"}
-
-
-[tool.setuptools.package-data]
-"geomodels.tests.data" = ["*.txt"]
 
 
 [tool.pytest.ini_options]

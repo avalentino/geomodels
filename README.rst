@@ -56,7 +56,7 @@ Pip_ and setuptools_::
   $ python3 -m pip install geomodels
 
 Please refer to the Pip_ user manual for details about installation
-options and to the :doc:`installation` section in the documentation
+options and to the "Installation and Testing" section in the documentation
 for details about installation from sources.
 
 .. _Python: https://www.python.org
@@ -110,7 +110,7 @@ The recommended way to test GeoModels with using PyTest_::
 Usage example
 -------------
 
-.. doctest::
+::
 
    >>> from geomodels import GeoidModel
    >>> geoid = GeoidModel()
