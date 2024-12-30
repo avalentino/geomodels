@@ -107,7 +107,7 @@ html_theme_options = {
     # Non-service sidebar control
     "extra_nav_links": {
         "GeoModels on PyPI": "https://pypi.org/project/geomodels",
-        "GeoGraphicLib": "https://geographiclib.sourceforge.io/html",
+        "GeoGraphicLib": "https://github.com/geographiclib/geographiclib",
     },
     # 'show_related': True,
     # 'sidebar_collapse': True,  # not supported by Sphinx v1.8.5
