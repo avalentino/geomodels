@@ -1,4 +1,4 @@
-"""Command Line Interface (CLI) for the geomodels package."""
+"""Command Line Interface (CLI) for the geomodels Python package."""
 
 import os
 import enum
@@ -22,18 +22,12 @@ from .wmmf import import_igrf_txt
 from .tests import print_versions
 from ._typing import PathType
 
-try:
-    import argcomplete
-except ImportError:
-    argcomplete = False
-
-
 EX_FAILURE = 1
 EX_INTERRUPT = 130
 
-
 PROG = __package__ + "-cli"
 LOGFMT = "%(levelname)s: %(message)s"
+DEFAULT_LOGLEVEL = "WARNING"
 
 
 class EInfoMode(enum.Enum):
@@ -42,6 +36,15 @@ class EInfoMode(enum.Enum):
     INFO = "info"
     DATA = "data"
     ALL = "all"
+
+
+def _autocomplete(parser: argparse.ArgumentParser) -> None:
+    try:
+        import argcomplete
+    except ImportError:
+        pass
+    else:
+        argcomplete.autocomplete(parser)
 
 
 def _format_data_info(datadir=None):
@@ -146,8 +149,10 @@ def import_igrf(
     wmmdata.save(outpath, force)
 
 
-def _set_logging_control_args(parser, default_loglevel="WARNING"):
-    """Set up command line options for logging control."""
+def _add_logging_control_args(
+    parser: argparse.ArgumentParser, default_loglevel: str = DEFAULT_LOGLEVEL
+) -> argparse.ArgumentParser:
+    """Add command line options for logging control."""
     loglevels = [logging.getLevelName(level) for level in range(10, 60, 10)]
 
     parser.add_argument(
@@ -164,7 +169,7 @@ def _set_logging_control_args(parser, default_loglevel="WARNING"):
         const="ERROR",
         help=(
             "suppress standard output messages, only errors are printed "
-            'to screen (set "loglevel" to "ERROR")'
+            "to screen (set 'loglevel' to 'ERROR')"
         ),
     )
     parser.add_argument(
@@ -173,29 +178,34 @@ def _set_logging_control_args(parser, default_loglevel="WARNING"):
         dest="loglevel",
         action="store_const",
         const="INFO",
-        help='print verbose output messages (set "loglevel" to "INFO")',
+        help="print verbose output messages (set 'loglevel' to 'INFO')",
     )
     parser.add_argument(
+        # "-d",
         "--debug",
         dest="loglevel",
         action="store_const",
         const="DEBUG",
-        help='print debug messages (set "loglevel" to "DEBUG")',
+        help="print debug messages (set 'loglevel' to 'DEBUG')",
     )
 
     return parser
 
 
-def get_info_parser(parser=None):
-    """Return a CLI argument parser for the `info` sub-command."""
+def _get_synopsis(docstring: str | None) -> str:
+    return docstring.splitlines()[0] if docstring is not None else ""
+
+
+def get_info_parser(subparsers=None) -> argparse.ArgumentParser:
+    """Set up the argument parser for the `info` sub-command."""
     name = "info"
-    synopsis = info.__doc__.splitlines()[0].lower()
+    synopsis = _get_synopsis(info.__doc__)
     doc = info.__doc__
 
-    if parser is None:
+    if subparsers is None:
         parser = argparse.ArgumentParser(prog=name, description=doc)
     else:
-        parser = parser.add_parser(name, description=doc, help=synopsis)
+        parser = subparsers.add_parser(name, description=doc, help=synopsis)
 
     parser.set_defaults(func=info)
 
@@ -228,26 +238,23 @@ def get_info_parser(parser=None):
         help="show info about installed data",
     )
 
-    # positional arguments
-    # ...
-
     return parser
 
 
-def get_install_data_parser(parser=None):
-    """Return a CLI argument parser for the `install-data` sub-command."""
+def get_install_data_parser(subparsers=None) -> argparse.ArgumentParser:
+    """Set up the argument parser for the `install-data` sub-command."""
     name = "install-data"
-    synopsis = install_data.__doc__.splitlines()[0].lower()
+    synopsis = _get_synopsis(install_data.__doc__)
     doc = install_data.__doc__
 
-    if parser is None:
+    if subparsers is None:
         parser = argparse.ArgumentParser(
             prog=name,
             description=doc,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
     else:
-        parser = parser.add_parser(
+        parser = subparsers.add_parser(
             name,
             description=doc,
             help=synopsis,
@@ -292,16 +299,16 @@ def get_install_data_parser(parser=None):
     return parser
 
 
-def get_import_igrf_parser(parser=None):
-    """Return a CLI argument parser for the `import-igrf` sub-command."""
+def get_import_igrf_parser(subparsers=None) -> argparse.ArgumentParser:
+    """Set up the  argument parser for the `import-igrf` sub-command."""
     name = "import-igrf"
-    doc = import_igrf.__doc__.splitlines()[0]
-    synopsis = doc.lower()
+    synopsis = _get_synopsis(import_igrf.__doc__)
+    doc = import_igrf.__doc__
 
-    if parser is None:
+    if subparsers is None:
         parser = argparse.ArgumentParser(prog=name, description=doc)
     else:
-        parser = parser.add_parser(name, description=doc, help=synopsis)
+        parser = subparsers.add_parser(name, description=doc, help=synopsis)
 
     parser.set_defaults(func=import_igrf)
 
@@ -325,27 +332,23 @@ def get_import_igrf_parser(parser=None):
     return parser
 
 
-def get_parser():
-    """Instantiate the command line argument parser."""
-    parser = argparse.ArgumentParser(description=__doc__, prog=PROG)
+def get_parser() -> argparse.ArgumentParser:
+    """Instantiate the command line argument (sub-)parser."""
+    parser = argparse.ArgumentParser(prog=PROG, description=__doc__)
     parser.add_argument(
         "--version", action="version", version="%(prog)s v" + __version__
     )
 
     # Command line options
-    _set_logging_control_args(parser)
-
-    # Positional arguments
-    # ...
+    _add_logging_control_args(parser)
 
     # Sub-command management
-    subparsers = parser.add_subparsers(title="sub-commands")  # dest='func'
+    subparsers = parser.add_subparsers(title="sub-commands")  # , metavar="")
     get_info_parser(subparsers)
     get_install_data_parser(subparsers)
     get_import_igrf_parser(subparsers)
 
-    if argcomplete:
-        argcomplete.autocomplete(parser)
+    _autocomplete(parser)
 
     return parser
 
@@ -361,37 +364,41 @@ def parse_args(args=None, namespace=None, parser=None):
     # ...
 
     if getattr(args, "func", None) is None:
-        parser.error("no sub-commnd specified.")
+        parser.error("no sub-command specified.")
 
     return args
 
 
 def _get_kwargs(args):
-    kwargs = dict(args._get_kwargs())
-    kwargs.pop("loglevel")
-    kwargs.pop("func")
+    kwargs = vars(args).copy()
+    kwargs.pop("func", None)
+    kwargs.pop("loglevel", None)
     return kwargs
 
 
 def main(*argv):
     """Implement the main CLI interface."""
-    logging.basicConfig(format=LOGFMT, level=logging.WARNING)
+    # setup logging
+    logging.basicConfig(format=LOGFMT, level=DEFAULT_LOGLEVEL)
     logging.captureWarnings(True)
+    log = logging.getLogger(__name__)
 
+    # parse cmd line arguments
     args = parse_args(argv if argv else None)
-    logging.getLogger().setLevel(args.loglevel)
 
     try:
-        logging.debug("args: %s", args)
+        # NOTE: use the root logger to set the logging level
+        logging.getLogger().setLevel(args.loglevel)
 
-        func = args.func
+        log.debug("args: %s", args)
         kwargs = _get_kwargs(args)
-        return func(**kwargs)
-
+        return args.func(**kwargs)
     except Exception as exc:  # noqa: B902
-        logging.critical(f"{type(exc).__name__!r} {exc}")
-        logging.debug("stacktrace:", exc_info=True)
+        log.critical(
+            "unexpected exception caught: %r %s", type(exc).__name__, exc
+        )
+        log.debug("stacktrace:", exc_info=True)
         return EX_FAILURE
     except KeyboardInterrupt:
-        logging.warning("Keyboard interrupt received: exit the program")
+        log.warning("Keyboard interrupt received: exit the program")
         return EX_INTERRUPT
