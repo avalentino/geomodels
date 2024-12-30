@@ -1,7 +1,7 @@
 GeoModels
 =========
 
-:copyright: 2019-2023 Antonio Valentino
+:copyright: 2019-2024 Antonio Valentino
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
