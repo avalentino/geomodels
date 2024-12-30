@@ -16,7 +16,7 @@ keywords = [
     "gravity",
     "magnetic",
 ]
-license = {text = "MIT"}
+license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -52,12 +52,11 @@ Homepage = "https://github.com/avalentino/geomodels"
 Documentation = "https://geomodels.readthedocs.io"
 Repository = "https://github.com/avalentino/geomodels.git"
 Changelog = "https://github.com/avalentino/geomodels/blob/main/docs/NEWS.rst"
-Issue = "https://github.com/avalentino/geomodels/issues"
+Issues = "https://github.com/avalentino/geomodels/issues"
 
 
 [tool.setuptools]
 packages = ["geomodels", "geomodels.tests", "geomodels.tests.data"]
-# license-files = ["LICENSE"]
 
 
 [tool.setuptools.dynamic]
