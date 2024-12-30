@@ -71,7 +71,7 @@ if os.name == "posix":
         )
     ]
 else:
-    datafiles = None
+    datafiles = []
 
 
 IGNORE_BUNDLED_LIBS_STR = os.environ.get("GEOMODELS_IGNORE_BUNDLED_LIBS")
