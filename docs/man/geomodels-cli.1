@@ -1,11 +1,11 @@
-.TH GEOMODELS\-CLI "1" "2024\-12\-29" "geomodels" "Manual"
+.TH GEOMODELS\-CLI "1" "2024\-12\-30" "geomodels" "Manual"
 .SH NAME
 geomodels\-cli
 .SH SYNOPSIS
 .B geomodels\-cli
-[-h] [--version] [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-q] [-v] [--debug] {info,install-data,import-igrf,test} ...
+[-h] [--version] [--loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-q] [-v] [--debug] {info,install-data,import-igrf} ...
 .SH DESCRIPTION
-Command Line Interface (CLI) for the geomodels package.
+Command Line Interface (CLI) for the geomodels Python package.
 
 .SH OPTIONS
 .TP
@@ -33,16 +33,13 @@ print debug messages (set "loglevel" to "DEBUG")
 SUB-COMMANDS
 .TP
 \fBgeomodels\-cli\fR \fI\,info\/\fR
-provide information about the installation and environment.
+Provide information about the installation and environment.
 .TP
 \fBgeomodels\-cli\fR \fI\,install\-data\/\fR
-download and install the data necessary for models computation.
+Download and install the data necessary for models computation.
 .TP
 \fBgeomodels\-cli\fR \fI\,import\-igrf\/\fR
-import magnetic field data from igrf text format.
-.TP
-\fBgeomodels\-cli\fR \fI\,test\/\fR
-run the test suite for the geomodels package.
+Import magnetic field data from IGRF text format.
 
 .SH COMMAND \fI\,'geomodels\-cli info'\/\fR
 usage: geomodels\-cli info [\-h] [\-d DATADIR] [\-a] [\-\-data]
@@ -69,7 +66,7 @@ show info about installed data
 .SH COMMAND \fI\,'geomodels\-cli install\-data'\/\fR
 usage: geomodels\-cli install\-data [\-h] [\-b BASE_URL] [\-d DATADIR]
                                   [\-\-no\-progress]
-                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}
+                                  {all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,grs80,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,wmm2025,wmmhr2025,igrf11,igrf12,igrf13,igrf14,emm2010,emm2015,emm2017}
 
 Download and install the data necessary for models computation.
 
@@ -100,7 +97,7 @@ Download and install the data necessary for models computation.
 
 
 .TP
-\fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,igrf11,igrf12,igrf13,emm2010,emm2015,emm2017}\fR
+\fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,grs80,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,wmm2025,wmmhr2025,igrf11,igrf12,igrf13,igrf14,emm2010,emm2015,emm2017}\fR
 model(s) to be installed
 
 .SH OPTIONS \fI\,'geomodels\-cli install\-data'\/\fR
@@ -122,6 +119,12 @@ usage: geomodels\-cli import\-igrf [\-h] [\-o OUTPATH] [\-\-force] path
 
 Import magnetic field data from IGRF text format.
 
+    Import Spherical Harmonics coefficients for the IGRF magnetic field
+    model from text file in IGRF standard format.
+
+    See: https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
+
+
 .TP
 \fBpath\fR
 path or URL of the IGRF text file
@@ -134,25 +137,6 @@ specifies the output data path.
 .TP
 \fB\-\-force\fR
 overwrite existing files (default: False).
-
-.SH COMMAND \fI\,'geomodels\-cli test'\/\fR
-usage: geomodels\-cli test [\-h] [\-d DATADIR] [\-\-verbosity VERBOSITY]
-                          [\-\-failfast]
-
-Run the test suite for the geomodels package.
-
-.SH OPTIONS \fI\,'geomodels\-cli test'\/\fR
-.TP
-\fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the model data are stored.
-
-.TP
-\fB\-\-verbosity\fR \fI\,VERBOSITY\/\fR
-verbosity level for the unittest runner (default: 1).
-
-.TP
-\fB\-\-failfast\fR
-stop the test run on the first error or failure (default: False).
 
 .SH AUTHOR
 .nf

@@ -219,23 +219,3 @@ class ImportIgrfSubCommandTestCase(unittest.TestCase):
 
         self.import_igrf_mock.assert_called_once_with(str(path))
         self.wmmdata_mock.save.assert_called_once_with(outpath, False)
-
-
-class TestSubCommandTestCase(unittest.TestCase):
-    def test_help(self):
-        cmd = _make_cmd("test", "--help")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
-        self.assertEqual(result.returncode, 0)
-        usage = result.stdout.splitlines()[0]
-        self.assertIn("usage:", usage)
-        self.assertIn(cli.PROG, usage)
-        self.assertIn("test", usage)
-
-    def test_h(self):
-        cmd = _make_cmd("test", "-h")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
-        self.assertEqual(result.returncode, 0)
-        usage = result.stdout.splitlines()[0]
-        self.assertIn("usage:", usage)
-        self.assertIn(cli.PROG, usage)
-        self.assertIn("test", usage)

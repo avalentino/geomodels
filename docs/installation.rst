@@ -81,7 +81,7 @@ against GeographicLib >= 1.52. In the latter case the
 `GEOMODELS_GEOGRAPHICLIB_NAME` environment variable shall be used to set The
 name of the dynamic library::
 
-  $ exportGEOMODELS_GEOGRAPHICLIB_NAME=Geographic
+  $ export GEOMODELS_GEOGRAPHICLIB_NAME=Geographic
 
 note, that the `lib` prefix and the `.so` (`.dylib` on Mac OS-X) extension
 are not specified.
@@ -176,7 +176,7 @@ line interface.
 Testing
 -------
 
-Once the GeoModels package, and `recommended` (see above) data, have been
+Once the GeoModels package, and `recommended` data (see above), have been
 installed, it is possible to run the test suite to be sure that all works
 correctly.
 
@@ -184,9 +184,5 @@ The recommended way to test GeoModels with using PyTest_::
 
   $ env GEOGRAPHICLIB_DATA=/path/to/data \
     python3 -m pytest --pyargs geomodels
-
-As an alternative it is also possible to use the command line interface::
-
-  $ python3 -m geomodels test --datadir=/path/to/data
 
 .. _PyTest: http://pytest.org

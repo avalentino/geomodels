@@ -7,7 +7,7 @@ import logging
 import pathlib
 import argparse
 
-from . import __version__, tests
+from . import __version__
 from .data import (
     get_default_data_path,
     get_base_url,
@@ -144,24 +144,6 @@ def import_igrf(
         outpath = pathlib.Path(get_default_data_path()) / "magnetic"
 
     wmmdata.save(outpath, force)
-
-
-def test(
-    datadir: PathType | None = None,
-    verbosity: int = 1,
-    failfast: bool = False,
-):
-    """Run the test suite for the geomodels package."""
-    old_geographiclib_data = os.environ.get("GEOGRAPHICLIB_DATA")
-    try:
-        if datadir is not None:
-            os.environ["GEOGRAPHICLIB_DATA"] = str(datadir)
-        return tests.test(verbosity, failfast)
-    finally:
-        if old_geographiclib_data is None:
-            del os.environ["GEOGRAPHICLIB_DATA"]
-        else:
-            os.environ["GEOGRAPHICLIB_DATA"] = old_geographiclib_data
 
 
 def _set_logging_control_args(parser, default_loglevel="WARNING"):
@@ -343,49 +325,6 @@ def get_import_igrf_parser(parser=None):
     return parser
 
 
-def get_test_parser(parser=None):
-    """Return a CLI argument parser for the `test` sub-command."""
-    name = "test"
-    doc = test.__doc__.splitlines()[0]
-    synopsis = doc.lower()
-
-    if parser is None:
-        parser = argparse.ArgumentParser(prog=name, description=doc)
-    else:
-        parser = parser.add_parser(name, description=doc, help=synopsis)
-
-    parser.set_defaults(func=test)
-
-    # command line options
-    parser.add_argument(
-        "-d",
-        "--datadir",
-        default=get_default_data_path(),
-        help="specifies where the model data are stored "
-        "(default: %(default)r).",
-    )
-    parser.add_argument(
-        "--verbosity",
-        type=int,
-        default=1,
-        help="verbosity level for the unittest runner (default: %(default)s).",
-    )
-    parser.add_argument(
-        "--failfast",
-        action="store_true",
-        default=False,
-        help=(
-            "stop the test run on the first error or failure "
-            "(default: %(default)s)."
-        ),
-    )
-
-    # positional arguments
-    # ...
-
-    return parser
-
-
 def get_parser():
     """Instantiate the command line argument parser."""
     parser = argparse.ArgumentParser(description=__doc__, prog=PROG)
@@ -404,7 +343,6 @@ def get_parser():
     get_info_parser(subparsers)
     get_install_data_parser(subparsers)
     get_import_igrf_parser(subparsers)
-    get_test_parser(subparsers)
 
     if argcomplete:
         argcomplete.autocomplete(parser)
