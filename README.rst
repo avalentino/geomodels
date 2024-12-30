@@ -5,21 +5,23 @@ GeoModels
 :license: MIT
 :url: https://github.com/avalentino/geomodels
 
-.. image:: https://github.com/avalentino/geomodels/actions/workflows/ci.yml/badge.svg
-    :alt: GHA status page
+|PyPI Status| |GHA Status| |Documentation Status| |Python Versions| |License|
+
+.. |PyPI Status| image:: https://img.shields.io/pypi/v/geomodels
+    :target: https://pypi.org/project/geomodels
+    :alt: PyPI Status
+.. |GHA Status| image:: https://github.com/avalentino/geomodels/actions/workflows/ci.yml/badge.svg
     :target: https://github.com/avalentino/geomodels/actions
-
-.. image:: https://img.shields.io/pypi/v/geomodels
-    :alt: Latest Version
+    :alt: GitHub Actions Status
+.. |Documentation Status| image:: https://readthedocs.org/projects/geomodels/badge/?version=latest
+    :target: https://geomodels.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/geomodels
     :target: https://pypi.org/project/geomodels
-
-.. image:: https://img.shields.io/pypi/pyversions/geomodels
     :alt: Supported Python versions
+.. |License| image:: https://img.shields.io/pypi/l/geomodels
     :target: https://pypi.org/project/geomodels
-
-.. image:: https://img.shields.io/pypi/l/geomodels
     :alt: License
-    :target: https://pypi.org/project/geomodels
 
 
 About
