@@ -49,7 +49,7 @@ geomodels-cli = "geomodels.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/avalentino/geomodels"
-# Documentation = "https://packagename.readthedocs.io"
+Documentation = "https://geomodels.readthedocs.io"
 Repository = "https://github.com/avalentino/geomodels.git"
 Changelog = "https://github.com/avalentino/geomodels/blob/main/docs/NEWS.rst"
 Issue = "https://github.com/avalentino/geomodels/issues"
