@@ -66,7 +66,7 @@ class EGravityModel(enum.Enum):
     EGM84 = "egm84"
     EGM96 = "egm96"
     EGM2008 = "egm2008"
-    # GRS80 = 'grs80'
+    GRS80 = "grs80"
     WGS84 = "wgs84"
 
     @staticmethod
@@ -79,12 +79,15 @@ class EMagneticModel(enum.Enum):
     """Enumerate magnetic field models."""
 
     WMM2010 = "wmm2010"
-    WMM2015 = "wmm2015"  # deprecated version of wmm2015v2
+    WMM2015 = "wmm2015"
     WMM2015V2 = "wmm2015v2"
     WMM2020 = "wmm2020"
+    WMM2025 = "wmm2025"
+    WMMHR2025 = "wmmhr2025"
     IGRF11 = "igrf11"
     IGRF12 = "igrf12"
-    IGRF13 = "igrf13"  # new in GeographicLib v1.51
+    IGRF13 = "igrf13"
+    IGRF14 = "igrf14"
     EMM2010 = "emm2010"
     EMM2015 = "emm2015"
     EMM2017 = "emm2017"
