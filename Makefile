@@ -84,6 +84,8 @@ docs: ext data man
 	$(MAKE) -C docs html
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
 	$(MAKE) -C docs doctest
+	$(MAKE) -C docs linkcheck
+	# $(MAKE) -C docs spelling
 
 man: docs/man/geomodels-cli.1
 
