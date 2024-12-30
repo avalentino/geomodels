@@ -7,6 +7,8 @@ See: https://geographiclib.sourceforge.io/C++/doc/magnetic.html#magneticformat
 and https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 """
 
+from __future__ import annotations
+
 import os
 import struct
 import typing
@@ -169,26 +171,16 @@ ID              {id_}
 
 
 SphCoeffSet = namedtuple("SphCoeffSet", ["C", "S"])
-
-# @COMPATIBILITY: typing.OrderedDict is new in Python v3.7.2
-if hasattr(typing, "OrderedDict"):
-    SphCoeffsType = typing.OrderedDict[str, SphCoeffSet]
-else:
-    SphCoeffsType = dict[str, SphCoeffSet]
+SphCoeffsType = OrderedDict[str, SphCoeffSet]
 
 
 class WmmData:
     """Magnetic field data."""
 
-    # @COMPATIBILITY: output type is a string (forward declaration)
-    #                 Python 3.7 implements PEP 563:
-    #                 "Postponed evaluation of annotations"
-    #
-    #                 from __future__ import annotations
     @classmethod
     def from_metadata_and_coeffs(
         cls, medadata: MetaData, coeffs: SphCoeffsType
-    ) -> "WmmData":
+    ) -> WmmData:
         """Instantiate a WmmData object from metadata and coefficients."""
         wmmdata = cls()
         wmmdata.metadata = medadata
