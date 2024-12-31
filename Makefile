@@ -111,4 +111,4 @@ data: ext
 
 wheels:
 	# Requires docker
-	cibuildwheel --platform
+	cibuildwheel --platform auto
