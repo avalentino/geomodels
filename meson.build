@@ -11,6 +11,7 @@ project(
         ],
         check: true
     ).stdout().strip().strip('"'),
+    default_options: ['cpp_std=c++11'],
 )
 
 subdir(meson.project_name())
