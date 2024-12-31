@@ -29,7 +29,7 @@ help:
 	@echo "  wheels    - build Python wheels"
 
 dist:
-	$(PYTHON) -m build
+	$(PYTHON) -m build -Csetup-args="-Dgeographiclib=auto"
 	$(PYTHON) -m twine check dist/*.tar.gz dist/*.whl
 
 check: ext data
@@ -101,7 +101,7 @@ docs/man/geomodels-cli.1: ext
 	    --author-email "antonio dot valentino at tiscali.it" > $@
 
 ext:
-	meson setup build
+	meson setup build -Dgeographiclib=auto
 	meson compile -C build
 	cp build/$(TARGET)/_ext.*.so $(TARGET)
 

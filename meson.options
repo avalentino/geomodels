@@ -1,0 +1,11 @@
+option(
+    'geographiclib',
+    type: 'combo',
+    choices: ['auto', 'internal', 'external'],
+    value: 'internal',
+    description:
+        '''Specify which geographiclib version shoud be used:
+        "auto" try to use the system one and fallback to the internal one is needed,
+        "internal" use the internal copy and link it statically to the Python extension,
+        "external" only use system libraries''',
+)
