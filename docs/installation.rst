@@ -3,7 +3,7 @@ Installation and Testing
 
 .. highlight:: sh
 
-The GeoModels requires `Python`_ >= 3.6.
+The GeoModels requires `Python`_ >= 3.10.
 To use GeoModels depends on the following Python_ packages:
 
 * `numpy <https://numpy.org>`_
