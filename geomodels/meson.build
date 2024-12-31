@@ -19,6 +19,7 @@ if use_subproject
             'BUILD_SHARED_LIBS': false,
             'BUILD_MANPAGES': false,
             'CMAKE_POSITION_INDEPENDENT_CODE': true,
+            'BINDIR': '',
         }
     )
 

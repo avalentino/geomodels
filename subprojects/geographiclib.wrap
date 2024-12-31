@@ -5,4 +5,3 @@
 
 [wrap-file]
 method = cmake
-diff_files = geographiclib-notools.patch
