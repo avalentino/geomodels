@@ -15,8 +15,8 @@ if use_subproject
     opt_var = cmake.subproject_options()
     opt_var.add_cmake_defines(
         {
-            'BUILD_BOTH_LIBS': true,
-            'BUILD_SHARED_LIBS': true,
+            'BUILD_BOTH_LIBS': false,
+            'BUILD_SHARED_LIBS': false,
             'BUILD_MANPAGES': false,
             'CMAKE_POSITION_INDEPENDENT_CODE': true,
         }

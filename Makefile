@@ -29,7 +29,7 @@ help:
 	@echo "  wheels    - build Python wheels"
 
 dist:
-	$(PYTHON) -m build -Csetup-args="-Dgeographiclib=auto"
+	$(PYTHON) -m build  # -Csetup-args="-Dgeographiclib=auto"
 	$(PYTHON) -m twine check dist/*.tar.gz dist/*.whl
 
 check: ext data

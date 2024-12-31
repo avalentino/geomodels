@@ -37,7 +37,6 @@ dependencies = [
     "numpy",
 ]
 dynamic = ["version"]
-# dynamic = ["version", "readme"]
 
 
 [project.optional-dependencies]
@@ -59,9 +58,9 @@ Changelog = "https://github.com/avalentino/geomodels/blob/main/docs/NEWS.rst"
 Issues = "https://github.com/avalentino/geomodels/issues"
 
 
-[tool.pytest.ini_options]
-# --ignore-glob is available in PyTest >= 4.3.0
-# addopts = --ignore-glob='GeographicLib*'
+[tool.meson-python.args]
+install = ["--skip-subprojects"]
+# dist = ["--skip-subprojects"]
 
 
 [tool.black]
