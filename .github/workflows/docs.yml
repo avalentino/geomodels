@@ -46,16 +46,12 @@ jobs:
           mkdir -p _static
           python3 -m sphinx -W -b html . _build/html
         working-directory: docs
-        # env:
-        #   PYTHONPATH: ..
 
       - name: Check links
         run: |
           mkdir -p _static
           python3 -m sphinx -W -b linkcheck . _build/linkcheck
         working-directory: docs
-        # env:
-        #   PYTHONPATH: ..
 
       - name: Doctest
         run: |
@@ -66,8 +62,8 @@ jobs:
         env:
           GEOGRAPHICLIB_DATA: "../data"
 
-      # - name: Spellcheck
-      #   run: |
-      #     mkdir -p _static
-      #     python3 -m sphinx -W -b spelling . _build/spelling
-      #   working-directory: docs
+      - name: Spellcheck
+        run: |
+          mkdir -p _static
+          python3 -m sphinx -W -b spelling . _build/spelling
+        working-directory: docs
