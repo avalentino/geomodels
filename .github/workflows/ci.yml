@@ -119,14 +119,16 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            pip twine libgeographiclib-dev geographiclib-tools \
-            python3-numpy python3-pytest python3-tqdm
+            meson cmake libgeographiclib-dev geographiclib-tools \
+            pip twine python3-numpy python3-pytest python3-tqdm
 
       - name: Build package
         env:
           GEOMODELS_IGNORE_BUNDLED_LIBS: "TRUE"
         run: |
-          python -m pip wheel --wheel-dir dist dist/${PACKAGE}*.tar.gz
+          python -m pip wheel \
+            --config-settings=setup-args="-Dgeographiclib=auto" \
+            --wheel-dir dist dist/${PACKAGE}*.tar.gz
           python -m twine check dist/*
 
       - name: Install
