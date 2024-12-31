@@ -60,12 +60,16 @@ Issues = "https://github.com/avalentino/geomodels/issues"
 
 [tool.meson-python.args]
 install = ["--skip-subprojects"]
-# dist = ["--skip-subprojects"]
+
+
+[tool.cibuildwheel]
+test-requires = "pytest"
+skip = "pp* cp38-* cp39-* cp310-musllinux_i686"
 
 
 [tool.black]
 line-length = 79
-# target-version = ['py311']
+# target-version = ['py310']
 
 
 [tool.isort]
