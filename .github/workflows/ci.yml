@@ -119,8 +119,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            pip twine libgeographiclib-dev geographiclib-tools \
-            python3-numpy python3-pytest python3-tqdm
+            libgeographiclib-dev geographiclib-tools \
+            pip twine python3-numpy python3-pytest python3-tqdm
 
       - name: Build package
         env:
