@@ -166,11 +166,49 @@ class InfoMethodsTestCase(unittest.TestCase):
 
     def test_min_time(self):
         self.assertIsInstance(self.model.min_time(), float)
-        # self.assertLess(self.model.min_time(), datetime.date.today().year)
+        min_times = {
+            "emm2010": 2010,
+            "emm2015": 2000,
+            "emm2017": 2000,
+            "igrf11": 1900,
+            "igrf12": 1900,
+            "igrf13": 1900,
+            "igrf14": 1900,
+            "wmm2010": 2010,
+            "wmm2015v2": 2015,
+            "wmm2015": 2015,
+            "wmm2020": 2020,
+            "wmm2025": 2025,
+            "wmmhr2025": 2025,
+        }
+        if self.name in min_times:
+            self.assertEqual(self.model.min_time(), min_times[self.name])
+        else:
+            self.assertLess(self.model.min_time(), datetime.date.today().year)
 
     def test_max_time(self):
         self.assertIsInstance(self.model.max_time(), float)
-        self.assertGreater(self.model.max_time(), datetime.date.today().year)
+        max_times = {
+            "emm2010": 2015,
+            "emm2015": 2020,
+            "emm2017": 2022,
+            "igrf11": 2015,
+            "igrf12": 2020,
+            "igrf13": 2025,
+            "igrf14": 2030,
+            "wmm2010": 2015,
+            "wmm2015v2": 2020,
+            "wmm2015": 2020,
+            "wmm2020": 2025,
+            "wmm2025": 2030,
+            "wmmhr2025": 2030,
+        }
+        if self.name in max_times:
+            self.assertEqual(self.model.max_time(), max_times[self.name])
+        else:
+            self.assertGreater(
+                self.model.max_time(), datetime.date.today().year
+            )
 
     def test_min_max_time(self):
         self.assertLess(self.model.min_time(), self.model.max_time())
