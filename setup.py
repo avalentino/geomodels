@@ -90,7 +90,7 @@ if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
         include_dirs=[str(geographiclib_include)],
         libraries=[],
         language="c++",
-        extra_compile_args=["-std=c++0x", "-Wall", "-Wextra"],
+        extra_compile_args=["-std=c++11", "-Wall"],
     )
     outpath = geographiclib_include / "GeographicLib" / "Config.h"
     mkconfig(SRCPATH, outpath)
