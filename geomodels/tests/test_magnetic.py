@@ -1,5 +1,6 @@
 import os
 import shutil
+import pathlib
 import datetime
 import tempfile
 import unittest
@@ -15,8 +16,8 @@ class StaticMethodsTestCase(unittest.TestCase):
     def test_default_magnetic_path(self):
         self.assertIsInstance(MagneticFieldModel.default_magnetic_path(), str)
         self.assertEqual(
-            MagneticFieldModel.default_magnetic_path(),
-            os.path.join(get_default_data_path(), "magnetic"),
+            pathlib.Path(MagneticFieldModel.default_magnetic_path()),
+            pathlib.Path(get_default_data_path()).joinpath("magnetic"),
         )
 
     def test_default_magnetic_name(self):
@@ -74,11 +75,9 @@ class InstantiationTestCase01(unittest.TestCase):
             self.assertEqual(model.magnetic_model_directory(), magnetic_path)
 
     def test_custom_path_from_env01(self):
-        default_path = MagneticFieldModel.default_magnetic_path()
+        default_path = pathlib.Path(MagneticFieldModel.default_magnetic_path())
         with tempfile.TemporaryDirectory() as dirname:
-            magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path)
-            )
+            magnetic_path = pathlib.Path(dirname) / default_path.name
             shutil.copytree(default_path, magnetic_path)
 
             old_env = os.environ.get("GEOGRAPHICLIB_DATA")
@@ -87,7 +86,8 @@ class InstantiationTestCase01(unittest.TestCase):
                 model = MagneticFieldModel(self.MODEL_NAME)
                 self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
                 self.assertEqual(
-                    model.magnetic_model_directory(), magnetic_path
+                    pathlib.Path(model.magnetic_model_directory()),
+                    magnetic_path,
                 )
             finally:
                 if old_env is None:

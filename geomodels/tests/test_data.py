@@ -99,6 +99,26 @@ class DownloadTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         shutil.rmtree(self.datadir)
 
+    def test_download_file_uri(self):
+        dstdir = self.datadir / "out"
+        dstdir.mkdir()
+
+        dstfile = dstdir / self.srcfile.name
+        self.assertFalse(dstfile.exists())
+
+        url = self.srcfile.as_uri()
+        geomodels.data.download(url, dstdir, progress=False)
+
+        self.assertTrue(dstfile.exists())
+        with open(dstfile) as fd:
+            data = fd.read()
+
+        self.assertEqual(data, self.DATA)
+
+    @unittest.skipIf(
+        not isinstance(pathlib.Path(), pathlib.PosixPath),
+        reason="not on a posix platform.",
+    )
     def test_download_file(self):
         dstdir = self.datadir / "out"
         dstdir.mkdir()

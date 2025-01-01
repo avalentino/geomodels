@@ -9,7 +9,6 @@ and https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 
 from __future__ import annotations
 
-import os
 import struct
 import typing
 import fnmatch
@@ -350,8 +349,8 @@ def import_igrf_txt(path: PathType) -> WmmData:
     :param path:
         the path to a local filename or a remote URL.
     """
-    urlobj = urlsplit(os.fspath(path))
-    filename = pathlib.Path(urlobj.path)
+    filename = pathlib.Path(path)
+    urlobj = urlsplit(filename.as_uri())
 
     pattern = "igrf[0-9][0-9]coeffs.txt"
     if not fnmatch.fnmatch(filename.name, pattern):

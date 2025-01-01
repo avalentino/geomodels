@@ -16,8 +16,8 @@ class StaticMethodsTestCase(unittest.TestCase):
     def test_default_geoid_path(self):
         self.assertIsInstance(GeoidModel.default_geoid_path(), str)
         self.assertEqual(
-            GeoidModel.default_geoid_path(),
-            os.path.join(get_default_data_path(), "geoids"),
+            pathlib.Path(GeoidModel.default_geoid_path()),
+            pathlib.Path(get_default_data_path()).joinpath("geoids"),
         )
 
     def test_default_geoid_name(self):
@@ -62,9 +62,13 @@ class InstantiationTestCase(unittest.TestCase):
             for filename in default_path.glob(f"{self.MODEL_NAME}*"):
                 shutil.copy(filename, geoid_path)
 
-            model = GeoidModel(self.MODEL_NAME, geoid_path)
-            self.assertEqual(model.geoid_name(), self.MODEL_NAME)
-            self.assertEqual(model.geoid_directory(), str(geoid_path))
+            try:
+                model = GeoidModel(self.MODEL_NAME, geoid_path)
+                # , threadsafe=True)
+                self.assertEqual(model.geoid_name(), self.MODEL_NAME)
+                self.assertEqual(model.geoid_directory(), str(geoid_path))
+            finally:
+                del model  # release resources
 
     def test_custom_path_from_env01(self):
         default_path = pathlib.Path(GeoidModel.default_geoid_path())
@@ -77,10 +81,13 @@ class InstantiationTestCase(unittest.TestCase):
             old_env = os.environ.get("GEOGRAPHICLIB_DATA")
             os.environ["GEOGRAPHICLIB_DATA"] = dirname
             try:
-                model = GeoidModel(self.MODEL_NAME)
+                model = GeoidModel(self.MODEL_NAME)  # , threadsafe=True)
                 self.assertEqual(model.geoid_name(), self.MODEL_NAME)
-                self.assertEqual(model.geoid_directory(), str(geoid_path))
+                self.assertEqual(
+                    pathlib.Path(model.geoid_directory()), geoid_path
+                )
             finally:
+                del model  # release resources
                 if old_env is None:
                     del os.environ["GEOGRAPHICLIB_DATA"]
                 else:
@@ -97,10 +104,11 @@ class InstantiationTestCase(unittest.TestCase):
             old_env = os.environ.get("GEOGRAPHICLIB_GEOID_PATH")
             os.environ["GEOGRAPHICLIB_GEOID_PATH"] = str(geoid_path)
             try:
-                model = GeoidModel(self.MODEL_NAME)
+                model = GeoidModel(self.MODEL_NAME)  # , threadsafe=True)
                 self.assertEqual(model.geoid_name(), self.MODEL_NAME)
                 self.assertEqual(model.geoid_directory(), str(geoid_path))
             finally:
+                del model  # release resources
                 if old_env is None:
                     del os.environ["GEOGRAPHICLIB_GEOID_PATH"]
                 else:

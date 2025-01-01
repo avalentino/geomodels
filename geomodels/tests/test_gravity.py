@@ -16,8 +16,8 @@ class StaticMethodsTestCase(unittest.TestCase):
     def test_default_gravity_path(self):
         self.assertIsInstance(GravityModel.default_gravity_path(), str)
         self.assertEqual(
-            GravityModel.default_gravity_path(),
-            os.path.join(get_default_data_path(), "gravity"),
+            pathlib.Path(GravityModel.default_gravity_path()),
+            pathlib.Path(get_default_data_path()).joinpath("gravity"),
         )
 
     def test_default_gravity_name(self):
@@ -81,7 +81,8 @@ class InstantiationTestCase(unittest.TestCase):
                 model = GravityModel(self.MODEL_NAME)
                 self.assertEqual(model.gravity_model_name(), self.MODEL_NAME)
                 self.assertEqual(
-                    model.gravity_model_directory(), str(gravity_model_path)
+                    pathlib.Path(model.gravity_model_directory()),
+                    gravity_model_path,
                 )
             finally:
                 if old_env is None:
