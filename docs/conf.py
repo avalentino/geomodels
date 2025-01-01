@@ -44,7 +44,7 @@ def get_version(filename="../geomodels/_version.py", strip_extra=False):
 # -- Project information -----------------------------------------------------
 
 project = "GeoModels"
-copyright = "2019-2024, Antonio Valentino"
+copyright = "2019-2025, Antonio Valentino"
 author = "Antonio Valentino"
 
 # The short X.Y version.
