@@ -18,6 +18,7 @@ from ._utils import (
     as_contiguous_1d_components,
     reshape_components,
 )
+from ._typing import PathType
 
 ctypedef CGeoid.convertflag ConvDir
 
@@ -115,10 +116,14 @@ cdef class GeoidModel:
     cdef CGeoid *_ptr
 
     def __cinit__(
-        self, name=None, path='', bint cubic=True, bint threadsafe=False
+        self,
+        name: str | None = None,
+        path: PathType = "",
+        bint cubic=True,
+        bint threadsafe=False,
     ):
         cdef string c_name = CGeoid.DefaultGeoidName()
-        cdef string c_path = os.fsencode(path)
+        cdef string c_path = os.fsencode(os.fspath(path))
 
         if name is not None:
             c_name = os.fsencode(name)

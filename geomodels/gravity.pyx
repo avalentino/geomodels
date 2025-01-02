@@ -17,6 +17,7 @@ from ._utils import (
     as_contiguous_1d_components,
     reshape_components,
 )
+from ._typing import PathType
 
 
 cdef class GravityModel:
@@ -116,18 +117,15 @@ cdef class GravityModel:
     """
     cdef CGravityModel *_ptr
 
-    # def __cinit__(
-    #     self, name: str | None = None,
-    #     path: PathType = "",
     def __cinit__(
         self,
-        name=None,
-        path='',
+        name: str | None = None,
+        path: PathType = "",
         int max_degree=-1,
         int max_order=-1,
     ):
         cdef string c_name = CGravityModel.DefaultGravityName()
-        cdef string c_path = os.fsencode(path)
+        cdef string c_path = os.fsencode(os.fspath(path))
 
         if name is not None:
             c_name = os.fsencode(name)

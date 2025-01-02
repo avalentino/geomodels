@@ -17,6 +17,7 @@ from ._utils import (
     as_contiguous_1d_components,
     reshape_components,
 )
+from ._typing import PathType
 
 
 cdef class MagneticFieldModel:
@@ -83,10 +84,10 @@ cdef class MagneticFieldModel:
     """
     cdef CMagneticModel *_ptr
 
-    def __cinit__(self, name=None, path=''):
+    def __cinit__(self, name: str | None = None, path: PathType = ""):
         # @TODO: support for 'earth' parameter (default: WGS84)
         cdef string c_name = CMagneticModel.DefaultMagneticName()
-        cdef string c_path = os.fsencode(path)
+        cdef string c_path = os.fsencode(os.fspath(path))
 
         if name is not None:
             c_name = os.fsencode(name)
