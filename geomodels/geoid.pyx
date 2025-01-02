@@ -88,7 +88,6 @@ cdef class GeoidModel:
 
     Example
     -------
-
     ::
 
         # Example of using the `geomodels.GeoidModel` class.

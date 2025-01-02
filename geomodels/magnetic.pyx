@@ -57,7 +57,6 @@ cdef class MagneticFieldModel:
 
     Example
     -------
-
     ::
 
         # Example of using the `geomodels.MagneticModel` class.

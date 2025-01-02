@@ -88,7 +88,6 @@ cdef class GravityModel:
 
     Example
     -------
-
     ::
 
         # Example of using the `geomodels.GravityModel` class.

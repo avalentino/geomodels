@@ -9,7 +9,7 @@ from .common cimport real
 
 
 cdef extern from "GeographicLib/Geoid.hpp" namespace "GeographicLib" nogil:
-    cdef cppclass CGeoid 'GeographicLib::Geoid':
+    cdef cppclass CGeoid "GeographicLib::Geoid":
         ctypedef enum convertflag:
             ELLIPSOIDTOGEOID = -1,
             NONE = 0,

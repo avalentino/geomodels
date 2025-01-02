@@ -8,7 +8,7 @@ from .common cimport real
 
 
 cdef extern from "GeographicLib/GravityModel.hpp" namespace "GeographicLib" nogil:
-    cdef cppclass CGravityModel 'GeographicLib::GravityModel':
+    cdef cppclass CGravityModel "GeographicLib::GravityModel":
         # ctypedef enum mask:
         #     NONE,
         #     GRAVITY,

@@ -8,7 +8,7 @@ from .common cimport real
 
 
 cdef extern from "GeographicLib/MagneticModel.hpp" namespace "GeographicLib" nogil:
-    cdef cppclass CMagneticModel 'GeographicLib::MagneticModel':
+    cdef cppclass CMagneticModel "GeographicLib::MagneticModel":
         CMagneticModel(const string& name, const string& path) except +
         # @TODO: const Geocentric& earth=Geocentric.WGS84()
 
