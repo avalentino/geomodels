@@ -58,8 +58,7 @@ def _format_data_info(datadir=None):
         lines.append(f"* model: {modeltype} ({modeltype_dir!r})")
         for item in modelenum:
             pattern = os.path.join(modeltype_dir, item.value + "*")
-            installed = bool(glob.glob(pattern))
-            installed = "INSTALLED " if installed else "NOT INSTALLED"
+            installed = "INSTALLED " if glob.glob(pattern) else "NOT INSTALLED"
             lines.append(f"  {item.name:12s} - {installed}")
 
     return "\n".join(lines)

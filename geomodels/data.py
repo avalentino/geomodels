@@ -10,7 +10,7 @@ import contextlib
 from typing import Union
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 
 from ._typing import PathType
 
@@ -132,7 +132,7 @@ _URL_QUERY = "use_mirror=autoselect"
 _URL_FRAGMENT = ""
 
 
-def get_base_url():
+def get_base_url() -> str:
     """Return the base URL for data download."""
     return _BASE_URL
 
@@ -178,11 +178,47 @@ def get_model_url(
 InstallableModelType = Union[EModelGroup, EModelType, GenericModelType]
 
 
-_MODELTYPE_MAP = {
+_MODELTYPE_MAP: dict[EModelType, type[GenericModelType]] = {
     EModelType.GEOID: EGeoidModel,
     EModelType.GRAVITY: EGravityModel,
     EModelType.MAGNETIC: EMagneticModel,
 }
+
+
+def _get_url_map_from_group(
+    model: EModelGroup,
+    base_url: str | None = None,
+    archive_type: EArchiveType = EArchiveType.BZ2,
+) -> dict[GenericModelType, str]:
+    urls: dict[GenericModelType, str] = {}
+    match model:
+        case EModelGroup.ALL:
+            for modeltype in EModelType:
+                urls.update(_get_url_map(modeltype, base_url, archive_type))
+        case EModelGroup.MINIMAL:
+            from . import GeoidModel, GravityModel, MagneticFieldModel
+
+            models: list[GenericModelType] = [
+                EGeoidModel(GeoidModel.default_geoid_name()),
+                EGravityModel(GravityModel.default_gravity_name()),
+                EMagneticModel(MagneticFieldModel.default_magnetic_name()),
+            ]
+            for model_ in models:
+                urls[model_] = get_model_url(model_, base_url, archive_type)
+        case EModelGroup.RECOMMENDED:
+            urls.update(_get_url_map(EModelGroup.MINIMAL))
+            extra_models: list[GenericModelType] = [
+                EGeoidModel.EGM96_5,
+                EGravityModel.EGM96,
+                EMagneticModel.IGRF12,
+                EMagneticModel.WMM2015,
+            ]
+            for model_ in extra_models:
+                urls[model_] = get_model_url(model_, base_url, archive_type)
+        case _:
+            raise ValueError(f"unexpected value: {model!r}")
+
+    return urls
 
 
 def _get_url_map(
@@ -190,44 +226,29 @@ def _get_url_map(
     base_url: str | None = None,
     archive_type: EArchiveType = EArchiveType.BZ2,
 ) -> dict[GenericModelType, str]:
-    urls = {}
-    if model is EModelGroup.ALL:
-        for modeltype in EModelType:
-            urls.update(_get_url_map(modeltype, base_url, archive_type))
-    elif model is EModelGroup.MINIMAL:
-        from . import GeoidModel, GravityModel, MagneticFieldModel
-
-        models = [
-            EGeoidModel(GeoidModel.default_geoid_name()),
-            EGravityModel(GravityModel.default_gravity_name()),
-            EMagneticModel(MagneticFieldModel.default_magnetic_name()),
-        ]
-        for model_ in models:
-            urls[model_] = get_model_url(model_, base_url, archive_type)
-    elif model is EModelGroup.RECOMMENDED:
-        urls.update(_get_url_map(EModelGroup.MINIMAL))
-        extra_models = [
-            EGeoidModel.EGM96_5,
-            EGravityModel.EGM96,
-            EMagneticModel.IGRF12,
-            EMagneticModel.WMM2015,
-        ]
-        for model_ in extra_models:
-            urls[model_] = get_model_url(model_, base_url, archive_type)
-    elif model in _MODELTYPE_MAP:
-        modelenum = _MODELTYPE_MAP[model]
-        urls = {
-            item: get_model_url(item, base_url, archive_type)
-            for item in modelenum
-        }
-    else:
-        urls[model] = get_model_url(model, base_url, archive_type)
+    urls: dict[GenericModelType, str]
+    match model:
+        case EModelGroup() as group:
+            urls = _get_url_map_from_group(group)
+        case EModelType() as modeltype:
+            models: Iterable[GenericModelType] = _MODELTYPE_MAP[modeltype]
+            urls = {
+                model_: get_model_url(model_, base_url, archive_type)
+                for model_ in models
+            }
+        case EGeoidModel() | EGravityModel() | EMagneticModel() as mod:
+            urls = {mod: get_model_url(mod, base_url, archive_type)}
+        case _:
+            raise ValueError(f"unexpected model: {model!r}")
 
     return urls
 
 
+have_tqdm: bool
 try:
     import tqdm
+
+    have_tqdm = True
 
     class TqdmReportHook(tqdm.tqdm):
         """Tqdm based report hook for urllib.request.urlretrieve."""
@@ -247,9 +268,14 @@ try:
             }
             kargs.update(kwargs)
 
-            super().__init__(**kargs)
+            super().__init__(**kargs)  # type: ignore[call-overload]
 
-        def __call__(self, count=1, block_size=1, total_size=None):
+        def __call__(
+            self,
+            count: int = 1,
+            block_size: int = 1,
+            total_size: int | None = None,
+        ):
             if total_size not in (None, -1):
                 self.total = total_size
 
@@ -261,26 +287,24 @@ try:
             return True
 
 except ImportError:
-    tqdm = None
+    have_tqdm = True
 
 
-def _get_report_hook(progress: bool | ReportHookType, description: str):
-    if progress is True and tqdm:
+def _get_report_hook(
+    progress: bool | ReportHookType, description: str
+) -> ReportHookType | None:
+    if progress is True and have_tqdm:
         try:
             base_width = 50
             ncols = os.get_terminal_size().columns
             ncols = ncols - base_width if ncols >= base_width else 0
         except OSError:
             ncols = 0
-        report_hook = TqdmReportHook(desc=description[-ncols:], leave=False)
+        return TqdmReportHook(desc=description[-ncols:], leave=False)
     elif callable(progress):
-        report_hook = progress
-    # elif progress is False:
-    #     reporthook = None  # type: ignore
+        return progress
     else:
-        report_hook = None  # type: ignore
-
-    return report_hook
+        return None
 
 
 def download(
@@ -336,7 +360,7 @@ def download(
 def install(
     model: InstallableModelType = EModelGroup.MINIMAL,
     datadir: PathType | None = None,
-    base_url: str = None,
+    base_url: str | None = None,
     archive_type: EArchiveType = EArchiveType.BZ2,
     progress: bool = True,
 ):
@@ -382,7 +406,8 @@ def install(
     datadir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tempdir:
-        if progress and tqdm and len(urls) > 1:
+        urliterator: Iterable[tuple[GenericModelType, str]]
+        if progress and have_tqdm and len(urls) > 1:
             urliterator = tqdm.tqdm(urls.items(), unit="file", desc="download")
         else:
             urliterator = urls.items()

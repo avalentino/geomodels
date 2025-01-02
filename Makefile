@@ -70,7 +70,7 @@ lint:
 	$(PYTHON) -m pydocstyle --count $(TARGET)
 	$(PYTHON) -m isort --check $(TARGET)
 	$(PYTHON) -m black --check $(TARGET)
-	# $(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports $(TARGET)
+	$(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports -p $(TARGET)
 	ruff check $(TARGET)
 
 api: ext

@@ -190,7 +190,7 @@ class WmmData:
     def __init__(self, filename: PathType | None = None) -> None:
         """Initialize a WmmData instance."""
         self.metadata = MetaData()
-        self.coeffs = OrderedDict()
+        self.coeffs: SphCoeffsType = OrderedDict()
 
         if filename:
             filename = pathlib.Path(filename)
@@ -275,8 +275,8 @@ class WmmData:
         if m > n:
             m = n
 
-        data = struct.pack("<ii", n, m)
-        fd.write(data)
+        bytes_ = struct.pack("<ii", n, m)
+        fd.write(bytes_)
 
         data = coeffs.C.T[np.triu_indices(m + 1, 0, n + 1)]
         data = np.ascontiguousarray(data, dtype="<f8")
@@ -361,7 +361,7 @@ def import_igrf_txt(path: PathType) -> WmmData:
     if urlobj.scheme in ("", "file"):
         fd = open(filename)
     else:
-        fd = urlopen(path)
+        fd = urlopen(str(path))
 
     with fd:
         for line in fd:
@@ -376,7 +376,7 @@ def import_igrf_txt(path: PathType) -> WmmData:
             raise RuntimeError(f"header line not found in {filename}")
 
         years = metadata.get_years()
-        dtype = (
+        dtype = np.dtype(
             [
                 ("type", "S1"),
                 ("n", "int"),
@@ -385,8 +385,6 @@ def import_igrf_txt(path: PathType) -> WmmData:
             + [(f"{year}", "float64") for year in years]
             + [("rate", "float64")]
         )
-        dtype = np.dtype(dtype)
-
         coeffs = np.loadtxt(fd, dtype=dtype)
 
     n = np.max(coeffs["n"])

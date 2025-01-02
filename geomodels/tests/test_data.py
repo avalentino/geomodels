@@ -42,49 +42,52 @@ class UrlTestCase(unittest.TestCase):
     def test_get_model_url(self):
         base_url = geomodels.data.get_base_url()
         archive_extension = geomodels.data.EArchiveType.BZ2.value
+        model: geomodels.data.GenericModelType
         for model_type in self.MODEL_TYPES:
-            for model in model_type:
+            for model in model_type:  # type: ignore[assignment]
                 with self.subTest(model=model):
                     url = geomodels.data.get_model_url(model)
                     self.assertIsInstance(url, str)
                     self.assertTrue(url.startswith(base_url))
-                    url = urlsplit(url)
-                    self.assertIn(model.get_model_type().value, url.path)
-                    self.assertIn(model.value, url.path)
-                    self.assertTrue(url.path.endswith(archive_extension))
+                    urlobj = urlsplit(url)
+                    self.assertIn(model.get_model_type().value, urlobj.path)
+                    self.assertIn(model.value, urlobj.path)
+                    self.assertTrue(urlobj.path.endswith(archive_extension))
 
     def test_get_model_url_with_base_url(self):
         base_url = "https://dummy.url"
         archive_extension = geomodels.data.EArchiveType.BZ2.value
+        model: geomodels.data.GenericModelType
         for model_type in self.MODEL_TYPES:
-            for model in model_type:
+            for model in model_type:  # type: ignore[assignment]
                 with self.subTest(model=model):
                     url = geomodels.data.get_model_url(
                         model, base_url=base_url
                     )
                     self.assertIsInstance(url, str)
                     self.assertTrue(url.startswith(base_url))
-                    url = urlsplit(url)
-                    self.assertIn(model.get_model_type().value, url.path)
-                    self.assertIn(model.value, url.path)
-                    self.assertTrue(url.path.endswith(archive_extension))
+                    urlobj = urlsplit(url)
+                    self.assertIn(model.get_model_type().value, urlobj.path)
+                    self.assertIn(model.value, urlobj.path)
+                    self.assertTrue(urlobj.path.endswith(archive_extension))
 
     def test_get_model_url_with_archive_type(self):
         base_url = geomodels.data.get_base_url()
         archive_type = geomodels.data.EArchiveType.ZIP
         archive_extension = archive_type.value
+        model: geomodels.data.GenericModelType
         for model_type in self.MODEL_TYPES:
-            for model in model_type:
+            for model in model_type:  # type: ignore[assignment]
                 with self.subTest(model=model):
                     url = geomodels.data.get_model_url(
                         model, archive_type=archive_type
                     )
                     self.assertIsInstance(url, str)
                     self.assertTrue(url.startswith(base_url))
-                    url = urlsplit(url)
-                    self.assertIn(model.get_model_type().value, url.path)
-                    self.assertIn(model.value, url.path)
-                    self.assertTrue(url.path.endswith(archive_extension))
+                    urlobj = urlsplit(url)
+                    self.assertIn(model.get_model_type().value, urlobj.path)
+                    self.assertIn(model.value, urlobj.path)
+                    self.assertTrue(urlobj.path.endswith(archive_extension))
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -305,7 +308,7 @@ class InstallTestCase(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as datadir:
             self.assertRaises(
-                (TypeError, AttributeError),
+                (TypeError, ValueError),
                 geomodels.data.install,
                 model,
                 datadir,

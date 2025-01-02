@@ -90,5 +90,9 @@ line_length = 79
 add-ignore = "D105"
 
 
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+
+
 [tool.ruff]
 line-length = 79

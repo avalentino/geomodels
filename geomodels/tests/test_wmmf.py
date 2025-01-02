@@ -4,6 +4,7 @@ import shutil
 import pathlib
 import tempfile
 import unittest
+from typing import Protocol
 
 import numpy as np
 from numpy import testing as npt
@@ -14,8 +15,18 @@ from geomodels import wmmf
 DATAPATH = pathlib.Path(geomodels.MagneticFieldModel.default_magnetic_path())
 
 
+class MetaDataTestProtocol(Protocol):
+    @property
+    def metadata(self) -> wmmf.MetaData: ...
+
+    def assertEqual(self, *args, **kargs): ...  # noqa: N802
+    def assertIsInstance(self, *args, **kargs): ...  # noqa: N802
+    def assertTrue(self, *args, **kargs): ...  # noqa: N802
+    def subTest(self, *args, **kargs): ...  # noqa: N802
+
+
 class MetaDataTestMixin:
-    def test_fields(self):
+    def test_fields(self: MetaDataTestProtocol):
         for name in (
             "Name",
             "Description",
@@ -46,7 +57,7 @@ class MetaDataTestMixin:
                 self.assertTrue(hasattr(self.metadata, name))
                 self.assertIsInstance(getattr(self.metadata, name), int)
 
-    def test_get_id(self):
+    def test_get_id(self: MetaDataTestProtocol):
         self.assertEqual(self.metadata.get_id(), self.metadata.ID)
 
 
@@ -164,8 +175,7 @@ class WmmDataTestCase(unittest.TestCase):
 
     def test_save_to_dir(self):
         with tempfile.TemporaryDirectory() as outpath:
-            outpath = pathlib.Path(outpath)
-            metadata_filename = outpath / "igrf12.wmm"
+            metadata_filename = pathlib.Path(outpath) / "igrf12.wmm"
             bin_filename = metadata_filename.with_suffix(".wmm.cof")
 
             self.assertFalse(metadata_filename.is_file())
@@ -178,8 +188,7 @@ class WmmDataTestCase(unittest.TestCase):
 
     def test_save_to_file(self):
         with tempfile.TemporaryDirectory() as outpath:
-            outpath = pathlib.Path(outpath)
-            metadata_filename = outpath / "custom_igrf12.wmm"
+            metadata_filename = pathlib.Path(outpath) / "custom_igrf12.wmm"
             bin_filename = metadata_filename.with_suffix(".wmm.cof")
 
             self.assertFalse(metadata_filename.is_file())

@@ -50,12 +50,10 @@ def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
 
     is_scalar = np.isscalar(args[0])
 
-    args = list(args)
-    for i in range(len(args)):
-        args[i] = np.asarray(args[i])
+    arglist = [np.asarray(item) for item in args]
 
-    shape = args[0].shape
-    for name, param in zip(labels, args):
+    shape: tuple | None = arglist[0].shape
+    for name, param in zip(labels, arglist):
         dt = param.dtype
         if not (
             np.issubdtype(dt, np.floating) or np.issubdtype(dt, np.integer)
@@ -65,25 +63,29 @@ def as_contiguous_1d_components(*args, labels=None, dtype=np.float64):
         if param.shape != shape:
             raise ValueError("not all components have the same shape")
 
-    size = args[0].size
-    for i in range(len(args)):
-        args[i] = np.ascontiguousarray(args[i].reshape([size]), dtype=dtype)
+    size = arglist[0].size
+    for i in range(len(arglist)):
+        arglist[i] = np.ascontiguousarray(
+            arglist[i].reshape([size]), dtype=dtype
+        )
 
     shape = shape if not is_scalar else None
 
-    return args + [shape]
+    return arglist + [shape]
 
 
-def reshape_components(shape, *args):
+def reshape_components(shape, *args) -> np.ndarray | list[np.ndarray]:
     """Reshape all args to the specified shape."""
     is_scalar = True if shape is None else False
 
     if is_scalar:
-        args = [item.item() for item in args]
+        argslist = [item.item() for item in args]
     else:
-        args = [item.reshape(shape) for item in args]
+        argslist = [item.reshape(shape) for item in args]
 
-    if len(args) == 1:
-        args = args[0]
+    if len(argslist) == 1:
+        out = argslist[0]
+    else:
+        out = argslist
 
-    return args
+    return out

@@ -26,8 +26,10 @@ class GeographicLibCommonCase(unittest.TestCase):
         mobj = re.match(
             r"(?P<major>\d+)\.(?P<minor>\d+)(\.(?P<micro>\d+))?", version_str
         )
-
-        self.assertEqual(version_info.major, int(mobj.group("major")))
-        self.assertEqual(version_info.minor, int(mobj.group("minor")))
-        if mobj.group("micro"):
-            self.assertEqual(version_info.micro, int(mobj.group("micro")))
+        if mobj:
+            self.assertEqual(version_info.major, int(mobj.group("major")))
+            self.assertEqual(version_info.minor, int(mobj.group("minor")))
+            if mobj.group("micro"):
+                self.assertEqual(version_info.micro, int(mobj.group("micro")))
+        else:
+            raise RuntimeError(f"invalid version string: {version_str!r}")
