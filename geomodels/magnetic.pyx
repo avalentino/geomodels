@@ -141,7 +141,7 @@ cdef class MagneticFieldModel:
             the height of the point above the ellipsoid (meters)
         :returns:
             Bx, By, Bz: the easterly, northerly and vertical (up)
-            components of the magnetic field (nanotesla).
+            components of the magnetic field (nT).
         """
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
@@ -203,10 +203,11 @@ cdef class MagneticFieldModel:
         :param h:
             the height of the point above the ellipsoid (meters)
         :returns:
-            Bx, By, Bz, Bxt, Byt, Bzt: where Bx, By, Bz are respectively
-            the easterly, northerly and vertical (up) components of the
-            magnetic field (nanotesla), and Bxt, Byt and Bzt are the rate
-            of change of Bx, By and Bz respectively (nT/yr).
+            `Bx`, `By`, `Bz`, `Bxt`, `Byt`, `Bzt`: where
+            `Bx`, `By`, `Bz` are the easterly, northerly and vertical (up)
+            components of the magnetic field (nT) respectively, and
+            `Bxt`, `Byt`, `Bzt` are the rate (nT/yr) of change of
+            `Bx`, `By` and `Bz` respectively.
         """
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
