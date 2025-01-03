@@ -103,7 +103,7 @@ cdef class MagneticFieldModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute(
+    cdef _compute(
         self, double t, double[::1] vlat, double[::1] vlon, double[::1] vh
     ):
         cdef long size = vlat.size
@@ -128,7 +128,7 @@ cdef class MagneticFieldModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_with_rate(
+    cdef _compute_with_rate(
         self, double t, double[::1] vlat, double[::1] vlon, double[::1] vh
     ):
         cdef long size = vlat.size
@@ -196,10 +196,12 @@ cdef class MagneticFieldModel:
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
 
         if not rate:
-            Bx, By, Bz = self.compute(t, lat, lon, h)
+            Bx, By, Bz = self._compute(t, lat, lon, h)
             return reshape_components(shape, Bx, By, Bz)
         else:
-            Bx, By, Bz, Bxt, Byt, Bzt = self.compute_with_rate(t, lat, lon, h)
+            Bx, By, Bz, Bxt, Byt, Bzt = self._compute_with_rate(
+                t, lat, lon, h
+            )
             return reshape_components(shape, Bx, By, Bz, Bxt, Byt, Bzt)
 
     # @TODO: MagneticCircle Circle(real t, real lat, real h) const
@@ -234,7 +236,7 @@ cdef class MagneticFieldModel:
     @staticmethod
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_field_components(
+    cdef _field_components(
         double[::1] vBx, double[::1] vBy, double[::1] vBz
     ):
         cdef long size = vBx.size
@@ -280,7 +282,7 @@ cdef class MagneticFieldModel:
             Bx, By, Bz, labels=['Bx', 'By', 'Bz'], dtype=dtype
         )
 
-        H, F, D, I = MagneticFieldModel.compute_field_components(Bx, By, Bz)
+        H, F, D, I = MagneticFieldModel._field_components(Bx, By, Bz)
 
         return reshape_components(shape, H, F, D, I)
 

@@ -143,7 +143,7 @@ cdef class GravityModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_gravity(
+    cdef _gravity(
         self, double[::1] vlat, double[::1] vlon, double[::1] vh
     ):
         cdef long size = vlat.size
@@ -189,12 +189,12 @@ cdef class GravityModel:
               this is usually negative
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
-        W, gx, gy, gz = self.compute_gravity(lat, lon, h)
+        W, gx, gy, gz = self._gravity(lat, lon, h)
         return reshape_components(shape, W, gx, gy, gz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_disturbance(
+    cdef _disturbance(
         self, double[::1] vlat, double[::1] vlon, double[::1] vh
     ):
         cdef long size = vlat.size
@@ -239,12 +239,12 @@ cdef class GravityModel:
               ([m / s**2])
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
-        T, deltax, deltay, deltaz = self.compute_disturbance(lat, lon, h)
+        T, deltax, deltay, deltaz = self._disturbance(lat, lon, h)
         return reshape_components(shape, T, deltax, deltay, deltaz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_geoid_height(self, double[::1] vlat, double[::1] vlon):
+    cdef _geoid_height(self, double[::1] vlat, double[::1] vlon):
         cdef long size = vlat.size
         dtype = np.float64
 
@@ -275,12 +275,12 @@ cdef class GravityModel:
         lat, lon, shape = as_contiguous_1d_components(
             lat, lon, dtype=np.float64
         )
-        h = self.compute_geoid_height(lat, lon)
+        h = self._geoid_height(lat, lon)
         return reshape_components(shape, h)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_spherical_anomaly(
+    cdef _spherical_anomaly(
             self, double[::1] vlat, double[::1] vlon, double[::1] vh):
         cdef long size = vlat.size
         dtype = np.float64
@@ -324,12 +324,12 @@ cdef class GravityModel:
         reproduced accurately.
         """
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, np.float64)
-        Dg01, xi, eta = self.compute_spherical_anomaly(lat, lon, h)
+        Dg01, xi, eta = self._spherical_anomaly(lat, lon, h)
         return reshape_components(shape, Dg01, xi, eta)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_w(self, double[::1] vx, double[::1] vy, double[::1] vz):
+    cdef _w(self, double[::1] vx, double[::1] vy, double[::1] vz):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -372,12 +372,12 @@ cdef class GravityModel:
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
         )
-        out, gx, gy, gz = self.compute_w(x, y, z)
+        out, gx, gy, gz = self._w(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_v(self, double[::1] vx, double[::1] vy, double[::1] vz):
+    cdef _v(self, double[::1] vx, double[::1] vy, double[::1] vz):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -419,13 +419,14 @@ cdef class GravityModel:
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
         )
-        out, gx, gy, gz = self.compute_v(x, y, z)
+        out, gx, gy, gz = self._v(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_t_components(self,
-                              double[::1] vx, double[::1] vy, double[::1] vz):
+    cdef _t_components(
+        self, double[::1] vx, double[::1] vy, double[::1] vz
+    ):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -471,12 +472,12 @@ cdef class GravityModel:
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
         )
-        out, gx, gy, gz = self.compute_t_components(x, y, z)
+        out, gx, gy, gz = self._t_components(x, y, z)
         return reshape_components(shape, out, gx, gy, gz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_t(self, double[::1] vx, double[::1] vy, double[::1] vz):
+    cdef _t(self, double[::1] vx, double[::1] vy, double[::1] vz):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -506,12 +507,12 @@ cdef class GravityModel:
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
         )
-        out = self.compute_t(x, y, z)
+        out = self._t(x, y, z)
         return reshape_components(shape, out)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_u(self, double[::1] vx, double[::1] vy, double[::1] vz):
+    cdef _u(self, double[::1] vx, double[::1] vy, double[::1] vz):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -554,12 +555,12 @@ cdef class GravityModel:
         x, y, z, shape = as_contiguous_1d_components(
             x, y, z, labels=['x', 'y', 'z'], dtype=np.float64
         )
-        out, gammax, gammay, gammaz = self.compute_u(x, y, z)
+        out, gammax, gammay, gammaz = self._u(x, y, z)
         return reshape_components(shape, out, gammax, gammay, gammaz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute_phi(self, double[::1] vx, double[::1] vy):
+    cdef _phi(self, double[::1] vx, double[::1] vy):
         cdef long size = vx.size
         dtype = np.float64
 
@@ -593,7 +594,7 @@ cdef class GravityModel:
         x, y, shape = as_contiguous_1d_components(
             x, y, labels=['x', 'y'], dtype=np.float64
         )
-        out, fx, fy = self.compute_phi(x, y)
+        out, fx, fy = self._phi(x, y)
         return reshape_components(shape, out, fx, fy)
 
     # @TODO:

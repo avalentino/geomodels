@@ -203,7 +203,7 @@ cdef class GeoidModel:
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef compute(self, double[::1] vlat, double[::1] vlon):
+    cdef _compute(self, double[::1] vlat, double[::1] vlon):
         cdef long size = vlat.size
         h = np.empty(shape=[size], dtype=np.float64)
         cdef double[::1] vh = h
@@ -238,12 +238,12 @@ cdef class GeoidModel:
         lat, lon, shape = as_contiguous_1d_components(
             lat, lon, labels=['lat', 'lon'], dtype=dtype
         )
-        h = self.compute(lat, lon)
+        h = self._compute(lat, lon)
         return reshape_components(shape, h)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef core_convert_height(
+    cdef _convert_height(
         self,
         double[::1] vlat,
         double[::1] vlon,
@@ -292,7 +292,7 @@ cdef class GeoidModel:
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
 
-        out = self.core_convert_height(lat, lon, h, direction.value)
+        out = self._convert_height(lat, lon, h, direction.value)
 
         return reshape_components(shape, out)
 
