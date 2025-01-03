@@ -287,7 +287,7 @@ try:
             return True
 
 except ImportError:
-    have_tqdm = True
+    have_tqdm = False
 
 
 def _get_report_hook(
