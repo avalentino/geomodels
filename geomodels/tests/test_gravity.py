@@ -112,6 +112,18 @@ class InstantiationTestCase(unittest.TestCase):
                 else:
                     os.environ["GEOGRAPHICLIB_GRAVITY_PATH"] = old_env
 
+    def test_max_degree(self):
+        max_degree = 2
+        model = GravityModel(max_degree=max_degree)
+        self.assertIsInstance(model, GravityModel)
+        self.assertLessEqual(model.degree(), max_degree)
+
+    def test_max_order(self):
+        max_order = 2
+        model = GravityModel(max_order=max_order)
+        self.assertIsInstance(model, GravityModel)
+        self.assertLessEqual(model.order(), max_order)
+
 
 class InfoMethodsTestCase(unittest.TestCase):
     def setUp(self) -> None:

@@ -18,11 +18,9 @@ cdef extern from "GeographicLib/GravityModel.hpp" namespace "GeographicLib" nogi
         #     GEOID_HEIGHT,
         #     ALL
 
-        CGravityModel(const string& name, const string& path) except +
-        # @TODO: new in GeographicLib v1.50
-        # CGravityModel(
-        #     const string& name, const string& path, int Nmax, int Mmax
-        # ) except +
+        CGravityModel(
+            const string& name, const string& path, int Nmax, int Mmax
+        ) except +
 
         real Gravity(
             real lat, real lon, real h, real& gx, real& gy, real& gz

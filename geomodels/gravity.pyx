@@ -70,6 +70,10 @@ cdef class GravityModel:
         the name of the model
     :param path:
         (optional) directory for data file
+    :param max_degree:
+        (optional) if non-negative, truncate the degree of the model this value
+    :param max_order:
+        (optional) if non-negative, truncate the order of the model this value
     :raises GeographicErr:
         if the data file cannot be found, is unreadable, or is corrupt
     :raises MemoryError:
@@ -112,9 +116,16 @@ cdef class GravityModel:
     """
     cdef CGravityModel *_ptr
 
-    # @TODO: support GeographicLib v1.50
-    # def __cinit__(self, name, path='', int Nmax=-1, int Mmax=-1):
-    def __cinit__(self, name=None, path=''):
+    # def __cinit__(
+    #     self, name: str | None = None,
+    #     path: PathType = "",
+    def __cinit__(
+        self,
+        name=None,
+        path='',
+        int max_degree=-1,
+        int max_order=-1,
+    ):
         cdef string c_name = CGravityModel.DefaultGravityName()
         cdef string c_path = os.fsencode(path)
 
@@ -123,9 +134,9 @@ cdef class GravityModel:
 
         try:
             with nogil:
-                # @TODO: support GeographicLib v1.50
-                # self._ptr = new CGravityModel(c_name, c_path, Nmax, Mmax)
-                self._ptr = new CGravityModel(c_name, c_path)
+                self._ptr = new CGravityModel(
+                    c_name, c_path, max_degree, max_order
+                )
         except RuntimeError as exc:
             raise GeographicErr(str(exc)) from exc
 
