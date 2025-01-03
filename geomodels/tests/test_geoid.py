@@ -215,9 +215,9 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(self.model.scale(), float)
         self.assertGreater(self.model.scale(), 0)
 
-    def equator_radius(self):
-        self.assertIsInstance(self.model.equator_radius(), float)
-        self.assertGreater(self.model.equator_radius(), 5e6)
+    def test_equatorial_radius(self):
+        self.assertIsInstance(self.model.equatorial_radius(), float)
+        self.assertGreater(self.model.equatorial_radius(), 5e6)
 
     def test_flattening(self):
         self.assertIsInstance(self.model.flattening(), float)

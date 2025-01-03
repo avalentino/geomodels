@@ -157,9 +157,9 @@ class InfoMethodsTestCase(unittest.TestCase):
         path = self.model.gravity_model_directory()
         self.assertEqual(path, self.datapath)
 
-    def equator_radius(self):
-        self.assertIsInstance(self.model.equator_radius(), float)
-        self.assertGreater(self.model.equator_radius(), 5e6)
+    def test_equatorial_radius(self):
+        self.assertIsInstance(self.model.equatorial_radius(), float)
+        self.assertGreater(self.model.equatorial_radius(), 5e6)
 
     def test_flattening(self):
         self.assertIsInstance(self.model.flattening(), float)
