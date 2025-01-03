@@ -126,6 +126,28 @@ cdef class MagneticFieldModel:
 
         return Bx, By, Bz
 
+    def __call__(self, double t, lat, lon, h):
+        """Compute the magnetic field.
+
+        Evaluate the components of the geomagnetic field.
+
+        :param t:
+            the time (years)
+        :param lat:
+            latitude of the point (degrees)
+        :param lon:
+            longitude of the point (degrees)
+        :param h:
+            the height of the point above the ellipsoid (meters)
+        :returns:
+            Bx, By, Bz: the easterly, northerly and vertical (up)
+            components of the magnetic field (nanotesla).
+        """
+        dtype = np.float64
+        lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
+        Bx, By, Bz = self._compute(t, lat, lon, h)
+        return reshape_components(shape, Bx, By, Bz)
+
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cdef _compute_with_rate(
@@ -166,11 +188,11 @@ cdef class MagneticFieldModel:
 
         return Bx, By, Bz, Bxt, Byt, Bzt
 
-    def __call__(self, double t, lat, lon, h, bint rate=False):
-        """Compute the magnetic field.
+    def compute_with_rate(self, double t, lat, lon, h):
+        """Compute the magnetic field and its rate.
 
         Evaluate the components of the geomagnetic field and
-        (optionally) their time derivatives
+        their time derivatives
 
         :param t:
             the time (years)
@@ -180,29 +202,16 @@ cdef class MagneticFieldModel:
             longitude of the point (degrees)
         :param h:
             the height of the point above the ellipsoid (meters)
-        :param bool rate:
-            also returns first time derivative of the magnetic field
-            components (default: False)
         :returns:
-            Bx, By, Bz: the easterly, northerly and vertical (up)
-            components of the magnetic field (nanotesla).
-
-            If time_derivatives is set to True then the following tuple
-            is returned: (Bx, By, Bz, Bxt, Byt, Bzt), where  Bxt, Byt
-            and Bzt are the rate of change of Bx, By and Bz
-            respectively (nT/yr).
+            Bx, By, Bz, Bxt, Byt, Bzt: where Bx, By, Bz are respectively
+            the easterly, northerly and vertical (up) components of the
+            magnetic field (nanotesla), and Bxt, Byt and Bzt are the rate
+            of change of Bx, By and Bz respectively (nT/yr).
         """
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
-
-        if not rate:
-            Bx, By, Bz = self._compute(t, lat, lon, h)
-            return reshape_components(shape, Bx, By, Bz)
-        else:
-            Bx, By, Bz, Bxt, Byt, Bzt = self._compute_with_rate(
-                t, lat, lon, h
-            )
-            return reshape_components(shape, Bx, By, Bz, Bxt, Byt, Bzt)
+        Bx, By, Bz, Bxt, Byt, Bzt = self._compute_with_rate(t, lat, lon, h)
+        return reshape_components(shape, Bx, By, Bz, Bxt, Byt, Bzt)
 
     # @TODO: MagneticCircle Circle(real t, real lat, real h) const
     # def circle(...):
@@ -281,9 +290,7 @@ cdef class MagneticFieldModel:
         Bx, By, Bz, shape = as_contiguous_1d_components(
             Bx, By, Bz, labels=['Bx', 'By', 'Bz'], dtype=dtype
         )
-
         H, F, D, I = MagneticFieldModel._field_components(Bx, By, Bz)
-
         return reshape_components(shape, H, F, D, I)
 
     # @staticmethod

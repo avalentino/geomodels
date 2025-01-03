@@ -164,22 +164,25 @@ class MagneticFieldModel:
         lat: npt.ArrayLike,
         lon: npt.ArrayLike,
         h: npt.ArrayLike,
-        rate: bool = False,
-    ) -> (
-        tuple[
-            np.ndarray,
-            np.ndarray,
-            np.ndarray,
-        ]
-        | tuple[
-            np.ndarray,
-            np.ndarray,
-            np.ndarray,
-            np.ndarray,
-            np.ndarray,
-            np.ndarray,
-        ]
-    ): ...
+    ) -> tuple[
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+    ]: ...
+    def compute_with_rate(
+        self,
+        t: float,
+        lat: npt.ArrayLike,
+        lon: npt.ArrayLike,
+        h: npt.ArrayLike,
+    ) -> tuple[
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+        np.ndarray,
+    ]: ...
     @staticmethod
     def field_components(
         Bx: npt.ArrayLike, By: npt.ArrayLike, Bz: npt.ArrayLike

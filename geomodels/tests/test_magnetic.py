@@ -290,8 +290,10 @@ class ComputationTestCase(unittest.TestCase):
         npt.assert_allclose([fld_x, fld_y, fld_z], [self.BX, self.BY, self.BZ])
 
     def test_compute_scalar_with_rate(self):
-        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        (fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt) = (
+            self.model.compute_with_rate(
+                self.YEAR, self.LAT, self.LON, self.HEIGHT
+            )
         )
         npt.assert_allclose([fld_x, fld_y, fld_z], [self.BX, self.BY, self.BZ])
         npt.assert_allclose(
@@ -424,12 +426,13 @@ class VectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(fld_z, self.BZ.flatten())
 
     def test_compute_vector_with_rate(self):
-        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
-            self.YEAR,
-            self.LAT.flatten(),
-            self.LON.flatten(),
-            self.HEIGHT.flatten(),
-            rate=True,
+        (fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt) = (
+            self.model.compute_with_rate(
+                self.YEAR,
+                self.LAT.flatten(),
+                self.LON.flatten(),
+                self.HEIGHT.flatten(),
+            )
         )
         npt.assert_allclose(fld_x, self.BX.flatten())
         npt.assert_allclose(fld_y, self.BY.flatten())
@@ -447,8 +450,10 @@ class VectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(fld_z, self.BZ)
 
     def test_compute_matrix_with_rate(self):
-        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        (fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt) = (
+            self.model.compute_with_rate(
+                self.YEAR, self.LAT, self.LON, self.HEIGHT
+            )
         )
         npt.assert_allclose(fld_x, self.BX)
         npt.assert_allclose(fld_y, self.BY)
@@ -553,12 +558,13 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(fld_z, self.BZ.flatten())
 
     def test_compute_vector_with_rate(self):
-        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
-            self.YEAR,
-            self.LAT.flatten(),
-            self.LON.flatten(),
-            self.HEIGHT,
-            rate=True,
+        (fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt) = (
+            self.model.compute_with_rate(
+                self.YEAR,
+                self.LAT.flatten(),
+                self.LON.flatten(),
+                self.HEIGHT,
+            )
         )
         npt.assert_allclose(fld_x, self.BX.flatten())
         npt.assert_allclose(fld_y, self.BY.flatten())
@@ -576,8 +582,10 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(fld_z, self.BZ)
 
     def test_compute_matrix_with_rate(self):
-        fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt = self.model(
-            self.YEAR, self.LAT, self.LON, self.HEIGHT, rate=True
+        (fld_x, fld_y, fld_z, fld_xt, fld_yt, fld_zt) = (
+            self.model.compute_with_rate(
+                self.YEAR, self.LAT, self.LON, self.HEIGHT
+            )
         )
         npt.assert_allclose(fld_x, self.BX)
         npt.assert_allclose(fld_y, self.BY)
