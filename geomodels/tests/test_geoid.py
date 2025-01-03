@@ -144,7 +144,7 @@ class InstantiationTestCase(unittest.TestCase):
 
     def test_positional_true_false(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.MODEL_NAME, path, True, False)
+        model = GeoidModel(self.MODEL_NAME, path, cubic=True, threadsafe=False)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), "cubic")
@@ -152,7 +152,7 @@ class InstantiationTestCase(unittest.TestCase):
 
     def test_positional_false_true(self):
         path = GeoidModel.default_geoid_path()
-        model = GeoidModel(self.MODEL_NAME, path, False, True)
+        model = GeoidModel(self.MODEL_NAME, path, cubic=False, threadsafe=True)
         self.assertEqual(model.geoid_name(), self.MODEL_NAME)
         self.assertEqual(model.geoid_directory(), path)
         self.assertEqual(model.interpolation(), "bilinear")

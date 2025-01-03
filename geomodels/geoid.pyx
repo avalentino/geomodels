@@ -119,6 +119,7 @@ cdef class GeoidModel:
         self,
         name: str | None = None,
         path: PathType = "",
+        *,
         bint cubic=True,
         bint threadsafe=False,
     ):

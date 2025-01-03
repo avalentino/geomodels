@@ -24,6 +24,7 @@ class GeoidModel:
         self,
         name: str | None = None,
         path: PathType = "",
+        *,
         cubic: bool = True,
         threadsafe: bool = False,
     ): ...
