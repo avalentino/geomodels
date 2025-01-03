@@ -44,7 +44,7 @@ all = ["geomodels[cli]", "geomodels[download]", "geomodels[test]"]
 
 
 [project.scripts]
-geomodels-cli = "geomodels.__main__:main"
+geomodels-cli = "geomodels.cli:main"
 
 
 [project.urls]
