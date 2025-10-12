@@ -1,8 +1,6 @@
 """Command Line Interface (CLI) for the geomodels Python package."""
 
-import os
 import enum
-import glob
 import logging
 import pathlib
 import argparse
@@ -20,7 +18,7 @@ from .data import (
 )
 from .wmmf import import_igrf_txt
 from .tests import print_versions
-from ._typing import PathType
+from ._typing import PathType  # noqa: TC001
 
 EX_FAILURE = 1
 EX_INTERRUPT = 130
@@ -50,15 +48,17 @@ def _autocomplete(parser: argparse.ArgumentParser) -> None:
 def _format_data_info(datadir=None):
     if datadir is None:
         datadir = get_default_data_path()
+    datadir = pathlib.Path(datadir)
 
-    lines = [f"data directory: {datadir!r}"]
-    for modelenum in (EGeoidModel, EGravityModel, EMagneticModel):
-        modeltype = modelenum.get_model_type().value
-        modeltype_dir = os.path.join(datadir, modeltype)
-        lines.append(f"* model: {modeltype} ({modeltype_dir!r})")
-        for item in modelenum:
-            pattern = os.path.join(modeltype_dir, item.value + "*")
-            installed = "INSTALLED " if glob.glob(pattern) else "NOT INSTALLED"
+    lines = [f"data directory: '{datadir}'"]
+    for model_enum in (EGeoidModel, EGravityModel, EMagneticModel):
+        modeltype = model_enum.get_model_type().value
+        modeltype_dir = datadir / modeltype
+        lines.append(f"* model: {modeltype} ('{modeltype_dir}')")
+        for item in model_enum:
+            pattern = item.value + "*"
+            matches = modeltype_dir.glob(pattern)
+            installed = "INSTALLEDS" if matches else "NOT INSTALLED"
             lines.append(f"  {item.name:12s} - {installed}")
 
     return "\n".join(lines)
@@ -73,7 +73,7 @@ def info(mode=EInfoMode.ALL, datadir=None):
     if mode in (EInfoMode.INFO, EInfoMode.ALL):
         print_versions()
     if mode in (EInfoMode.DATA, EInfoMode.ALL):
-        print(_format_data_info(datadir))
+        print(_format_data_info(datadir))  # T201
 
 
 def install_data(model, datadir=None, base_url=None, no_progress=False):
@@ -393,8 +393,9 @@ def main(*argv):
         kwargs = _get_kwargs(args)
         return args.func(**kwargs)
     except Exception as exc:  # noqa: B902
+        msg = str(exc)
         log.critical(
-            "unexpected exception caught: %r %s", type(exc).__name__, exc
+            "unexpected exception caught: %r %s", type(exc).__name__, msg
         )
         log.debug("stacktrace:", exc_info=True)
         return EX_FAILURE

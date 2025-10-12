@@ -289,7 +289,7 @@ class InstallTestCase(unittest.TestCase):
 
             igrf12 = geomodels.data.EMagneticModel.IGRF12
             model_file = model_dir / (igrf12.name.lower() + ".dummyext")
-            open(model_file, "w").close()  # touch
+            model_file.touch()
 
             geomodels.data.install(model, datadir, progress=False)
 

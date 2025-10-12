@@ -45,7 +45,7 @@ class MainTestCase(unittest.TestCase):
 class InfoSubCommandTestCase(unittest.TestCase):
     VERSION_RE = re.compile(rf"^geomodels version:\s+{VERSION}$", re.MULTILINE)
     DATAPATH_RE = re.compile(
-        rf"^data directory:\s+{get_default_data_path()!r}$", re.MULTILINE
+        rf"^data directory:\s+'{get_default_data_path()}'$", re.MULTILINE
     )
 
     def test_help(self):

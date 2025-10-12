@@ -7,14 +7,14 @@ import platform
 from setuptools import setup, Extension
 
 
-def mkconfig(srcpath, outpath, have_lohg_double=0):
+def mkconfig(srcpath: str, outpath: str, have_long_double: int = 0) -> None:
     data = pathlib.Path(srcpath).joinpath("CMakeLists.txt").read_text()
     mobj = re.search(
         r"""\
 set\s*\(\s*PROJECT_VERSION_MAJOR\s+(?P<VERSION_MAJOR>\d+)\s*\)\s*
 set\s*\(\s*PROJECT_VERSION_MINOR\s+(?P<VERSION_MINOR>\d+)\s*\)\s*
 set\s*\(\s*PROJECT_VERSION_PATCH\s+(?P<VERSION_PATCH>\d+)\s*\)\s*
-""",
+""",  # noqa: C092
         data,
         re.MULTILINE,
     )
@@ -40,14 +40,14 @@ set\s*\(\s*PROJECT_VERSION_PATCH\s+(?P<VERSION_PATCH>\d+)\s*\)\s*
 #define GEOGRAPHICLIB_DATA "/usr/local/share/GeographicLib"
 
 // These are macros which affect the building of the library
-#define GEOGRAPHICLIB_HAVE_LONG_DOUBLE {have_lohg_double}
+#define GEOGRAPHICLIB_HAVE_LONG_DOUBLE {have_long_double}
 #define GEOGRAPHICLIB_WORDS_BIGENDIAN {bigendian}
 #define GEOGRAPHICLIB_PRECISION 2
 
 #if !defined(GEOGRAPHICLIB_SHARED_LIB)
 #define GEOGRAPHICLIB_SHARED_LIB 0
 #endif
-"""
+"""  # noqa: C092
 
     outpath = pathlib.Path(outpath)
     if not outpath.exists():
@@ -71,9 +71,7 @@ else:
 
 
 IGNORE_BUNDLED_LIBS_STR = os.environ.get("GEOMODELS_IGNORE_BUNDLED_LIBS")
-IGNORE_BUNDLED_LIBS = bool(
-    IGNORE_BUNDLED_LIBS_STR in ("1", "ON", "TRUE", "YES")
-)
+IGNORE_BUNDLED_LIBS = IGNORE_BUNDLED_LIBS_STR in {"1", "ON", "TRUE", "YES"}
 SRCPATH = pathlib.Path("extern/geographiclib")
 
 

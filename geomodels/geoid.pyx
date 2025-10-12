@@ -12,7 +12,7 @@ from libcpp.string cimport string
 
 from .geoid cimport CGeoid
 
-from .error import GeographicErr
+from .error import GeographicError
 from ._utils import (
     as_contiguous_1d_llh,
     as_contiguous_1d_components,
@@ -73,9 +73,9 @@ cdef class GeoidModel:
     :param threadsafe:
         (optional), if true, construct a thread safe object.
         The default is false
-    :raises GeographicErr:
+    :raises GeographicError:
         if the data file cannot be found, is unreadable, or is corrupt
-    :raises GeographicErr:
+    :raises GeographicError:
         if `threadsafe` is True but the memory necessary for caching
         the data can't be allocated.
 
@@ -133,7 +133,7 @@ cdef class GeoidModel:
             with nogil:
                 self._ptr = new CGeoid(c_name, c_path, cubic, threadsafe)
         except RuntimeError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
     def __dealloc__(self):
         del self._ptr
@@ -149,13 +149,13 @@ cdef class GeoidModel:
             north latitude (degrees) of the north edge of the cached area.
         :param east:
             east longitude (degrees) of the east edge of the cached area.
-        :raises GeographicErr:
+        :raises GeographicError:
             if the memory necessary for caching the data can't be
             allocated (in this case, you will have no cache and can try
             again with a smaller area).
-        :raises GeographicErr:
+        :raises GeographicError:
             if there's a problem reading the data.
-        :raises GeographicErr:
+        :raises GeographicError:
             if this is called on a thread-safe :class:`Geoid`.
 
         Cache the data for the specified "rectangular" area bounded by
@@ -169,18 +169,18 @@ cdef class GeoidModel:
             with nogil:
                 self._ptr.CacheArea(south, west, north, east)
         except RecursionError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
     def cache_all(self):
         """Cache all the data.
 
-        :raises GeographicErr:
+        :raises GeographicError:
             if the memory necessary for caching the data can't be
             allocated (in this case, you will have no cache and can try
             again with a smaller area).
-        :raises GeographicErr:
+        :raises GeographicError:
             if there's a problem reading the data.
-        :raises GeographicErr:
+        :raises GeographicError:
             if this is called on a thread-safe :class:`Geoid`.
 
         On most computers, this is fast for data sets with grid
@@ -191,7 +191,7 @@ cdef class GeoidModel:
             with nogil:
                 self._ptr.CacheAll()
         except RecursionError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
     def cache_clear(self):
         """Clear the cache.
@@ -214,7 +214,7 @@ cdef class GeoidModel:
                     vh[i] = cython.operator.dereference(self._ptr)(
                         vlat[i], vlon[i])
         except RecursionError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
         return h
 
@@ -225,7 +225,7 @@ cdef class GeoidModel:
             latitude of the point (degrees).
         :param lon:
             longitude of the point (degrees).
-        :raises GeographicErr:
+        :raises GeographicError:
             if there's a problem reading the data.
             This never happens if (`lat`, `lon`) is within a
             successfully cached area.
@@ -262,7 +262,7 @@ cdef class GeoidModel:
                         vlat[i], vlon[i], vh[i], direction
                     )
         except RecursionError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
         return out
 
@@ -282,7 +282,7 @@ cdef class GeoidModel:
             convert a height above the geoid to a height above the
             ellipsoid; :data:`Geoid.ELLIPSOIDTOGEOID` means convert a
             height above the ellipsoid to a height above the geoid.
-        :raises GeographicErr:
+        :raises GeographicError:
             if there's a problem reading the data; this never happens
             if (`lat`, `lon`) is within a successfully cached area.
         :returns:

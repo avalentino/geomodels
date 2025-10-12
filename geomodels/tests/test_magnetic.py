@@ -64,15 +64,15 @@ class InstantiationTestCase01(unittest.TestCase):
         self.assertEqual(model.magnetic_model_directory(), path)
 
     def test_custom_path(self):
-        default_path = MagneticFieldModel.default_magnetic_path()
+        default_path = pathlib.Path(MagneticFieldModel.default_magnetic_path())
         with tempfile.TemporaryDirectory() as dirname:
-            magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path)
-            )
+            magnetic_path = pathlib.Path(dirname) / default_path.name
             shutil.copytree(default_path, magnetic_path)
             model = MagneticFieldModel(self.MODEL_NAME, magnetic_path)
             self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
-            self.assertEqual(model.magnetic_model_directory(), magnetic_path)
+            self.assertEqual(
+                model.magnetic_model_directory(), str(magnetic_path)
+            )
 
     def test_custom_path_from_env01(self):
         default_path = pathlib.Path(MagneticFieldModel.default_magnetic_path())
@@ -96,20 +96,18 @@ class InstantiationTestCase01(unittest.TestCase):
                     os.environ["GEOGRAPHICLIB_DATA"] = old_env
 
     def test_custom_path_from_env02(self):
-        default_path = MagneticFieldModel.default_magnetic_path()
+        default_path = pathlib.Path(MagneticFieldModel.default_magnetic_path())
         with tempfile.TemporaryDirectory() as dirname:
-            magnetic_path = os.path.join(
-                dirname, os.path.basename(default_path)
-            )
+            magnetic_path = pathlib.Path(dirname).joinpath(default_path.name)
             shutil.copytree(default_path, magnetic_path)
 
             old_env = os.environ.get("GEOGRAPHICLIB_MAGNETIC_PATH")
-            os.environ["GEOGRAPHICLIB_MAGNETIC_PATH"] = magnetic_path
+            os.environ["GEOGRAPHICLIB_MAGNETIC_PATH"] = str(magnetic_path)
             try:
                 model = MagneticFieldModel(self.MODEL_NAME)
                 self.assertEqual(model.magnetic_model_name(), self.MODEL_NAME)
                 self.assertEqual(
-                    model.magnetic_model_directory(), magnetic_path
+                    model.magnetic_model_directory(), str(magnetic_path)
                 )
             finally:
                 if old_env is None:
@@ -137,9 +135,10 @@ class InfoMethodsTestCase(unittest.TestCase):
         datestr = self.model.datetime()
         self.assertIsInstance(datestr, str)
         self.assertNotEqual(datestr, "UNKNOWN")
-        date = datetime.datetime.strptime(datestr, "%Y-%m-%d")
+        date = datetime.datetime.strptime(datestr, "%Y-%m-%d")  # noqa: DTZ007
+        date = date.replace(tzinfo=datetime.timezone.utc)
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
-        self.assertLess(date, datetime.datetime.now())
+        self.assertLess(date, datetime.datetime.now(tz=datetime.timezone.utc))
 
     def test_magnetic_file(self):
         filename = self.model.magnetic_file()
@@ -184,7 +183,10 @@ class InfoMethodsTestCase(unittest.TestCase):
         if self.name in min_times:
             self.assertEqual(self.model.min_time(), min_times[self.name])
         else:
-            self.assertLess(self.model.min_time(), datetime.date.today().year)
+            self.assertLess(
+                self.model.min_time(),
+                datetime.datetime.now(tz=datetime.timezone.utc).date().year,
+            )
 
     def test_max_time(self):
         self.assertIsInstance(self.model.max_time(), float)
@@ -207,7 +209,8 @@ class InfoMethodsTestCase(unittest.TestCase):
             self.assertEqual(self.model.max_time(), max_times[self.name])
         else:
             self.assertGreater(
-                self.model.max_time(), datetime.date.today().year
+                self.model.max_time(),
+                datetime.datetime.now(tz=datetime.timezone.utc).date().year,
             )
 
     def test_min_max_time(self):
@@ -306,84 +309,58 @@ class VectorComputationTestCase(unittest.TestCase):
     MODEL_NAME = "wmm2015"
 
     YEAR = 2016.0
-    LAT = np.asarray(
-        [
-            [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
-            [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
-        ]
-    )
-    LON = np.asarray(
-        [
-            [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
-            [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
-        ]
-    )
-    HEIGHT = np.asarray(
-        [
-            [+300, +400000],
-            [+400000, +300],
-        ]
-    )
-    BX = np.asarray(
-        [
-            [-1251.3634113, -2917.6087863],
-            [-2908.0688421, -1262.5153146],
-        ]
-    )
-    BY = np.asarray(
-        [
-            [+33848.7341446, +13455.1508250],
-            [+13378.9665352, +33836.6298435],
-        ]
-    )
-    BZ = np.asarray(
-        [
-            [-7293.85353820, +20132.4047379],
-            [+20169.4124889, -7539.67870600],
-        ]
-    )
-    BXT = np.asarray(
-        [
-            [+53.6988656, +48.1739432],
-            [+48.0353017, +53.7715374],
-        ]
-    )
-    BYT = np.asarray(
-        [
-            [+33.7765829, -37.4184172],
-            [-37.5102493, +33.9119117],
-        ]
-    )
-    BZT = np.asarray(
-        [
-            [+41.3769946, +28.8842256],
-            [+27.8740361, +41.1851008],
-        ]
-    )
-    H = np.asarray(
-        [
-            [+33871.8572503, +13767.8438673],
-            [+13691.3699073, +33860.1751928],
-        ]
-    )
-    F = np.asarray(
-        [
-            [+34648.2757582, +24389.9004772],
-            [+24377.4241889, +34689.4540037],
-        ]
-    )
-    D = np.asarray(
-        [
-            [-2.117219650, -12.23458341],
-            [-12.26312924, -2.136833910],
-        ]
-    )
-    I = np.asarray(  # noqa: E741
-        [
-            [+12.15231735, -55.63314796],
-            [-55.83061445, +12.55330784],
-        ]
-    )
+    LAT = np.asarray([
+        [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
+        [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
+    ])
+    LON = np.asarray([
+        [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
+        [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
+    ])
+    HEIGHT = np.asarray([
+        [+300, +400000],
+        [+400000, +300],
+    ])
+    BX = np.asarray([
+        [-1251.3634113, -2917.6087863],
+        [-2908.0688421, -1262.5153146],
+    ])
+    BY = np.asarray([
+        [+33848.7341446, +13455.1508250],
+        [+13378.9665352, +33836.6298435],
+    ])
+    BZ = np.asarray([
+        [-7293.85353820, +20132.4047379],
+        [+20169.4124889, -7539.67870600],
+    ])
+    BXT = np.asarray([
+        [+53.6988656, +48.1739432],
+        [+48.0353017, +53.7715374],
+    ])
+    BYT = np.asarray([
+        [+33.7765829, -37.4184172],
+        [-37.5102493, +33.9119117],
+    ])
+    BZT = np.asarray([
+        [+41.3769946, +28.8842256],
+        [+27.8740361, +41.1851008],
+    ])
+    H = np.asarray([
+        [+33871.8572503, +13767.8438673],
+        [+13691.3699073, +33860.1751928],
+    ])
+    F = np.asarray([
+        [+34648.2757582, +24389.9004772],
+        [+24377.4241889, +34689.4540037],
+    ])
+    D = np.asarray([
+        [-2.117219650, -12.23458341],
+        [-12.26312924, -2.136833910],
+    ])
+    I = np.asarray([  # noqa: E741
+        [+12.15231735, -55.63314796],
+        [-55.83061445, +12.55330784],
+    ])
 
     def setUp(self) -> None:
         self.model = MagneticFieldModel(self.MODEL_NAME)
@@ -468,79 +445,55 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
     MODEL_NAME = "wmm2015"
 
     YEAR = 2016.0
-    LAT = np.asarray(
-        [
-            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-        ]
-    )
-    LON = np.asarray(
-        [
-            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-        ]
-    )
+    LAT = np.asarray([
+        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+    ])
+    LON = np.asarray([
+        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+    ])
     HEIGHT = +300
-    BX = np.asarray(
-        [
-            [-1251.3634113, -1262.5153146],
-            [-1251.3634113, -1262.5153146],
-        ]
-    )
-    BY = np.asarray(
-        [
-            [+33848.7341446, +33836.6298435],
-            [+33848.7341446, +33836.6298435],
-        ]
-    )
-    BZ = np.asarray(
-        [
-            [-7293.85353820, -7539.67870600],
-            [-7293.85353820, -7539.67870600],
-        ]
-    )
-    BXT = np.asarray(
-        [
-            [+53.6988656, +53.7715374],
-            [+53.6988656, +53.7715374],
-        ]
-    )
-    BYT = np.asarray(
-        [
-            [+33.7765829, +33.9119117],
-            [+33.7765829, +33.9119117],
-        ]
-    )
-    BZT = np.asarray(
-        [
-            [+41.3769946, +41.1851008],
-            [+41.3769946, +41.1851008],
-        ]
-    )
-    H = np.asarray(
-        [
-            [+33871.8572503, +33860.1751928],
-            [+33871.8572503, +33860.1751928],
-        ]
-    )
-    F = np.asarray(
-        [
-            [+34648.2757582, +34689.4540037],
-            [+34648.2757582, +34689.4540037],
-        ]
-    )
-    D = np.asarray(
-        [
-            [-2.11721965, -2.13683391],
-            [-2.11721965, -2.13683391],
-        ]
-    )
-    I = np.asarray(  # noqa: E741
-        [
-            [+12.15231735, +12.55330784],
-            [+12.15231735, +12.55330784],
-        ]
-    )
+    BX = np.asarray([
+        [-1251.3634113, -1262.5153146],
+        [-1251.3634113, -1262.5153146],
+    ])
+    BY = np.asarray([
+        [+33848.7341446, +33836.6298435],
+        [+33848.7341446, +33836.6298435],
+    ])
+    BZ = np.asarray([
+        [-7293.85353820, -7539.67870600],
+        [-7293.85353820, -7539.67870600],
+    ])
+    BXT = np.asarray([
+        [+53.6988656, +53.7715374],
+        [+53.6988656, +53.7715374],
+    ])
+    BYT = np.asarray([
+        [+33.7765829, +33.9119117],
+        [+33.7765829, +33.9119117],
+    ])
+    BZT = np.asarray([
+        [+41.3769946, +41.1851008],
+        [+41.3769946, +41.1851008],
+    ])
+    H = np.asarray([
+        [+33871.8572503, +33860.1751928],
+        [+33871.8572503, +33860.1751928],
+    ])
+    F = np.asarray([
+        [+34648.2757582, +34689.4540037],
+        [+34648.2757582, +34689.4540037],
+    ])
+    D = np.asarray([
+        [-2.11721965, -2.13683391],
+        [-2.11721965, -2.13683391],
+    ])
+    I = np.asarray([  # noqa: E741
+        [+12.15231735, +12.55330784],
+        [+12.15231735, +12.55330784],
+    ])
 
     def setUp(self) -> None:
         self.model = MagneticFieldModel(self.MODEL_NAME)
