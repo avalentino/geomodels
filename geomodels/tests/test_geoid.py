@@ -175,8 +175,11 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(datestr, str)
         self.assertNotEqual(datestr, "UNKNOWN")
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d')
-        date = datetime.datetime.strptime(datestr, "%Y-%m-%d %H:%M:%S")
-        self.assertLess(date, datetime.datetime.now())
+        date = datetime.datetime.strptime(  # noqa: DTZ007
+            datestr, "%Y-%m-%d %H:%M:%S"
+        )
+        date = date.replace(tzinfo=datetime.timezone.utc)
+        self.assertLess(date, datetime.datetime.now(tz=datetime.timezone.utc))
 
     def test_geoid_file(self):
         filename = self.model.geoid_file()
@@ -330,30 +333,22 @@ class ComputationTestCase(unittest.TestCase):
 
 
 class VectorComputationTestCase(unittest.TestCase):
-    LAT = np.asarray(
-        [
-            [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
-            [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
-        ]
-    )
-    LON = np.asarray(
-        [
-            [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
-            [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
-        ]
-    )
-    HEIGHT = np.asarray(
-        [
-            [+28.7068, +14.8866],
-            [+15.0314, +28.6599],
-        ]
-    )
-    GHEIGHT = np.asarray(
-        [
-            [+300, +400000],
-            [+400000, +300],
-        ]
-    )
+    LAT = np.asarray([
+        [+dms_to_dec(16, 46, 33), -dms_to_dec(16, 46, 43)],
+        [-dms_to_dec(16, 56, 33), +dms_to_dec(16, 56, 43)],
+    ])
+    LON = np.asarray([
+        [-dms_to_dec(3, 0, 34), +dms_to_dec(3, 0, 44)],
+        [+dms_to_dec(3, 10, 34), -dms_to_dec(3, 10, 44)],
+    ])
+    HEIGHT = np.asarray([
+        [+28.7068, +14.8866],
+        [+15.0314, +28.6599],
+    ])
+    GHEIGHT = np.asarray([
+        [+300, +400000],
+        [+400000, +300],
+    ])
     EHEIGHT = HEIGHT + GHEIGHT
     RTOL = 2.5e-6
 
@@ -416,24 +411,18 @@ class VectorComputationTestCase(unittest.TestCase):
 
 
 class ConstHeightVectorComputationTestCase(unittest.TestCase):
-    LAT = np.asarray(
-        [
-            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-            [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
-        ]
-    )
-    LON = np.asarray(
-        [
-            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-            [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
-        ]
-    )
-    HEIGHT = np.asarray(
-        [
-            [+28.7068, +28.6599],
-            [+28.7068, +28.6599],
-        ]
-    )
+    LAT = np.asarray([
+        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+        [+dms_to_dec(16, 46, 33), +dms_to_dec(16, 56, 43)],
+    ])
+    LON = np.asarray([
+        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+        [-dms_to_dec(3, 0, 34), -dms_to_dec(3, 10, 44)],
+    ])
+    HEIGHT = np.asarray([
+        [+28.7068, +28.6599],
+        [+28.7068, +28.6599],
+    ])
     KHEIGHT = +300
     RTOL = 2.5e-6
 

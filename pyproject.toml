@@ -257,7 +257,7 @@ docstring-code-format = true
 
 [tool.ruff.lint.per-file-ignores]
 "**/{tests}/*" = ["D"]
-"**/{notebooks}/*.ipynb" = ["D","T201"]
+"**/{notebooks}/*.ipynb" = ["D", "T201"]
 "docs/conf.py" = ["D", "A001", "INP001"]
 "setup.py" = ["D", "T201"]
 "geomodels/cli.py" = ["BLE001", "T201"]

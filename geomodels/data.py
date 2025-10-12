@@ -7,12 +7,11 @@ import logging
 import pathlib
 import tempfile
 import contextlib
-from typing import Union
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
 from collections.abc import Callable, Iterable
 
-from ._typing import PathType
+from ._typing import PathType  # noqa: TC001
 
 __all__ = [
     "EModelGroup",
@@ -25,6 +24,9 @@ __all__ = [
     "get_model_url",
     "install",
 ]
+
+
+_log = logging.getLogger(__name__)
 
 
 class EModelGroup(enum.Enum):
@@ -105,7 +107,7 @@ class EArchiveType(enum.Enum):
     BZ2 = ".tar.bz2"
 
 
-GenericModelType = Union[EGeoidModel, EGravityModel, EMagneticModel]
+GenericModelType = EGeoidModel | EGravityModel | EMagneticModel
 ReportHookType = Callable[[int, int, int], None]
 
 
@@ -122,7 +124,9 @@ def get_default_data_path() -> str:
     if path is None:
         from . import MagneticFieldModel
 
-        path = os.path.dirname(MagneticFieldModel.default_magnetic_path())
+        return str(
+            pathlib.Path(MagneticFieldModel.default_magnetic_path()).parent
+        )
     return path
 
 
@@ -171,11 +175,13 @@ def get_model_url(
         filename=model.value,
         ext=archive_type.value,
     )
-    url = url._replace(path=urlpath, query=query, fragment=fragment)
+    url = url._replace(  # noqa: SF01
+        path=urlpath, query=query, fragment=fragment
+    )
     return url.geturl()
 
 
-InstallableModelType = Union[EModelGroup, EModelType, GenericModelType]
+InstallableModelType = EModelGroup | EModelType | GenericModelType
 
 
 _MODELTYPE_MAP: dict[EModelType, type[GenericModelType]] = {
@@ -241,7 +247,7 @@ def _get_url_map(
         case _:
             raise ValueError(f"unexpected model: {model!r}")
 
-    return urls
+    return urls  # noqa: R504
 
 
 have_tqdm: bool
@@ -256,7 +262,7 @@ try:
         def __init__(self, **kwargs):
             if "iterable" in kwargs:
                 raise TypeError(
-                    "{!r} argument is not allowed by TqdmReportHook."
+                    "'iterable' argument is not allowed by TqdmReportHook."
                 )
 
             # set defaults
@@ -301,10 +307,9 @@ def _get_report_hook(
         except OSError:
             ncols = 0
         return TqdmReportHook(desc=description[-ncols:], leave=False)
-    elif callable(progress):
+    if callable(progress):
         return progress
-    else:
-        return None
+    return None
 
 
 def download(
@@ -336,7 +341,7 @@ def download(
     """
     urlobj = urlsplit(url)
     if not urlobj.scheme:
-        urlobj = urlobj._replace(scheme="file")
+        urlobj = urlobj._replace(scheme="file")  # noqa: SF01
 
     path = pathlib.Path(path)
     if path.is_dir():
@@ -350,9 +355,13 @@ def download(
 
     if isinstance(report_hook, contextlib.AbstractContextManager):
         with report_hook:
-            outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
+            outpath, _ = urlretrieve(  # noqa: S310
+                urlobj.geturl(), path, report_hook
+            )
     else:
-        outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
+        outpath, _ = urlretrieve(  # noqa: S310
+            urlobj.geturl(), path, report_hook
+        )
 
     return outpath
 
@@ -416,7 +425,7 @@ def install(
             target = datadir / model.get_model_type().value / model.value
             matches = list(target.parent.glob(f"{target.name}*"))
             if matches:
-                logging.debug('"%s" already exists: skip download', target)
+                _log.debug('"%s" already exists: skip download', target)
                 continue
             filename = download(url, tempdir, progress=progress)
             # @CMPATIBILITY: shutil.unpack_archive accepts pathlib.Path

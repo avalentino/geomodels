@@ -11,7 +11,7 @@ from libcpp.string cimport string
 
 from .magnetic cimport CMagneticModel
 
-from .error import GeographicErr
+from .error import GeographicError
 from ._utils import (
     as_contiguous_1d_llh,
     as_contiguous_1d_components,
@@ -36,7 +36,7 @@ cdef class MagneticFieldModel:
         the name of the model
     :param path:
         (optional) directory for data file
-    :raises GeographicErr:
+    :raises GeographicError:
          if the data file cannot be found, is unreadable, or is corrupt
     :raises MemoryError:
          if the memory necessary for storing the model can't be allocated
@@ -66,7 +66,7 @@ cdef class MagneticFieldModel:
 
         from geomodels import MagneticModel
 
-        mag MagneticModel("wmm2010")
+        mag = MagneticModel("wmm2010")
 
         # Mt Everest
         lat = 27.99
@@ -74,8 +74,8 @@ cdef class MagneticFieldModel:
         h = 8820
         t = 2012
 
-        Bx, By, Bz = mag(t, lat,lon, h, Bx, By, Bz)
-        H, F, D, I = MagneticModel.compute_field_components(Bx, By, Bz)
+        bx, by, bz = mag(t, lat, lon, h)
+        H, F, D, I = mag.field_components(bx, by, bz)
 
         print(f"horizontal magnetic field (nT): {H}")
         print(f"total magnetic field (nT): {F}")
@@ -96,7 +96,7 @@ cdef class MagneticFieldModel:
             with nogil:
                 self._ptr = new CMagneticModel(c_name, c_path)
         except RuntimeError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
     def __dealloc__(self):
         del self._ptr
@@ -109,22 +109,22 @@ cdef class MagneticFieldModel:
         cdef long size = vlat.size
         dtype = np.float64
 
-        Bx = np.empty(shape=[size], dtype=dtype)
-        By = np.empty(shape=[size], dtype=dtype)
-        Bz = np.empty(shape=[size], dtype=dtype)
+        bx = np.empty(shape=[size], dtype=dtype)
+        by = np.empty(shape=[size], dtype=dtype)
+        bz = np.empty(shape=[size], dtype=dtype)
 
-        cdef double[::1] vBx = Bx
-        cdef double[::1] vBy = By
-        cdef double[::1] vBz = Bz
+        cdef double[::1] vbx = bx
+        cdef double[::1] vby = by
+        cdef double[::1] vbz = bz
 
         cdef long i = 0
         with nogil:
             for i in range(size):
                 cython.operator.dereference(self._ptr)(
-                    t, vlat[i], vlon[i], vh[i], vBx[i], vBy[i], vBz[i]
+                    t, vlat[i], vlon[i], vh[i], vbx[i], vby[i], vbz[i]
                 )
 
-        return Bx, By, Bz
+        return bx, by, bz
 
     def __call__(self, double t, lat, lon, h):
         """Compute the magnetic field.
@@ -145,8 +145,8 @@ cdef class MagneticFieldModel:
         """
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
-        Bx, By, Bz = self._compute(t, lat, lon, h)
-        return reshape_components(shape, Bx, By, Bz)
+        bx, by, bz = self._compute(t, lat, lon, h)
+        return reshape_components(shape, bx, by, bz)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -156,19 +156,19 @@ cdef class MagneticFieldModel:
         cdef long size = vlat.size
         dtype = np.float64
 
-        Bx = np.empty(shape=[size], dtype=dtype)
-        By = np.empty(shape=[size], dtype=dtype)
-        Bz = np.empty(shape=[size], dtype=dtype)
-        Bxt = np.empty(shape=[size], dtype=dtype)
-        Byt = np.empty(shape=[size], dtype=dtype)
-        Bzt = np.empty(shape=[size], dtype=dtype)
+        bx = np.empty(shape=[size], dtype=dtype)
+        by = np.empty(shape=[size], dtype=dtype)
+        bz = np.empty(shape=[size], dtype=dtype)
+        bxt = np.empty(shape=[size], dtype=dtype)
+        byt = np.empty(shape=[size], dtype=dtype)
+        bzt = np.empty(shape=[size], dtype=dtype)
 
-        cdef double[::1] vBx = Bx
-        cdef double[::1] vBy = By
-        cdef double[::1] vBz = Bz
-        cdef double[::1] vBxt = Bxt
-        cdef double[::1] vByt = Byt
-        cdef double[::1] vBzt = Bzt
+        cdef double[::1] vbx = bx
+        cdef double[::1] vby = by
+        cdef double[::1] vbz = bz
+        cdef double[::1] vbxt = bxt
+        cdef double[::1] vbyt = byt
+        cdef double[::1] vbzt = bzt
 
         cdef long i = 0
         with nogil:
@@ -178,15 +178,15 @@ cdef class MagneticFieldModel:
                     vlat[i],
                     vlon[i],
                     vh[i],
-                    vBx[i],
-                    vBy[i],
-                    vBz[i],
-                    vBxt[i],
-                    vByt[i],
-                    vBzt[i],
+                    vbx[i],
+                    vby[i],
+                    vbz[i],
+                    vbxt[i],
+                    vbyt[i],
+                    vbzt[i],
                 )
 
-        return Bx, By, Bz, Bxt, Byt, Bzt
+        return bx, by, bz, bxt, byt, bzt
 
     def compute_with_rate(self, double t, lat, lon, h):
         """Compute the magnetic field and its rate.
@@ -211,8 +211,8 @@ cdef class MagneticFieldModel:
         """
         dtype = np.float64
         lat, lon, h, shape = as_contiguous_1d_llh(lat, lon, h, dtype)
-        Bx, By, Bz, Bxt, Byt, Bzt = self._compute_with_rate(t, lat, lon, h)
-        return reshape_components(shape, Bx, By, Bz, Bxt, Byt, Bzt)
+        bx, by, bz, bxt, byt, bzt = self._compute_with_rate(t, lat, lon, h)
+        return reshape_components(shape, bx, by, bz, bxt, byt, bzt)
 
     # @TODO: MagneticCircle Circle(real t, real lat, real h) const
     # def circle(...):
@@ -247,9 +247,9 @@ cdef class MagneticFieldModel:
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cdef _field_components(
-        double[::1] vBx, double[::1] vBy, double[::1] vBz
+        double[::1] vbx, double[::1] vby, double[::1] vbz
     ):
-        cdef long size = vBx.size
+        cdef long size = vbx.size
         dtype = np.float64
 
         H = np.empty(shape=[size], dtype=dtype)
@@ -266,20 +266,20 @@ cdef class MagneticFieldModel:
         with nogil:
             for i in range(size):
                 CMagneticModel.FieldComponents(
-                    vBx[i], vBy[i], vBz[i], vH[i], vF[i], vD[i], vI[i]
+                    vbx[i], vby[i], vbz[i], vH[i], vF[i], vD[i], vI[i]
                 )
 
         return H, F, D, I
 
     @staticmethod
-    def field_components(Bx, By, Bz):
+    def field_components(bx, by, bz):
         """Compute various quantities dependent on the magnetic field.
 
-        :param float Bx:
+        :param float bx:
             the x (easterly) component of the magnetic field (nT)
-        :param float By:
+        :param float by:
             the y (northerly) component of the magnetic field (nT)
-        :param float Bz:
+        :param float bz:
             the z (vertical, up positive) component of the magnetic field (nT)
         :returns:
             * H the horizontal magnetic field (nT)
@@ -288,10 +288,10 @@ cdef class MagneticFieldModel:
             * I the inclination of the field (degrees down from horizontal)
         """
         dtype = np.float64
-        Bx, By, Bz, shape = as_contiguous_1d_components(
-            Bx, By, Bz, labels=['Bx', 'By', 'Bz'], dtype=dtype
+        bx, by, bz, shape = as_contiguous_1d_components(
+            bx, by, bz, labels=['Bx', 'By', 'Bz'], dtype=dtype
         )
-        H, F, D, I = MagneticFieldModel._field_components(Bx, By, Bz)
+        H, F, D, I = MagneticFieldModel._field_components(bx, by, bz)
         return reshape_components(shape, H, F, D, I)
 
     # @staticmethod

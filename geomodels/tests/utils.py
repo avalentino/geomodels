@@ -1,6 +1,6 @@
 """Utility functions."""
 
 
-def dms_to_dec(d, m, s):
-    """Convert angles from degres, minutes and seconds to decimal degrees."""
-    return ((d * 60 + m) * 60 + s) / 60**2
+def dms_to_dec(deg, min_, sec):
+    """Convert angles from degrees, minutes and seconds to decimal degrees."""
+    return ((deg * 60 + min_) * 60 + sec) / 60**2

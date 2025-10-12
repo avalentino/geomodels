@@ -185,7 +185,7 @@ class MagneticFieldModel:
     ]: ...
     @staticmethod
     def field_components(
-        Bx: npt.ArrayLike, By: npt.ArrayLike, Bz: npt.ArrayLike
+        bx: npt.ArrayLike, by: npt.ArrayLike, bz: npt.ArrayLike
     ) -> tuple[
         np.ndarray,
         np.ndarray,

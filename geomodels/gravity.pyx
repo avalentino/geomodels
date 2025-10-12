@@ -11,7 +11,7 @@ from libcpp.string cimport string
 
 from .gravity cimport CGravityModel
 
-from .error import GeographicErr
+from .error import GeographicError
 from ._utils import (
     as_contiguous_1d_llh,
     as_contiguous_1d_components,
@@ -75,7 +75,7 @@ cdef class GravityModel:
         (optional) if non-negative, truncate the degree of the model this value
     :param max_order:
         (optional) if non-negative, truncate the order of the model this value
-    :raises GeographicErr:
+    :raises GeographicError:
         if the data file cannot be found, is unreadable, or is corrupt
     :raises MemoryError:
         if the memory necessary for storing the model can't be
@@ -136,7 +136,7 @@ cdef class GravityModel:
                     c_name, c_path, max_degree, max_order
                 )
         except RuntimeError as exc:
-            raise GeographicErr(str(exc)) from exc
+            raise GeographicError(str(exc)) from exc
 
     def __dealloc__(self):
         del self._ptr
