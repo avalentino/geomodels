@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import re
 import sys
@@ -64,12 +62,10 @@ if os.name == "posix":
         mandir = pathlib.Path("man")
     else:
         mandir = pathlib.Path("share/man")
-    datafiles = [
-        (
-            str(mandir / "man1"),
-            ["docs/man/geomodels-cli.1"],
-        )
-    ]
+    datafiles = [(
+        str(mandir / "man1"),
+        ["docs/man/geomodels-cli.1"],
+    )]
 else:
     datafiles = []
 
@@ -103,6 +99,13 @@ else:
         language="c++",
     )
 
+cython_directives = (
+    geomodels_ext.cython_directives
+    if hasattr(geomodels_ext, "cython_directives")
+    else {}
+)
+cython_directives["freethreading_compatible"] = True
+geomodels_ext.cython_directives = cython_directives
 
 description = pathlib.Path("README.rst").read_text()
 description = description.replace(".. doctest", "").replace(":doc:", "")

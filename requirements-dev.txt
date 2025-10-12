@@ -1,6 +1,0 @@
-argcomplete
-build>=0.8
-cython
-numpy
-setuptools
-tqdm

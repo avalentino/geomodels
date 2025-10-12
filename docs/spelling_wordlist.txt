@@ -9,10 +9,12 @@ igrf
 instantiation
 instantiations
 Moritz
+nd
 nT
 orthometric
 pgm
 pre
 url
+vendored
 wmm
 wwm
