@@ -21,7 +21,7 @@ class DataPathTestCase(unittest.TestCase):
 
         try:
             path = geomodels.data.get_default_data_path()
-            self.assertEqual(path, dummy_path)
+            self.assertEqual(path, str(pathlib.Path(dummy_path)))
         finally:
             if old_env is None:
                 del os.environ["GEOGRAPHICLIB_DATA"]

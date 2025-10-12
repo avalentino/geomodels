@@ -1,4 +1,4 @@
-.TH GEOMODELS\-CLI "1" "2024\-12\-30" "geomodels" "Manual"
+.TH GEOMODELS\-CLI "1" "2026\-01\-04" "geomodels" "Generated Python Manual"
 .SH NAME
 geomodels\-cli
 .SH SYNOPSIS
@@ -19,15 +19,15 @@ logging level (default: WARNING)
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 suppress standard output messages, only errors are printed to screen (set
-"loglevel" to "ERROR")
+'loglevel' to 'ERROR')
 
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-print verbose output messages (set "loglevel" to "INFO")
+print verbose output messages (set 'loglevel' to 'INFO')
 
 .TP
 \fB\-\-debug\fR
-print debug messages (set "loglevel" to "DEBUG")
+print debug messages (set 'loglevel' to 'DEBUG')
 
 .SH
 SUB-COMMANDS
@@ -46,14 +46,14 @@ usage: geomodels\-cli info [\-h] [\-d DATADIR] [\-a] [\-\-data]
 
 Provide information about the installation and environment.
 
-    Information provided include: the platform, the library versions and
-    installed data.
-
+Information provided include: the platform, the library versions and
+installed data.
 
 .SH OPTIONS \fI\,'geomodels\-cli info'\/\fR
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the model data are stored.
+specifies where the model data are stored (default:
+'/usr/local/share/GeographicLib').
 
 .TP
 \fB\-a\fR, \fB\-\-all\fR
@@ -70,31 +70,30 @@ usage: geomodels\-cli install\-data [\-h] [\-b BASE_URL] [\-d DATADIR]
 
 Download and install the data necessary for models computation.
 
-    GeoModels uses external data to perform geoid, gravity and magnetic
-    field computations.
+GeoModels uses external data to perform geoid, gravity and magnetic
+field computations.
 
-    It is possible to install different subsets of data:
+It is possible to install different subsets of data:
 
-    :minimal:
-        only data for the default model of each kind (geoid,
-        gravity and magnetic field) are installed,
-    :recommended:
-        install the `minimal` set of data (see above) plus few
-        additional and commonly used data (it is guaranteed that
-        the `recommended` subset always includes all data that
-        are necessary to run the test suite),
-    :all:
-        install all available data (about 670MB of disk space
-        required),
-    :geoids:
-        install data for all supported geoids,
-    :gravity:
-        install data for all supported gravity models,
-    :magnetic:
-        install data for all supported magnetic field models.
+:minimal:
+    only data for the default model of each kind (geoid,
+    gravity and magnetic field) are installed,
+:recommended:
+    install the `minimal` set of data (see above) plus few
+    additional and commonly used data (it is guaranteed that
+    the `recommended` subset always includes all data that
+    are necessary to run the test suite),
+:all:
+    install all available data (about 670MB of disk space
+    required),
+:geoids:
+    install data for all supported geoids,
+:gravity:
+    install data for all supported gravity models,
+:magnetic:
+    install data for all supported magnetic field models.
 
-    Additionally the it is possible to install data for a single model.
-
+Additionally the it is possible to install data for a single model.
 
 .TP
 \fB{all,minimal,recommended,geoids,gravity,magnetic,egm84\-30,egm84\-15,egm96\-15,egm96\-5,egm2008\-5,egm2008\-2_5,egm2008\-1,egm84,egm96,egm2008,grs80,wgs84,wmm2010,wmm2015,wmm2015v2,wmm2020,wmm2025,wmmhr2025,igrf11,igrf12,igrf13,igrf14,emm2010,emm2015,emm2017}\fR
@@ -104,11 +103,12 @@ model(s) to be installed
 .TP
 \fB\-b\fR \fI\,BASE_URL\/\fR, \fB\-\-base\-url\fR \fI\,BASE_URL\/\fR
 specifies the base URL for the download (default:
-https://downloads.sourceforge.net/project/geographiclib).
+'https://downloads.sourceforge.net/project/geographiclib/').
 
 .TP
 \fB\-d\fR \fI\,DATADIR\/\fR, \fB\-\-datadir\fR \fI\,DATADIR\/\fR
-specifies where the datasets should be stored.
+specifies where the datasets should be stored (default:
+'/usr/local/share/GeographicLib').
 
 .TP
 \fB\-\-no\-progress\fR
@@ -119,11 +119,10 @@ usage: geomodels\-cli import\-igrf [\-h] [\-o OUTPATH] [\-\-force] path
 
 Import magnetic field data from IGRF text format.
 
-    Import Spherical Harmonics coefficients for the IGRF magnetic field
-    model from text file in IGRF standard format.
+Import Spherical Harmonics coefficients for the IGRF magnetic field
+model from text file in IGRF standard format.
 
-    See: https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
-
+See: https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html.
 
 .TP
 \fBpath\fR
@@ -132,7 +131,8 @@ path or URL of the IGRF text file
 .SH OPTIONS \fI\,'geomodels\-cli import\-igrf'\/\fR
 .TP
 \fB\-o\fR \fI\,OUTPATH\/\fR, \fB\-\-outpath\fR \fI\,OUTPATH\/\fR
-specifies the output data path.
+specifies the output data path (default:
+"/usr/local/share/GeographicLib/magnetic").
 
 .TP
 \fB\-\-force\fR

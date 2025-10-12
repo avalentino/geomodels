@@ -1,15 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 #
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
+# For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
 import os
 import sys
 
@@ -17,6 +12,9 @@ try:
     import geomodels  # noqa: F401
 except ImportError:
     sys.path.insert(0, os.path.abspath(".."))
+
+
+# -- Version utils -----------------------------------------------------------
 
 
 def get_version(filename="../geomodels/_version.py", strip_extra=False):
@@ -37,14 +35,14 @@ def get_version(filename="../geomodels/_version.py", strip_extra=False):
 
     if strip_extra:
         return version.base_version
-    else:
-        return str(version)
+    return str(version)
 
 
 # -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "GeoModels"
-copyright = "2019-2025, Antonio Valentino"
+copyright = "2019-2026, Antonio Valentino"
 author = "Antonio Valentino"
 
 # The short X.Y version.
@@ -53,46 +51,51 @@ version = get_version(strip_extra=True)
 # The full version, including alpha/beta/rc tags
 release = get_version(strip_extra=False)
 
-
-# -- General configuration ---------------------------------------------------
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.extlinks",
-]
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
-
-# The master toctree document.
 master_doc = "index"
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = [
+    "sphinx.ext.autodoc",
+    # "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autosummary",
+    # "sphinx.ext.coverage",
+    "sphinx.ext.doctest",
+    # "sphinx.ext.duration",
+    "sphinx.ext.extlinks",
+    # "sphinx.ext.githubpages",
+    # "sphinx.ext.graphviz",
+    "sphinx.ext.ifconfig",
+    # "sphinx.ext.imgconverter",
+    # "sphinx.ext.inheritance_diagram",
+    "sphinx.ext.intersphinx",
+    # "sphinx.ext.linkcode",  # needs_sphinx = "1.2"
+    # "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    # "sphinx.ext.imgmath",
+    # "sphinx.ext.jsmath",
+    "sphinx.ext.mathjax",
+]
+
+try:
+    import sphinxcontrib.spelling  # noqa: F401,I900
+except ImportError:
+    pass
+else:
+    extensions.append("sphinxcontrib.spelling")
+
+templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 # -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
 html_theme = "alabaster"
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
+html_static_path = ["_static"]
 html_theme_options = {
     # Service links and badges¶
     # 'badge_branch': 'master',  # not supported by Sphinx v1.8.5
@@ -116,11 +119,6 @@ html_theme_options = {
     # 'show_relbars': True,  # not supported by Sphinx v1.8.5
 }
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
-
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -136,46 +134,47 @@ html_sidebars = {
 }
 
 
-# -- Options for LaTeX output ---------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    "papersize": "a4paper",
-    # The font size ('10pt', '11pt' or '12pt').
-    "pointsize": "12pt",
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
+# -- Options for LaTeX output ------------------------------------------------
 latex_documents = [
-    (master_doc, "GeoModels.tex", "GeoModels Documentation", author, "manual"),
+    (
+        master_doc,
+        project + ".tex",
+        f"{project} Documentation",
+        author,
+        "manual",
+        False,
+    ),
 ]
 
-# If false, no module index is generated.
 latex_domain_indices = False
+
+latex_elements = {
+    "papersize": "a4paper",
+    "pointsize": "12pt",
+}
 
 
 # -- Extension configuration -------------------------------------------------
 
 # -- Options for intersphinx extension ---------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#configuration
 
-# Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
+    "python": ("https://docs.python.org/3/", None),
     # '/usr/share/doc/python3/html/objects.inv'),
-    "numpy": ("https://docs.scipy.org/doc/numpy", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
     # '/usr/share/doc/python-numpy-doc/html/objects.inv'),
 }
 
 
 # -- Options for extlinks extension ------------------------------------------
 
-# External links configuration
 extlinks = {
     "issue": ("https://github.com/avalentino/geomodels/issues/%s", "gh-%s"),
 }
+
+
+# -- Options for todo extension ----------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#configuration
+
+todo_include_todos = True

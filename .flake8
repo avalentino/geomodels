@@ -1,24 +1,51 @@
 [flake8]
+min-python-version = 3.10
 # max_line_length = 79
 # max-complexity = 10
 doctests = true
 # https://github.com/psf/black/blob/main/docs/guides/using_black_with_other_tools.md
-extend-ignore = E203,W503,SC
-# extend-ignore = I  # flake8-import-order: not compatible with isort
-# extend-ignore = SC  # flake8-spellcheck: too aggressive
-# extend-ignore = CNL  # flake8-class-newline: incompatible with black
-# extend-ignore = A003,A005  # Python builtin is shadowed by class attribute / module
-# extend-ignore = D105  # undocumented-magic-method
-# extend-ignore = D107  # undocumented-public-init
+# - E203: whitespace before ‘,’, ‘;’, or ‘:’
+# - E701: multiple statements on one line (colon)
+# - E704: multiple statements on one line (def)
+# + W504: line break after binary operator
+# https://www.pydocstyle.org/en/stable/error_codes.html
+# - D105: undocumented-magic-method
+# - D107: undocumented-public-init
+# https://github.com/gforcada/flake8-builtins?tab=readme-ov-file#rules
+# - A003: A class attribute is shadowing a Python builtin.
+# - A005: A module is shadowing a Python builtin module (e.g: logging or socket)
+# https://github.com/PyCQA/flake8-bugbear?tab=readme-ov-file#list-of-warnings
+# + B950: (smart) Line too long
+# https://github.com/orsinium-labs/flake8-todos
+# - T003: add link on issue into TODO.
+# https://github.com/plinss/flake8-noqa?tab=readme-ov-file#error-codes
+# NQA102: "# noqa: X000" has no matching violations
+# misc
+# - I  # flake8-import-order: not compatible with isort
+# - SC  # flake8-spellcheck: too aggressive
+# - CNL  # flake8-class-newline: incompatible with black
+# - JS  # flake8-multiline-containers: not compatibel with ruff preview
+# - ANN  # flake8-annotations: too aggressive
+# - C  # flake8-commas: too aggressive
+# - PT  # flake8-pytest-style: test suite compatibel with unittest
+extend-ignore = E203,W503,SC,JS,BLK,ANN,C,PT,PL123,NIC002,S101,FNE007,FNE008,FNE003,FNE004
 extend-select = W504
 per-file-ignores =
-    tests/*: D,T003
-    */tests/*: D,T003
+    tests/*: D,T003,E800,VNE001,FNE007
+    */tests/*: D,T003,E800,VNE001,FNE007
     geomodels/_typing.py: A005
-    geomodels/cli.py: NQA102
-    setup.py: D
+    geomodels/cli.py: T201,NQA102
+    geomodels/data.py: RST
+    setup.py: D,T201,INP001
+    geomodels/tests/__init__.py: D,T201
+    geomodels/tests/test_cli.py: D,S404,S603
+    docs/conf.py: D,E800,INP001,VNE003,A001
 statistics = True
 count = True
+extend-exclude =
+    extern
+    build
+    docs/_build
 
 # flake8-cognitive-complexity
 # max-cognitive-complexity = 7  # default

@@ -16,22 +16,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
       - name: Install docs dependencies
         shell: bash
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install sphinx sphinxcontrib-spelling
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          if [ -f requirements-docs.txt ]; then pip install -r requirements-docs.txt; fi
+          python -m pip install --upgrade pip build
+          python -m pip install --group docs
 
       - name: Build
         run: |
@@ -39,7 +37,8 @@ jobs:
 
       - name: Install
         run: |
-          python -m pip install dist/*.whl
+          WHEELNAME=$(ls dist/geomodels-*.whl)
+          python -m pip install "${WHEELNAME}[all]"
 
       - name: Build docs
         run: |
