@@ -127,7 +127,7 @@ def get_default_data_path() -> str:
         return str(
             pathlib.Path(MagneticFieldModel.default_magnetic_path()).parent
         )
-    return path
+    return str(pathlib.Path(path))
 
 
 _BASE_URL = "https://downloads.sourceforge.net/project/geographiclib/"
