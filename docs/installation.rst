@@ -183,6 +183,6 @@ correctly.
 The recommended way to test GeoModels with using PyTest_::
 
   $ env GEOGRAPHICLIB_DATA=/path/to/data \
-    python3 -m pytest --pyargs geomodels
+    python3 -m pytest tests
 
 .. _PyTest: http://pytest.org

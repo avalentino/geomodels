@@ -1,9 +1,13 @@
 """Command Line Interface (CLI) for the geomodels Python package."""
 
+import os
+import sys
 import enum
+import locale
 import logging
 import pathlib
 import argparse
+import platform
 
 from . import __version__
 from .data import (
@@ -17,7 +21,6 @@ from .data import (
     EMagneticModel,
 )
 from .wmmf import import_igrf_txt
-from .tests import print_versions
 from ._typing import PathType  # noqa: TC001
 
 EX_FAILURE = 1
@@ -28,8 +31,30 @@ LOGFMT = "%(levelname)s: %(message)s"
 DEFAULT_LOGLEVEL = "WARNING"
 
 
+def print_versions():
+    """Print platform information and library version."""
+    from . import lib_version_str, __version__  # avoid circular imports
+
+    geographiclib_data = os.environ.get("GEOGRAPHICLIB_DATA", "not specified")
+
+    print(f"geomodels version:     {__version__}")
+    print(f"GeographicLib version: {lib_version_str()}")
+    print(f"GEOGRAPHICLIB_DATA:    {geographiclib_data}")
+
+    print(f"Python version:        {platform.python_version()}")
+    print(f"Platform:              {platform.platform()}")
+    print(f"Byte-ordering:         {sys.byteorder}")
+    print(f"Default encoding:      {sys.getdefaultencoding()}")
+    print(f"Default FS encoding:   {sys.getfilesystemencoding()}")
+    print(f"Locale:                {locale.getlocale()}")
+
+    print()
+
+    sys.stdout.flush()
+
+
 class EInfoMode(enum.Enum):
-    """Enumeration describing which king of info shall be provided."""
+    """Enumeration describing which kind of info shall be provided."""
 
     INFO = "info"
     DATA = "data"

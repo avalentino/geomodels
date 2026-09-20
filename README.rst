@@ -102,7 +102,7 @@ is possible to run the test suite to be sure that all works correctly.
 The recommended way to test GeoModels with using PyTest_::
 
   $ env GEOGRAPHICLIB_DATA=/path/to/data \
-    python3 -m pytest --pyargs geomodels
+    python3 -m pytest tessts
 
 .. _PyTest: http://pytest.org
 

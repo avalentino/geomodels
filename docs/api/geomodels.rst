@@ -42,7 +42,6 @@ Functions
 
 .. autofunction:: lib_version_str
 
-.. autofunction:: test
 
 Sub-modules
 -----------

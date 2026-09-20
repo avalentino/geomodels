@@ -79,7 +79,7 @@ dev = [
 
 
 [tool.setuptools]
-packages = ["geomodels", "geomodels.tests", "geomodels.tests.data"]
+packages = ["geomodels"]
 
 
 [tool.setuptools.dynamic]
@@ -261,7 +261,7 @@ docstring-code-format = true
 "docs/conf.py" = ["D", "A001", "INP001"]
 "setup.py" = ["D", "T201"]
 "geomodels/cli.py" = ["BLE001", "T201"]
-"geomodels/tests/__init__.py" = ["D", "T201"]
+"tests/__init__.py" = ["D", "T201"]
 
 
 [tool.ruff.lint.isort]

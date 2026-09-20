@@ -21,5 +21,4 @@ from .data import (  # noqa: F401
 )
 from .wmmf import MetaData, SphCoeffSet, WmmData, import_igrf_txt  # noqa: F401
 from .error import GeographicError  # noqa: F401
-from .tests import test  # noqa: F401
 from ._version import __version__  # noqa: F401

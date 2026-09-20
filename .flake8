@@ -32,13 +32,13 @@ extend-ignore = E203,W503,SC,JS,BLK,ANN,C,PT,PL123,NIC002,S101,FNE007,FNE008,FNE
 extend-select = W504
 per-file-ignores =
     tests/*.py: D,T003,E800,VNE001,FNE007
-    geomodels/tests/*.py: D,T003,E800,VNE001,FNE007
+    */tests/*.py: D,T003,E800,VNE001,FNE007
     geomodels/_typing.py: A005
     geomodels/cli.py: T201,NQA102
     geomodels/data.py: RST
     setup.py: D,T201,INP001
-    geomodels/tests/__init__.py: D,T201
-    geomodels/tests/test_cli.py: D,S404,S603
+    tests/__init__.py: D,T201
+    tests/test_cli.py: D,S404,S603
     docs/conf.py: D,E800,INP001,VNE003,A001
 statistics = True
 count = True

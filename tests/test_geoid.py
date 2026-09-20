@@ -9,7 +9,8 @@ import numpy as np
 from numpy import testing as npt
 
 from geomodels import GeoidModel, EHeightConvDir, get_default_data_path
-from geomodels.tests.utils import dms_to_dec
+
+from .utils import dms_to_dec
 
 
 class StaticMethodsTestCase(unittest.TestCase):

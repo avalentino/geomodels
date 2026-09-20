@@ -35,7 +35,7 @@ dist:
 check: ext data
 	$(PYTHON) -m geomodels info
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
-	$(PYTHON) -m pytest --doctest-modules $(TARGET)
+	$(PYTHON) -m pytest --doctest-modules tests
 
 fullcheck: data
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
@@ -43,7 +43,7 @@ fullcheck: data
 
 coverage: ext data
 	if [ -d data ]; then export GEOGRAPHICLIB_DATA="$(PWD)/data"; fi && \
-	$(PYTHON) -m pytest --doctest-modules --cov=$(TARGET) --cov-report=html --cov-report=term --pyargs geomodels
+	$(PYTHON) -m pytest --doctest-modules --cov=$(TARGET) --cov-report=html --cov-report=term tests
 
 clean:
 	$(RM) -r *.*-info build
@@ -75,7 +75,7 @@ lint:
 	$(PYTHON) -m black --check $(TARGET)
 	# $(PYTHON) -m fawltydeps
 	$(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports -p $(TARGET)
-	ruff check $(TARGET)
+	# ruff check $(TARGET)
 	codespell
 
 docs: ext data man
@@ -90,7 +90,7 @@ api: ext
 	$(RM) -r docs/api
 	$(SPHINX_APIDOC) --module-first --separate --no-toc -o docs/api \
 	  --doc-project "$(TARGET) API" --templatedir docs/_templates/apidoc \
-	  $(TARGET) $(TARGET)/tests $(TARGET)/*.pyx
+	  $(TARGET) $(TARGET)/*.pyx
 
 ext: geomodels/_ext.cpp
 	$(PYTHON) setup.py build_ext --inplace

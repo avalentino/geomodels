@@ -1,7 +1,7 @@
 include MANIFEST.in LICENSE
 include Makefile
 include geomodels/*.pyx geomodels/*.pxd
-# include geomodels/*.cpp
+recursive-include tests *.py *.txt
 recursive-include docs *.py *.rst Makefile *.bat spelling_wordlist.txt
 prune docs/_build
 recursive-include extern *
