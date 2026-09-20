@@ -28,11 +28,11 @@ doctests = true
 # - ANN  # flake8-annotations: too aggressive
 # - C  # flake8-commas: too aggressive
 # - PT  # flake8-pytest-style: test suite compatibel with unittest
-extend-ignore = E203,W503,SC,JS,BLK,ANN,C,PT,PL123,NIC002,S101,FNE007,FNE008,FNE003,FNE004
+extend-ignore = E203,W503,SC,JS,BLK,ANN,C,PT,PL123,NIC002,S101,FNE007,FNE008,FNE003,FNE004,T003,NQA
 extend-select = W504
 per-file-ignores =
-    tests/*: D,T003,E800,VNE001,FNE007
-    */tests/*: D,T003,E800,VNE001,FNE007
+    tests/*.py: D,T003,E800,VNE001,FNE007
+    geomodels/tests/*.py: D,T003,E800,VNE001,FNE007
     geomodels/_typing.py: A005
     geomodels/cli.py: T201,NQA102
     geomodels/data.py: RST
