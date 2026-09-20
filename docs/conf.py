@@ -53,6 +53,9 @@ release = get_version(strip_extra=False)
 
 master_doc = "index"
 
+# Workaround to prevent sourceforge to block requests
+user_agent = "Geomedel HTTP Request"
+
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
