@@ -75,6 +75,18 @@ IGNORE_BUNDLED_LIBS = IGNORE_BUNDLED_LIBS_STR in {"1", "ON", "TRUE", "YES"}
 SRCPATH = pathlib.Path("extern/geographiclib")
 
 
+def get_extra_compile_args():
+    from setuptools._distutils.ccompiler import new_compiler
+
+    compiler = new_compiler()
+    if hasattr(compiler, "initialize"):
+        compiler.initialize()
+    if hasattr(compiler, "cc") and "cl" in compiler.cc:
+        return ["/std:c++17"]
+
+    return ["-std=c++17", "-Wall"]
+
+
 if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
     geographiclib_src = SRCPATH.glob("src/*.cpp")
     geographiclib_include = list(SRCPATH.glob("include"))[0]
@@ -84,7 +96,7 @@ if SRCPATH.exists() and not IGNORE_BUNDLED_LIBS:
         include_dirs=[str(geographiclib_include)],
         libraries=[],
         language="c++",
-        extra_compile_args=["-std=c++17", "-Wall"],
+        extra_compile_args=get_extra_compile_args(),
     )
     outpath = geographiclib_include / "GeographicLib" / "Config.h"
     mkconfig(SRCPATH, outpath)
@@ -95,6 +107,7 @@ else:
         sources=["geomodels/_ext.pyx"],
         libraries=[libname],
         language="c++",
+        extra_compile_args=get_extra_compile_args(),
     )
 
 cython_directives = (
