@@ -328,7 +328,7 @@ def _metadata_from_txt_header(header: str) -> MetaData:
     if max(dyears) != min(dyears):
         raise RuntimeError("non uniform time sampling detected")
 
-    today = datetime.datetime.now(tz=datetime.timezone.utc).date()
+    today = datetime.datetime.now(tz=datetime.UTC).date()
     metadata = MetaData()
     metadata.ConversionDate = today.strftime(MetaData._DATEFMT)  # noqa: SF01
     metadata.NumModels = len(years)

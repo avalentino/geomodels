@@ -137,9 +137,9 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(datestr, str)
         self.assertNotEqual(datestr, "UNKNOWN")
         date = datetime.datetime.strptime(datestr, "%Y-%m-%d")  # noqa: DTZ007
-        date = date.replace(tzinfo=datetime.timezone.utc)
+        date = date.replace(tzinfo=datetime.UTC)
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
-        self.assertLess(date, datetime.datetime.now(tz=datetime.timezone.utc))
+        self.assertLess(date, datetime.datetime.now(tz=datetime.UTC))
 
     def test_magnetic_file(self):
         filename = self.model.magnetic_file()
@@ -186,7 +186,7 @@ class InfoMethodsTestCase(unittest.TestCase):
         else:
             self.assertLess(
                 self.model.min_time(),
-                datetime.datetime.now(tz=datetime.timezone.utc).date().year,
+                datetime.datetime.now(tz=datetime.UTC).date().year,
             )
 
     def test_max_time(self):
@@ -211,7 +211,7 @@ class InfoMethodsTestCase(unittest.TestCase):
         else:
             self.assertGreater(
                 self.model.max_time(),
-                datetime.datetime.now(tz=datetime.timezone.utc).date().year,
+                datetime.datetime.now(tz=datetime.UTC).date().year,
             )
 
     def test_min_max_time(self):

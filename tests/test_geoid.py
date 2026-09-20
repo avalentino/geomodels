@@ -179,8 +179,8 @@ class InfoMethodsTestCase(unittest.TestCase):
         date = datetime.datetime.strptime(  # noqa: DTZ007
             datestr, "%Y-%m-%d %H:%M:%S"
         )
-        date = date.replace(tzinfo=datetime.timezone.utc)
-        self.assertLess(date, datetime.datetime.now(tz=datetime.timezone.utc))
+        date = date.replace(tzinfo=datetime.UTC)
+        self.assertLess(date, datetime.datetime.now(tz=datetime.UTC))
 
     def test_geoid_file(self):
         filename = self.model.geoid_file()

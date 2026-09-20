@@ -142,9 +142,9 @@ class InfoMethodsTestCase(unittest.TestCase):
         self.assertIsInstance(datestr, str)
         self.assertNotEqual(datestr, "UNKNOWN")
         date = datetime.datetime.strptime(datestr, "%Y-%m-%d")  # noqa: DTZ007
-        date = date.replace(tzinfo=datetime.timezone.utc)
+        date = date.replace(tzinfo=datetime.UTC)
         # date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
-        self.assertLess(date, datetime.datetime.now(tz=datetime.timezone.utc))
+        self.assertLess(date, datetime.datetime.now(tz=datetime.UTC))
 
     def test_gravity_file(self):
         filename = self.model.gravity_file()
