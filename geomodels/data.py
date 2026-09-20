@@ -11,15 +11,15 @@ from urllib.parse import urlsplit
 from urllib.request import urlretrieve
 from collections.abc import Callable, Iterable
 
-from ._typing import PathType  # noqa: TC001
+from ._typing import PathType
 
 __all__ = [
-    "EModelGroup",
-    "EModelType",
+    "EArchiveType",
     "EGeoidModel",
     "EGravityModel",
     "EMagneticModel",
-    "EArchiveType",
+    "EModelGroup",
+    "EModelType",
     "get_default_data_path",
     "get_model_url",
     "install",
@@ -175,9 +175,7 @@ def get_model_url(
         filename=model.value,
         ext=archive_type.value,
     )
-    url = url._replace(  # noqa: SF01
-        path=urlpath, query=query, fragment=fragment
-    )
+    url = url._replace(path=urlpath, query=query, fragment=fragment)
     return url.geturl()
 
 
@@ -247,7 +245,7 @@ def _get_url_map(
         case _:
             raise ValueError(f"unexpected model: {model!r}")
 
-    return urls  # noqa: R504
+    return urls
 
 
 have_tqdm: bool
@@ -341,7 +339,7 @@ def download(
     """
     urlobj = urlsplit(url)
     if not urlobj.scheme:
-        urlobj = urlobj._replace(scheme="file")  # noqa: SF01
+        urlobj = urlobj._replace(scheme="file")
 
     path = pathlib.Path(path)
     if path.is_dir():
@@ -355,13 +353,9 @@ def download(
 
     if isinstance(report_hook, contextlib.AbstractContextManager):
         with report_hook:
-            outpath, _ = urlretrieve(  # noqa: S310
-                urlobj.geturl(), path, report_hook
-            )
+            outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
     else:
-        outpath, _ = urlretrieve(  # noqa: S310
-            urlobj.geturl(), path, report_hook
-        )
+        outpath, _ = urlretrieve(urlobj.geturl(), path, report_hook)
 
     return outpath
 
@@ -421,8 +415,10 @@ def install(
         else:
             urliterator = urls.items()
 
-        for model, url in urliterator:
-            target = datadir / model.get_model_type().value / model.value
+        for model_type, url in urliterator:
+            target = (
+                datadir / model_type.get_model_type().value / model_type.value
+            )
             matches = list(target.parent.glob(f"{target.name}*"))
             if matches:
                 _log.debug('"%s" already exists: skip download', target)

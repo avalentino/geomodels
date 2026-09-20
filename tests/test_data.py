@@ -30,11 +30,11 @@ class DataPathTestCase(unittest.TestCase):
 
 
 class UrlTestCase(unittest.TestCase):
-    MODEL_TYPES = [
+    MODEL_TYPES = (
         geomodels.data.EGeoidModel,
         geomodels.data.EGravityModel,
         geomodels.data.EMagneticModel,
-    ]
+    )
 
     def test_get_base_url(self):
         self.assertIsInstance(geomodels.data.get_base_url(), str)
@@ -140,11 +140,11 @@ class DownloadTestCase(unittest.TestCase):
 
 
 class InstallTestCase(unittest.TestCase):
-    MODEL_TYPES = [
+    MODEL_TYPES = (
         geomodels.data.EGeoidModel,
         geomodels.data.EGravityModel,
         geomodels.data.EMagneticModel,
-    ]
+    )
 
     def setUp(self) -> None:
         self.download_patcher = mock.patch(

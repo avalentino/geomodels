@@ -12,7 +12,7 @@ def suite():
     return loader.discover(start_dir=os.path.dirname(__file__))
 
 
-def test(verbosity: int = 1, failfast: bool = False):
+def runtests(verbosity: int = 1, failfast: bool = False):
     """Run the test suite for the geomodels package.
 
     :param int verbosity:

@@ -69,13 +69,13 @@ distclean: cleaner
 	$(RM) -r wheelhouse
 
 lint:
-	$(PYTHON) -m flake8 --count --statistics $(TARGET)
-	$(PYTHON) -m pydocstyle --count $(TARGET)
-	$(PYTHON) -m isort --check $(TARGET)
-	$(PYTHON) -m black --check $(TARGET)
+	$(PYTHON) -m flake8 --count --statistics $(TARGET) tests
+	$(PYTHON) -m pydocstyle --count $(TARGET) tests
+	$(PYTHON) -m isort --check $(TARGET) tests
+	$(PYTHON) -m black --check $(TARGET) tests
 	# $(PYTHON) -m fawltydeps
 	$(PYTHON) -m mypy --check-untyped-defs --ignore-missing-imports -p $(TARGET)
-	# ruff check $(TARGET)
+	ruff check $(TARGET) tests
 	codespell
 
 docs: ext data man

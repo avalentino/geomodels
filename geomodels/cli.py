@@ -11,17 +11,17 @@ import platform
 
 from . import __version__
 from .data import (
-    get_default_data_path,
-    get_base_url,
-    install,
-    EModelGroup,
     EModelType,
     EGeoidModel,
+    EModelGroup,
     EGravityModel,
     EMagneticModel,
+    install,
+    get_base_url,
+    get_default_data_path,
 )
 from .wmmf import import_igrf_txt
-from ._typing import PathType  # noqa: TC001
+from ._typing import PathType
 
 EX_FAILURE = 1
 EX_INTERRUPT = 130
@@ -33,7 +33,7 @@ DEFAULT_LOGLEVEL = "WARNING"
 
 def print_versions():
     """Print platform information and library version."""
-    from . import lib_version_str, __version__  # avoid circular imports
+    from . import __version__, lib_version_str  # avoid circular imports
 
     geographiclib_data = os.environ.get("GEOGRAPHICLIB_DATA", "not specified")
 
@@ -408,7 +408,7 @@ def main(*argv):
     log = logging.getLogger(__name__)
 
     # parse cmd line arguments
-    args = parse_args(argv if argv else None)
+    args = parse_args(argv or None)
 
     try:
         # NOTE: use the root logger to set the logging level
@@ -417,7 +417,7 @@ def main(*argv):
         log.debug("args: %s", args)
         kwargs = _get_kwargs(args)
         return args.func(**kwargs)
-    except Exception as exc:  # noqa: B902
+    except Exception as exc:  # noqa: B
         msg = str(exc)
         log.critical(
             "unexpected exception caught: %r %s", type(exc).__name__, msg

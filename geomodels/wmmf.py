@@ -51,10 +51,10 @@ class MetaData:
     NumConstants: int = 0
     Normalization: int = 1
     ID: str = "N/A"
-    Type = "linear"
-    ByteOrder = "little"
-    N: int = 0  # noqa: VNE001
-    M: int = 0  # noqa: VNE001
+    Type: str = "linear"
+    ByteOrder: str = "little"
+    N: int = 0
+    M: int = 0
     FORMAT_VERSION: int = 1
 
     _DATEFMT = "%Y-%m-%d"
@@ -157,7 +157,7 @@ MaxHeight       {self.MaxHeight}
 # the name of this file.  The coefficients were obtained from {upper_name}.COF
 # in the geomag70 distribution.
 ID              {id_}
-"""  # noqa: E800,N400
+"""
 
     def save(self, filename: PathType) -> None:
         """Save metadata in WMM format."""
@@ -180,7 +180,7 @@ class WmmData:
         wmmdata = cls()
         wmmdata.metadata = metadata
         wmmdata.coeffs = coeffs
-        wmmdata._check()  # noqa: SF01
+        wmmdata._check()
         return wmmdata
 
     def __init__(self, filename: PathType | None = None) -> None:
@@ -268,8 +268,7 @@ class WmmData:
         size = np.abs(coeffs.C) + np.abs(coeffs.S)
         lines = np.where(np.sum(size, 0) > 0)[0][-1]
         cols = np.where(np.sum(size, 1) > 0)[0][-1]
-        if cols > lines:
-            cols = lines
+        cols = min(cols, lines)
 
         bytes_ = struct.pack("<ii", lines, cols)
         fd.write(bytes_)
@@ -330,7 +329,7 @@ def _metadata_from_txt_header(header: str) -> MetaData:
 
     today = datetime.datetime.now(tz=datetime.UTC).date()
     metadata = MetaData()
-    metadata.ConversionDate = today.strftime(MetaData._DATEFMT)  # noqa: SF01
+    metadata.ConversionDate = today.strftime(MetaData._DATEFMT)
     metadata.NumModels = len(years)
     metadata.Epoch = int(years[0])
     metadata.DeltaEpoch = int(years[1] - years[0])
@@ -358,7 +357,7 @@ def import_igrf_txt(path: PathType) -> WmmData:
     if urlobj.scheme in ("", "file"):
         fd = open(filename)  # noqa: SIM115
     else:
-        fd = urlopen(str(path))  # noqa: S310
+        fd = urlopen(str(path))
 
     with fd:
         for line in fd:

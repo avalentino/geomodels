@@ -21,13 +21,17 @@ def _make_cmd(*args):
 class MainTestCase(unittest.TestCase):
     def test_version(self):
         cmd = _make_cmd("--version")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         self.assertIn(VERSION, result.stdout)
 
     def test_help(self):
         cmd = _make_cmd("--help")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -35,7 +39,9 @@ class MainTestCase(unittest.TestCase):
 
     def test_h(self):
         cmd = _make_cmd("-h")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -51,7 +57,9 @@ class InfoSubCommandTestCase(unittest.TestCase):
 
     def test_help(self):
         cmd = _make_cmd("info", "--help")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -60,7 +68,9 @@ class InfoSubCommandTestCase(unittest.TestCase):
 
     def test_h(self):
         cmd = _make_cmd("info", "-h")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -93,11 +103,11 @@ class InfoSubCommandTestCase(unittest.TestCase):
 
 
 class InstallDataSubCommandTestCase(unittest.TestCase):
-    MODEL_TYPES = [
+    MODEL_TYPES = (
         geomodels.data.EGeoidModel,
         geomodels.data.EGravityModel,
         geomodels.data.EMagneticModel,
-    ]
+    )
 
     def setUp(self) -> None:
         self.download_patcher = mock.patch(
@@ -113,7 +123,9 @@ class InstallDataSubCommandTestCase(unittest.TestCase):
 
     def test_help(self):
         cmd = _make_cmd("install-data", "--help")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -122,7 +134,9 @@ class InstallDataSubCommandTestCase(unittest.TestCase):
 
     def test_h(self):
         cmd = _make_cmd("install-data", "-h")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -197,7 +211,9 @@ class ImportIgrfSubCommandTestCase(unittest.TestCase):
 
     def test_help(self):
         cmd = _make_cmd("import-igrf", "--help")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)
@@ -206,7 +222,9 @@ class ImportIgrfSubCommandTestCase(unittest.TestCase):
 
     def test_h(self):
         cmd = _make_cmd("import-igrf", "-h")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, text=True, check=True
+        )
         self.assertEqual(result.returncode, 0)
         usage = result.stdout.splitlines()[0]
         self.assertIn("usage:", usage)

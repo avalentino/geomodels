@@ -19,10 +19,10 @@ class MetaDataTestProtocol(Protocol):
     @property
     def metadata(self) -> wmmf.MetaData: ...
 
-    def assertEqual(self, *args, **kargs): ...  # noqa: N802,U100
-    def assertIsInstance(self, *args, **kargs): ...  # noqa: N802,U100
-    def assertTrue(self, *args, **kargs): ...  # noqa: N802,U100
-    def subTest(self, *args, **kargs): ...  # noqa: N802,U100
+    def assertEqual(self, *args, **kargs): ...  # noqa: N802
+    def assertIsInstance(self, *args, **kargs): ...  # noqa: N802
+    def assertTrue(self, *args, **kargs): ...  # noqa: N802
+    def subTest(self, *args, **kargs): ...  # noqa: N802
 
 
 class MetaDataTestMixin:
@@ -116,7 +116,7 @@ class MetaDataFromTxtHeaderTestCase(MetaDataTestMixin, unittest.TestCase):
         with open(self.COEFFFILE) as fd:
             data = fd.read()
         header = data.splitlines(keepends=False)[3]
-        self.metadata = wmmf._metadata_from_txt_header(header)  # noqa: SF01
+        self.metadata = wmmf._metadata_from_txt_header(header)
         self.metadata.Name = "igrf12"
 
     def test_from_header(self):
@@ -159,9 +159,7 @@ class WmmDataTestCase(unittest.TestCase):
         self.assertEqual(
             len(self.wmmdata.coeffs), self.wmmdata.metadata.NumModels + 1
         )
-        years = [
-            int(item) for item in self.wmmdata.coeffs.keys() if item != "rate"
-        ]
+        years = [int(item) for item in self.wmmdata.coeffs if item != "rate"]
         self.assertEqual(years, self.wmmdata.metadata.get_years())
 
     def test_coeffs_data(self):

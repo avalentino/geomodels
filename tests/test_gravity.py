@@ -237,13 +237,13 @@ class ComputationTestCase(unittest.TestCase):
         self.model = GravityModel(self.MODEL_NAME)
 
     def test_gravity_scalar(self):
-        w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
+        _w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
         npt.assert_allclose(gx, self.GX)
         npt.assert_allclose(gy, self.GY)
         npt.assert_allclose(gz, self.GZ)
 
     def test_disturbance_scalar(self):
-        t, deltax, deltay, deltaz = self.model.disturbance(
+        _t, deltax, deltay, deltaz = self.model.disturbance(
             self.LAT, self.LON, self.HEIGHT
         )
         npt.assert_allclose(deltax, self.DELTAX)
@@ -398,7 +398,7 @@ class VectorComputationTestCase(unittest.TestCase):
         self.model = GravityModel(self.MODEL_NAME)
 
     def test_gravity_vector(self):
-        w, gx, gy, gz = self.model.gravity(
+        _w, gx, gy, gz = self.model.gravity(
             self.LAT.flatten(), self.LON.flatten(), self.HEIGHT.flatten()
         )
         npt.assert_allclose(gx, self.GX.flatten())
@@ -406,13 +406,13 @@ class VectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(gz, self.GZ.flatten())
 
     def test_gravity_matrix(self):
-        w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
+        _w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
         npt.assert_allclose(gx, self.GX)
         npt.assert_allclose(gy, self.GY)
         npt.assert_allclose(gz, self.GZ)
 
     def test_disturbance_vector(self):
-        t, deltax, deltay, deltaz = self.model.disturbance(
+        _t, deltax, deltay, deltaz = self.model.disturbance(
             self.LAT.flatten(), self.LON.flatten(), self.HEIGHT.flatten()
         )
         npt.assert_allclose(deltax, self.DELTAX.flatten())
@@ -420,7 +420,7 @@ class VectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(deltaz, self.DELTAZ.flatten())
 
     def test_disturbance_matrix(self):
-        t, deltax, deltay, deltaz = self.model.disturbance(
+        _t, deltax, deltay, deltaz = self.model.disturbance(
             self.LAT, self.LON, self.HEIGHT
         )
         npt.assert_allclose(deltax, self.DELTAX)
@@ -631,7 +631,7 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         self.model = GravityModel(self.MODEL_NAME)
 
     def test_gravity_vector(self):
-        w, gx, gy, gz = self.model.gravity(
+        _w, gx, gy, gz = self.model.gravity(
             self.LAT.flatten(), self.LON.flatten(), self.HEIGHT
         )
         npt.assert_allclose(gx, self.GX.flatten())
@@ -639,13 +639,13 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(gz, self.GZ.flatten())
 
     def test_gravity_matrix(self):
-        w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
+        _w, gx, gy, gz = self.model.gravity(self.LAT, self.LON, self.HEIGHT)
         npt.assert_allclose(gx, self.GX)
         npt.assert_allclose(gy, self.GY)
         npt.assert_allclose(gz, self.GZ)
 
     def test_disturbance_vector(self):
-        t, deltax, deltay, deltaz = self.model.disturbance(
+        _t, deltax, deltay, deltaz = self.model.disturbance(
             self.LAT.flatten(), self.LON.flatten(), self.HEIGHT
         )
         npt.assert_allclose(deltax, self.DELTAX.flatten())
@@ -653,7 +653,7 @@ class ConstHeightVectorComputationTestCase(unittest.TestCase):
         npt.assert_allclose(deltaz, self.DELTAZ.flatten())
 
     def test_disturbance_matrix(self):
-        t, deltax, deltay, deltaz = self.model.disturbance(
+        _t, deltax, deltay, deltaz = self.model.disturbance(
             self.LAT, self.LON, self.HEIGHT
         )
         npt.assert_allclose(deltax, self.DELTAX)

@@ -88,7 +88,6 @@ version = {attr = "geomodels._version.__version__"}
 
 [tool.setuptools.package-data]
 geomodels = ["py.typed", "*.pyi"]
-"geomodels.tests.data" = ["*.txt"]
 
 
 [tool.cibuildwheel]
