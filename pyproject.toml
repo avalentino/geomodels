@@ -37,8 +37,7 @@ dynamic = ["version", "readme"]
 [project.optional-dependencies]
 cli = ["argcomplete"]
 download = ["tqdm"]
-test = ["pytest"]
-all = ["geomodels[cli]", "geomodels[download]", "geomodels[test]"]
+all = ["geomodels[cli]", "geomodels[download]"]
 
 
 [project.scripts]
@@ -91,14 +90,16 @@ geomodels = ["py.typed", "*.pyi"]
 
 
 [tool.cibuildwheel]
-skip = "pp* cp310-musllinux_i686"
-test-requires = "pytest"
-# test-command = "pytest -v {project}/tests"
+test-groups = "test"
+test-command = [
+    "geomodels-cli install-data -d data recommended",
+    "pytest -v {project}/tests",
+]
+test-environment = { GEOGRAPHICLIB_DATA="data" }
 
 
 [tool.pytest.ini_options]
 addopts = [
-    # "--ignore=examples/",
     "--import-mode=importlib",
 ]
 
