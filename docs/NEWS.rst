@@ -1,7 +1,7 @@
 Release history
 ===============
 
-Geomodels 1.0.1 (UNRELEASED)
+Geomodels 1.0.1 (21/09/2026)
 ----------------------------
 
 * Update vendored GeographicLib to v2.7.
