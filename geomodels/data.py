@@ -424,6 +424,4 @@ def install(
                 _log.debug('"%s" already exists: skip download', target)
                 continue
             filename = download(url, tempdir, progress=progress)
-            # @CMPATIBILITY: shutil.unpack_archive accepts pathlib.Path
-            #                parameters since Python 3.7
-            shutil.unpack_archive(str(filename), extract_dir=str(datadir))
+            shutil.unpack_archive(filename, extract_dir=str(datadir))
